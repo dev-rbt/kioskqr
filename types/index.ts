@@ -17,6 +17,7 @@ export interface Product {
   category: string;
   ingredients?: string[];
   calories?: number;
+  weight?: number;  // Added weight property
   prepTime?: number;
   allergens?: string[];
   isSpicy?: boolean;
