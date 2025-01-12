@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Create directories if they don't exist
-    const publicDir = path.join(process.cwd(), 'public');
+    const publicDir = path.join(process.cwd(), 'uploads');
     const branchDir = path.join(publicDir, branchId);
     const bannersDir = path.join(branchDir, 'banners');
 
