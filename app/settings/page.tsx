@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {CategorySettings} from '@/components/settings/category-settings';
-import { ProductSettings } from '@/components/settings/product-settings';
+import ProductSettings from '@/components/settings/product-settings';
 import { ComboSettings } from '@/components/settings/combo-settings';
 import { TemplateSettings } from '@/components/settings/template-settings';
 import { PriceListSettings } from '@/components/settings/price-list-settings';
@@ -17,7 +17,8 @@ import {
   Package, 
   UtensilsCrossed,
   Globe,
-  RefreshCw
+  RefreshCw,
+  Tablet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useLanguageStore from '@/store/useLanguageStore';
@@ -25,6 +26,7 @@ import useBranchStore from "@/store/useBranchStore";
 import useTemplateStore from "@/store/useTemplateStore";
 import usePriceTemplateStore from "@/store/usePriceTemplateStore";
 import { Button } from "@/components/ui/button";
+import { KioskSettings } from "@/components/settings/kiosk-settings";
 
 const menuItems = [
   { id: 'branches', label: 'Şubeler', icon: Building2, component: BranchSettings },
@@ -34,6 +36,7 @@ const menuItems = [
   { id: 'products', label: 'Ürünler', icon: Package, component: ProductSettings },
   { id: 'combos', label: 'Combo Menüler', icon: UtensilsCrossed, component: ComboSettings },
   { id: 'services', label: 'Şube Ayarları', icon: Globe, component: ServiceSettings },
+  { id: 'settings', label: 'Kiosk Ayarları', icon: Tablet, component: KioskSettings },
 ];
 
 export default function SettingsPage() {

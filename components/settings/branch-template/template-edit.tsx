@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Image as ImageIcon, Save, Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Template } from '@/types/template';
+import { Image as ImageIcon, Save, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { SettingsTemplate, Template } from '@/types/template';
 import { useToast } from '@/hooks/use-toast';
 import useTemplateStore from "@/store/useTemplateStore";
 import { ColorPicker } from '@/components/ui/color-picker';
@@ -15,9 +15,24 @@ import useLanguageStore from '@/store/useLanguageStore';
 import useBranchStore from '@/store/useBranchStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface TemplateEditProps {
-  template: Template | null;
+  template: SettingsTemplate | null;
   onSave: (template: Template) => void;
   setTemplate: (template: Template | null) => void;
 }
@@ -25,6 +40,12 @@ interface TemplateEditProps {
 export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+  const [pendingLogo, setPendingLogo] = useState<File | null>(null);
+  const [pendingBanners, setPendingBanners] = useState<File[]>([]);
+  const [previewLogo, setPreviewLogo] = useState<string | null>(null);
+  const [previewBanners, setPreviewBanners] = useState<string[]>([]);
+  const [showLogoModal, setShowLogoModal] = useState(false);
   const { toast } = useToast();
   const updateTemplate = useTemplateStore(state => state.updateTemplate);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -33,12 +54,34 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
   const { branches } = useBranchStore();
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [branchSearchQuery, setBranchSearchQuery] = useState('');
-  const [activeLanguages, setActiveLanguages] = useState<Array<{ LanguageKey: string; IsActive: boolean }>>(
-    languages.map(lang => ({
-      LanguageKey: lang.Key,
-      IsActive: template?.Languages?.some(tl => tl.LanguageKey === lang.Key && tl.IsActive) || false,
-    }))
-  );
+  const [activeLanguages, setActiveLanguages] = useState<Array<{ LanguageKey: string; IsActive: boolean }>>([]);
+
+  // Template değiştiğinde şubeleri ve dilleri güncelle
+  useEffect(() => {
+    if (template) {
+      // Şubeleri ayarla
+      setSelectedBranches(template.Branches?.map(branch => branch.BranchID.toString()) || []);
+
+      // Dilleri ayarla
+      const templateLanguages = template.Languages || [];
+      setActiveLanguages(
+        languages.map(lang => ({
+          LanguageKey: lang.Key,
+          IsActive: templateLanguages.some(tl => tl.LanguageKey === lang.Key)
+        }))
+      );
+    }
+  }, [template?.TemplateKey, languages]);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", () => {
+      setCurrentBanner(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const filteredBranches = branches.filter(branch =>
     branch.BranchName.toLowerCase().includes(branchSearchQuery.toLowerCase())
@@ -49,7 +92,64 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
 
     setIsUpdating(true);
     try {
-      const response = await fetch('/api/templates/updateTemplate', {
+      // Önce logo ve banner'ları yükle
+      let logoUrl = template.LogoUrl;
+      if (pendingLogo) {
+        console.log('Uploading new logo...');
+        const formData = new FormData();
+        formData.append('file', pendingLogo);
+        formData.append('templateKey', template.TemplateKey);
+        formData.append('type', 'logo');
+
+        const response = await fetch('/api/settings-template/uploadImage', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload logo');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          console.log('Logo uploaded successfully:', data.imagePath);
+          logoUrl = data.imagePath;
+        }
+      }
+
+      // Mevcut banner'ları filtrele (blob URL'leri hariç)
+      const existingBanners = template.Banners.filter(banner => 
+        !banner.BannerUrl.startsWith('blob:') && !banner.isTemp
+      );
+
+      // Yeni banner'ları yükle
+      const uploadedBanners = [...existingBanners];
+      for (const file of pendingBanners) {
+        console.log('Uploading banner...');
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('templateKey', template.TemplateKey);
+        formData.append('type', 'banner');
+
+        const response = await fetch('/api/settings-template/uploadImage', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload banner');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          console.log('Banner uploaded successfully:', data.imagePath);
+          uploadedBanners.push({ BannerUrl: data.imagePath });
+        }
+      }
+
+      console.log('Updating template with logo:', logoUrl);
+      // Template'i güncelle
+      const response = await fetch('/api/settings-template/updateTemplate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,9 +161,9 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
           SecondColor: template.SecondColor,
           AccentColor: template.AccentColor,
           DefaultLanguageKey: template.DefaultLanguageKey,
-          LogoUrl: template.LogoUrl,
+          LogoUrl: logoUrl,
           Languages: activeLanguages,
-          Banners: template.Banners,
+          Banners: uploadedBanners,
           BranchIDs: selectedBranches
         }),
       });
@@ -72,8 +172,21 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
         throw new Error('Failed to update template');
       }
 
-      updateTemplate(template);
-      onSave(template);
+      const updatedTemplate = {
+        ...template,
+        LogoUrl: logoUrl,
+        Banners: uploadedBanners
+      };
+
+      // State'i temizle
+      setPendingLogo(null);
+      setPendingBanners([]);
+      setPreviewLogo(null);
+      setPreviewBanners([]);
+
+      // Template'i güncelle
+      updateTemplate(updatedTemplate);
+      onSave(updatedTemplate);
 
       toast({
         title: "Başarılı",
@@ -91,76 +204,146 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
     }
   };
 
-  const handleLogoUpload = async (file: File) => {
-    if (!template) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('templateKey', template.TemplateKey);
-    formData.append('type', 'logo');
-
-    try {
-      const response = await fetch('/api/templates/uploadImage', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload logo');
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.imagePath) {
-        setTemplate({
-          ...template,
-          LogoUrl: data.imagePath
+  const handleLogoDelete = async () => {
+    if (template.LogoUrl && !template.LogoUrl.startsWith('blob:')) {
+      try {
+        const response = await fetch('/api/settings-template/deleteImage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imagePath: template.LogoUrl }),
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete logo file');
+        }
+      } catch (error) {
+        console.error('Error deleting logo:', error);
+        toast({
+          title: "Hata",
+          description: "Logo dosyası silinirken bir hata oluştu",
+          variant: "destructive",
+        });
+        return;
       }
-    } catch (error) {
-      console.error('Error uploading logo:', error);
-      toast({
-        title: "Hata",
-        description: "Logo yüklenirken bir hata oluştu",
-        variant: "destructive",
-      });
+    }
+
+    setTemplate({
+      ...template!,
+      LogoUrl: ''
+    });
+    setPendingLogo(null);
+    setPreviewLogo(null);
+    toast({
+      title: "Başarılı",
+      description: "Logo başarıyla kaldırıldı",
+    });
+  };
+
+  const handleBannerDelete = async (index: number) => {
+    const newBanners = [...template!.Banners];
+    const deletedBanner = newBanners[index];
+    
+    // If it's not a temporary banner and has a real URL, delete the file
+    if (!deletedBanner.isTemp && !deletedBanner.BannerUrl.startsWith('blob:')) {
+      try {
+        const response = await fetch('/api/settings-template/deleteImage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imagePath: deletedBanner.BannerUrl }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete banner file');
+        }
+      } catch (error) {
+        console.error('Error deleting banner:', error);
+        toast({
+          title: "Hata",
+          description: "Banner dosyası silinirken bir hata oluştu",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
+    newBanners.splice(index, 1);
+    
+    if (deletedBanner.isTemp) {
+      const newPendingBanners = [...pendingBanners];
+      newPendingBanners.splice(index - (template!.Banners.length - pendingBanners.length), 1);
+      setPendingBanners(newPendingBanners);
+      
+      const newPreviewBanners = [...previewBanners];
+      newPreviewBanners.splice(index - (template!.Banners.length - previewBanners.length), 1);
+      setPreviewBanners(newPreviewBanners);
+    }
+    
+    setTemplate({ ...template!, Banners: newBanners });
+    if (currentBanner >= newBanners.length) {
+      setCurrentBanner(Math.max(0, newBanners.length - 1));
     }
   };
 
-  const handleBannerUpload = async (file: File) => {
-    if (!template) return;
+  const handleLogoSelect = async (file: File) => {
+    // If there's an existing logo, delete it first
+    if (template.LogoUrl && !template.LogoUrl.startsWith('blob:')) {
+      try {
+        const response = await fetch('/api/settings-template/deleteImage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imagePath: template.LogoUrl }),
+        });
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('templateKey', template.TemplateKey);
-    formData.append('type', 'banner');
-
-    try {
-      const response = await fetch('/api/templates/uploadImage', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload banner');
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.imagePath) {
-        setTemplate({
-          ...template,
-          Banners: [...(template.Banners || []), { BannerUrl: data.imagePath }]
+        if (!response.ok) {
+          throw new Error('Failed to delete old logo file');
+        }
+      } catch (error) {
+        console.error('Error deleting old logo:', error);
+        toast({
+          title: "Uyarı",
+          description: "Eski logo dosyası silinirken bir hata oluştu",
+          variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error('Error uploading banner:', error);
-      toast({
-        title: "Hata",
-        description: "Banner yüklenirken bir hata oluştu",
-        variant: "destructive",
-      });
     }
+
+    setPendingLogo(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewLogo(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Create a temporary URL for preview
+    const tempUrl = URL.createObjectURL(file);
+    setTemplate({
+      ...template!,
+      LogoUrl: tempUrl
+    });
+  };
+
+  const handleBannerSelect = (files: File[]) => {
+    const newPendingBanners = [...pendingBanners, ...files];
+    setPendingBanners(newPendingBanners);
+
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+    setPreviewBanners(prev => [...prev, ...newPreviewUrls]);
+
+    const newBanners = files.map(file => ({
+      BannerUrl: URL.createObjectURL(file),
+      isTemp: true
+    }));
+
+    setTemplate({
+      ...template!,
+      Banners: [...(template!.Banners || []), ...newBanners]
+    });
   };
 
   const handleBranchToggle = (branchId: string) => {
@@ -208,6 +391,19 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
           <div>
             <Label>Kullanılan Şubeler</Label>
             <div className="space-y-2">
+              <div className="flex items-center justify-between p-2 border rounded-md mb-2">
+                <span>Tüm Şubeler</span>
+                <Switch
+                  checked={selectedBranches.length === branches.length}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedBranches(branches.map(branch => branch.BranchID.toString()));
+                    } else {
+                      setSelectedBranches([]);
+                    }
+                  }}
+                />
+              </div>
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -247,11 +443,22 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
             <Label>Logo</Label>
             <div className="mt-2 flex items-center space-x-4">
               {template.LogoUrl && (
-                <img
-                  src={template.LogoUrl}
-                  alt="Logo"
-                  className="h-12 w-12 object-contain"
-                />
+                <div className="relative">
+                  <img
+                    src={template.LogoUrl}
+                    alt="Logo"
+                    className="h-12 w-12 object-contain cursor-pointer"
+                    onClick={() => setShowLogoModal(true)}
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                    onClick={handleLogoDelete}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               )}
               <Button
                 variant="outline"
@@ -267,7 +474,7 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
                 accept="image/*"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) handleLogoUpload(file);
+                  if (file) handleLogoSelect(file);
                 }}
               />
             </div>
@@ -292,81 +499,60 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
                 multiple
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []);
-                  files.forEach(file => handleBannerUpload(file));
+                  if (files.length > 0) handleBannerSelect(files);
                 }}
               />
             </div>
             <div className="relative border rounded-md p-4">
               {template.Banners && template.Banners.length > 0 ? (
                 <div className="space-y-4">
-                  <div className="relative h-[200px] overflow-hidden rounded-md">
-                    <div 
-                      className="flex transition-transform duration-300 ease-in-out h-full"
-                      style={{ 
-                        transform: `translateX(-${currentBanner * 100}%)`,
-                        width: `${template.Banners.length * 100}%`
-                      }}
-                    >
+                  <Carousel 
+                    className="w-full"
+                    setApi={setApi}
+                  >
+                    <CarouselContent>
                       {template.Banners.map((banner, index) => (
-                        <div 
-                          key={index}
-                          className="relative w-full h-full flex-shrink-0"
-                        >
-                          <img
-                            src={banner.BannerUrl}
-                            alt={`Banner ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="absolute top-2 right-2"
-                            onClick={() => {
-                              const newBanners = [...template.Banners];
-                              newBanners.splice(index, 1);
-                              setTemplate({ ...template, Banners: newBanners });
-                              if (currentBanner >= newBanners.length) {
-                                setCurrentBanner(Math.max(0, newBanners.length - 1));
-                              }
-                            }}
-                          >
-                            Sil
-                          </Button>
-                        </div>
+                        <CarouselItem key={index}>
+                          <div className="relative h-[200px] overflow-hidden rounded-md">
+                            <img
+                              src={banner.BannerUrl}
+                              alt={`Banner ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => handleBannerDelete(index)}
+                            >
+                              Sil
+                            </Button>
+                            {banner.isTemp && (
+                              <div className="absolute bottom-2 right-2 bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">
+                                Kaydedilmedi
+                              </div>
+                            )}
+                          </div>
+                        </CarouselItem>
                       ))}
-                    </div>
-                    {template.Banners.length > 1 && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="absolute left-2 top-1/2 -translate-y-1/2"
-                          onClick={() => setCurrentBanner((prev) => (prev > 0 ? prev - 1 : template.Banners.length - 1))}
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2"
-                          onClick={() => setCurrentBanner((prev) => (prev < template.Banners.length - 1 ? prev + 1 : 0))}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+                  </Carousel>
                   <div className="flex justify-center gap-2">
-                    {template.Banners.map((_, index) => (
+                    {template.Banners.map((banner, index) => (
                       <Button
                         key={index}
                         variant="outline"
                         size="sm"
                         className={cn(
                           "w-2 h-2 p-0 rounded-full",
-                          currentBanner === index && "bg-primary"
+                          currentBanner === index && "bg-primary",
+                          banner.isTemp && "border-dashed"
                         )}
-                        onClick={() => setCurrentBanner(index)}
+                        onClick={() => {
+                          api?.scrollTo(index);
+                        }}
                       />
                     ))}
                   </div>
@@ -397,6 +583,11 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
                           <div className="flex items-center gap-2">
                             <span>{language.Code}</span>
                             <span className="text-sm">{language.Name}</span>
+                            {template.DefaultLanguageKey === language.Key && (
+                              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                Varsayılan
+                              </span>
+                            )}
                           </div>
                           <Switch
                             checked={activeLanguages.find(l => l.LanguageKey === language.Key)?.IsActive || false}
@@ -408,6 +599,14 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
                                     : lang
                                 )
                               );
+                              
+                              // Eğer varsayılan dil devre dışı bırakılıyorsa, varsayılan dili sıfırla
+                              if (!checked && template.DefaultLanguageKey === language.Key) {
+                                setTemplate({
+                                  ...template,
+                                  DefaultLanguageKey: ''
+                                });
+                              }
                             }}
                           />
                         </div>
@@ -423,7 +622,7 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
             <Label>Varsayılan Dil</Label>
             <select
               className="w-full mt-1 p-2 border rounded-md"
-              value={template.DefaultLanguageKey}
+              value={template.DefaultLanguageKey || ''}
               onChange={(e) => setTemplate({ ...template, DefaultLanguageKey: e.target.value })}
             >
               <option value="">Seçiniz...</option>
@@ -431,10 +630,15 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
                 .filter(lang => activeLanguages.find(l => l.LanguageKey === lang.Key)?.IsActive)
                 .map(lang => (
                   <option key={lang.Key} value={lang.Key}>
-                    {lang.Code} {lang.Name}
+                    {lang.Code} - {lang.Name}
                   </option>
                 ))}
             </select>
+            {!template.DefaultLanguageKey && activeLanguages.some(l => l.IsActive) && (
+              <p className="text-sm text-destructive mt-1">
+                Lütfen aktif dillerden birini varsayılan dil olarak seçin
+              </p>
+            )}
           </div>
 
           <div>
@@ -495,6 +699,21 @@ export function TemplateEdit({ template, onSave, setTemplate }: TemplateEditProp
           </div>
         </div>
       </div>
+      {/* Logo Modal */}
+      <Dialog open={showLogoModal} onOpenChange={setShowLogoModal}>
+        <DialogContent className="max-w-screen-md">
+          <DialogHeader>
+            <DialogTitle>Logo Önizleme</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center p-6">
+            <img
+              src={template.LogoUrl}
+              alt="Logo"
+              className="max-h-[70vh] max-w-full object-contain"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

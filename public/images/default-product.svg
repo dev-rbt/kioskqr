@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="200" height="200" rx="20" fill="#F3F4F6"/>
+    
+    <!-- Plate -->
+    <path d="M50 80C50 68.9543 58.9543 60 70 60H130C141.046 60 150 68.9543 150 80V120C150 131.046 141.046 140 130 140H70C58.9543 140 50 131.046 50 120V80Z" fill="#E5E7EB"/>
+    
+    <!-- Fork and Knife -->
+    <path d="M85 75V125M115 75V125" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M100 75V125" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Steam -->
+    <path d="M70 65C70 65 75 60 80 60C85 60 90 65 90 65" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M110 65C110 65 115 60 120 60C125 60 130 65 130 65" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Text -->
+    <text x="100" y="170" text-anchor="middle" font-family="Arial" font-size="14" fill="#6B7280">Ürün Görseli</text>
+</svg>

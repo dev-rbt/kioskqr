@@ -1,38 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { query } from '@/lib/db';
-
-interface Category {
-  MenuGroupKey: string;
-  TemplateKey: string;
-  MenuGroupText: string;
-  DisplayIndex: number;
-  IsActive: boolean;
-  ProductCount: number;
-  Translations: {
-    [key: string]: {
-      Name: string;
-      Description: string | null;
-      ImageUrl: string | null;
-      DisplayIndex: number;
-      IsActive: boolean;
-    };
-  };
-}
-
-interface Language {
-  Key: string;
-  Code: string;
-}
-
-interface Translation {
-  MenuGroupKey: string;
-  LanguageKey: string;
-  Name: string | null;
-  Description: string | null;
-  ImageUrl: string | null;
-  DisplayIndex: number;
-  IsActive: boolean;
-}
+import { Category, Language, Translation } from '@/types/category';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -41,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // 1. Get base categories with product count
-    const categories = await query(
+    const categories = await query<Partial<Category>>(
       `SELECT 
         mg."MenuGroupKey",
         mg."TemplateKey",
@@ -55,32 +23,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ORDER BY "DisplayIndex" ASC, "MenuGroupText"`
     );
 
-    console.log('Categories with product count:', categories?.map(cat => ({
-      MenuGroupKey: cat.MenuGroupKey,
-      ProductCount: cat.ProductCount,
-      rawProductCount: cat.ProductCount,
-      typeofProductCount: typeof cat.ProductCount
-    })));
-
     if (!categories?.length) {
       return res.status(200).json([]);
     }
 
     // 2. Get all languages
-    const languages = await query(
+    const languages = await query<Language>(
       `SELECT "Key", "Code"
        FROM "Languages"
        WHERE "IsActive" = true`
     );
-
-    console.log('Languages Result:', languages?.length, languages);
 
     if (!languages?.length) {
       return res.status(200).json([]);
     }
 
     // 3. Get all translations
-    const translations = await query(
+    const translations = await query<Translation>(
       `SELECT 
         mgt."MenuGroupKey",
         mgt."LanguageKey",
@@ -96,8 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       FROM "MenuGroupsTranslations" mgt
       LEFT JOIN "MenuGroups" mg ON mg."MenuGroupKey" = mgt."MenuGroupKey"`
     );
-
-    console.log('Translations Result:', translations?.length, translations);
 
     // Create a map of language keys to codes
     const languageMap = (languages || []).reduce<{ [key: string]: string }>((acc, lang) => {
@@ -136,15 +93,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       MenuGroupText: category.MenuGroupText || '',
       DisplayIndex: typeof category.DisplayIndex === 'number' ? category.DisplayIndex : 0,
       IsActive: typeof category.IsActive === 'boolean' ? category.IsActive : true,
-      ProductCount: parseInt(category.ProductCount) || 0,
-      Translations: translationsByGroup[category.MenuGroupKey] || {}
-    }));
+      ProductCount: typeof category.ProductCount === 'number' ? category.ProductCount : 0,
+      Translations: translationsByGroup[category.MenuGroupKey || ''] || {}
+    })) as Category[];
 
     return res.status(200).json(result);
 
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Error fetching categories',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
