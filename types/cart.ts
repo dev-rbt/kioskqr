@@ -33,8 +33,8 @@ export interface Cart {
     DiscountOrderAmount?: number;
     Notes?: string;
     CallNumber?: string;
-    Items?: CartProduct[];
     OrderType?: OrderType;
     PaymentType?: PaymentType;
+    Items?: CartProduct[];
     PaymentMethod?: PaymentMethod;
 }

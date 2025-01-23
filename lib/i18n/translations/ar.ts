@@ -54,7 +54,10 @@ export const ar = {
     selectLanguage: "اختر اللغة",
     activeLanguage: "اللغة النشطة",
     welcomeMessage: "يمكنك تقديم طلبك من هنا",
-    tapToViewMenu: "انقر لعرض القائمة"
+    tapToViewMenu: "انقر لعرض القائمة",
+    changePaymentMethod: "تغيير طريقة الدفع",
+    deviceNumberZeroError: "لا يمكن أن يكون رقم الجهاز 0",
+    paymentPrinting: "جاري طباعة الإيصال"
   },
   product: {
     spicy: "حار",
@@ -74,6 +77,11 @@ export const ar = {
     EMPLOYEE_NOT_FOUND: "الموظف ${employeeName} غير موجود",
     PRODUCT_NOT_FOUND: "المنتجات ${productNames} غير موجودة",
     PAYMENT_ERROR: "خطأ أثناء الدفع: ${errorMessage}",
-    ECR_NOT_CONNECTED: "آلة تسجيل النقد غير متصلة، يرجى إبلاغ موظفي المطعم"
+    ECR_NOT_CONNECTED: "آلة تسجيل النقد غير متصلة، يرجى إبلاغ موظفي المطعم",
+    ERROR_10000: "نفد الورق من آلة تسجيل النقد. يرجى إبلاغ الموظفين.",
+    ERROR_10001: "تم تحميل الورق. العملية مستمرة.",
+    ERROR_202: "نفد الورق من آلة تسجيل النقد. يرجى إبلاغ الموظفين.",
+    ERROR_80: "قام العميل بإلغاء المعاملة.",
+    ERROR_99: "فشلت عملية الدفع."
   }
 };

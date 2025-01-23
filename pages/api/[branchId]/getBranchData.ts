@@ -70,6 +70,8 @@ export default async function handler(
                                         json_build_object(
                                             'ProductID', mil."MenuItemKey",
                                             'OriginalName', milp."ProductName",
+                                            'TaxPercent', milp."TaxPercent",
+                                            'OrderByWeight', milp."OrderByWeight",
                                             'Translations', (
                                                 SELECT json_object_agg(
                                                     pt."LanguageKey",
@@ -113,6 +115,8 @@ export default async function handler(
                                                                 SELECT json_agg(
                                                                     json_build_object(
                                                                         'OriginalName', cgcdp."ProductName",
+                                                                        'TaxPercent', cgcdp."TaxPercent",
+                                                                        'OrderByWeight', cgcdp."OrderByWeight",
                                                                         'ExtraPriceTakeOut', cgcd."ExtraPriceTakeOut_TL",
                                                                         'ExtraPriceDelivery', cgcd."ExtraPriceDelivery_TL",
                                                                         'IsDefault', cgcd."IsDefault",

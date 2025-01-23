@@ -16,7 +16,7 @@ import {
   ShoppingCart,
   Smartphone
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { CurrencyDisplay } from '@/components/payment/currency-display';
 import { useState } from 'react';
@@ -52,16 +52,27 @@ export default function PaymentPage() {
   const { cart, updateCart } = useCartStore();
   const { branchData, t } = useBranchStore();
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const searchParams = useSearchParams();
+  const initialStep = searchParams?.get('stepNumber') ? parseInt(searchParams.get('stepNumber')!) : 1;
+  const [step, setStep] = useState(initialStep);
   const [error, setError] = useState('');
 
   const handleDeviceNumberChange = async (digit: string) => {
     if (digit === 'delete') {
       await updateCart({ CallNumber: cart.CallNumber?.slice(0, -1) });
+      setError('');
     } else {
-      await updateCart({ CallNumber: cart.CallNumber + digit });
+      const newNumber = cart.CallNumber + digit;
+      // Check if trying to enter just 0
+      if (newNumber === '0') {
+        setError(t.common.deviceNumberZeroError);
+        return;
+      }
+      // Remove leading zeros and update
+      const strippedNumber = newNumber.replace(/^0+/, '');
+      await updateCart({ CallNumber: strippedNumber });
+      setError('');
     }
-    setError('');
   };
 
   const handleDeviceNumberSubmit = () => {

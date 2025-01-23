@@ -52,9 +52,12 @@ export const az = {
     tryDifferentSearch: "Fərqli axtarış sözü sınayın",
     languageSelection: "Dil Seçimi",
     selectLanguage: "Dil seçin",
-    activeLanguage: "Aktiv dil",
+    activeLanguage: "Aktiv Dil",
     welcomeMessage: "Sifarişinizi Buradan Verə Bilərsiniz",
-    tapToViewMenu: "Menyunu görmək üçün toxunun"
+    tapToViewMenu: "Menyunu görmək üçün toxunun",
+    changePaymentMethod: "Ödəniş Üsulunu Dəyişdir",
+    deviceNumberZeroError: "Cihaz nömrəsi 0 ola bilməz",
+    paymentPrinting: "Ödəniş Çap Olunur"
   },
   product: {
     spicy: "Acılı",
@@ -74,6 +77,11 @@ export const az = {
     EMPLOYEE_NOT_FOUND: "${employeeName} adlı işçi tapılmadı",
     PRODUCT_NOT_FOUND: "${productNames} adlı məhsullar tapılmadı",
     PAYMENT_ERROR: "Ödəniş zamanı xəta baş verdi: ${errorMessage}",
-    ECR_NOT_CONNECTED: "Kassa qoşulmayıb, xahiş edirik restoran işçilərinə bildirin"
+    ECR_NOT_CONNECTED: "Kassa qoşulmayıb, xahiş edirik restoran işçilərinə bildirin",
+    ERROR_10000: "Kassada kağız bitib. Zəhmət olmasa, işçilərə xəbər verin.",
+    ERROR_10001: "Kağız yükləndi. Proses davam edir.",
+    ERROR_202: "Kassada kağız bitib. Zəhmət olmasa, işçilərə xəbər verin.",
+    ERROR_80: "Müştəri əməliyyatı ləğv etdi.",
+    ERROR_99: "Ödəniş prosesi uğursuz oldu."
   }
 };
