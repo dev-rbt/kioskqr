@@ -15,7 +15,15 @@ const nextConfig = {
   },
   webSocketServer: {
     host: '0.0.0.0',
-  }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: `${process.env.FILE_UPLOAD_DIR || process.cwd()}/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
