@@ -14,7 +14,7 @@ const nextConfig = {
     return [
       {
         source: '/uploads/:path*',
-        destination: `${process.env.FILE_UPLOAD_DIR || process.cwd()}/:path*`,
+        destination: '/api/images/:path*',
       },
     ];
   },
