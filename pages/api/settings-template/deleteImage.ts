@@ -18,7 +18,7 @@ export default async function handler(
         }
 
         // Get the absolute path to the public directory
-        const publicDir = path.join(process.cwd(), 'public');
+        const publicDir = path.join(process.env.FILE_UPLOAD_DIR || process.cwd());
         
         // Convert URL path to file system path
         const relativePath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;

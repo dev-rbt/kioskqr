@@ -3,7 +3,7 @@ import path from 'path';
 import { File } from 'formidable';
 
 export async function saveFile(file: File, templateKey: string, type: 'logo' | 'banner'): Promise<string> {
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'settings-template', templateKey);
+  const uploadDir = path.join(process.env.FILE_UPLOAD_DIR || process.cwd(), 'settings-template', templateKey);
   
   // Create directories if they don't exist
   if (!fs.existsSync(uploadDir)) {
