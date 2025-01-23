@@ -1,14 +1,14 @@
 "use client";
 
-import { ComboGroup, ComboItem } from '@/types/api';
+import { ComboGroup } from '@/types/branch';
 import { ComboSelections } from '@/types/combo';
 
 export function calculateGroupProgress(
   group: ComboGroup,
   selections: ComboSelections
 ): number {
-  const groupSelections = selections[group.GroupName] || [];
-  const totalQuantity = groupSelections.reduce((sum, s) => sum + s.quantity, 0);
+  const groupSelections = selections[group.OriginalName] || [];
+  const totalQuantity = groupSelections.reduce((sum, s) => sum + s.Quantity, 0);
 
   if (group.IsForcedGroup) {
     return Math.min((totalQuantity / group.ForcedQuantity) * 100, 100);
@@ -28,7 +28,7 @@ export function calculateTotalPrice(
   const extraPrice = Object.values(selections)
     .flat()
     .reduce((total, selection) => 
-      total + (selection.item.ExtraPriceTakeOut_TL * selection.quantity), 0);
+      total + (selection.Item.ExtraPriceTakeOut * selection.Quantity), 0);
 
   return basePrice + extraPrice;
 }
@@ -38,20 +38,20 @@ export function validateComboSelections(
   selections: ComboSelections
 ): { isValid: boolean; error?: string } {
   for (const group of groups) {
-    const groupSelections = selections[group.GroupName] || [];
-    const totalQuantity = groupSelections.reduce((sum, s) => sum + s.quantity, 0);
+    const groupSelections = selections[group.OriginalName] || [];
+    const totalQuantity = groupSelections.reduce((sum, s) => sum + s.Quantity, 0);
 
     if (group.IsForcedGroup && totalQuantity < group.ForcedQuantity) {
       return {
         isValid: false,
-        error: `${group.GroupName} için ${group.ForcedQuantity} adet seçim yapmalısınız`
+        error: `${group.OriginalName} için ${group.ForcedQuantity} adet seçim yapmalısınız`
       };
     }
 
     if (group.MaxQuantity > 0 && totalQuantity > group.MaxQuantity) {
       return {
         isValid: false,
-        error: `${group.GroupName} için en fazla ${group.MaxQuantity} adet seçebilirsiniz`
+        error: `${group.OriginalName} için en fazla ${group.MaxQuantity} adet seçebilirsiniz`
       };
     }
   }

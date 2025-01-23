@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { CategoryList } from './category-list';
-import { CategoryEdit } from './category-edit';
-import { Category } from '@/types/category';
-import useCategoryStore from "@/store/useCategoryStore";
-import useBranchStore from "@/store/useBranchStore";
-import useTemplateStore from "@/store/useTemplateStore";
+import { useState } from 'react';
+import { CategoryList } from './category-settings/category-list';
+import { CategoryEdit } from './category-settings/category-edit';
+import { Category } from '@/types/settings';
+import useCategoryStore from "@/store/settings/category";
+import useBranchStore from "@/store/settings/branch";
+import useTemplateStore from "@/store/settings/template";
 import { toast } from '@/hooks/use-toast';
 
 
@@ -101,7 +101,6 @@ export function CategorySettings() {
   return (
     <div className="grid md:grid-cols-3 gap-4">
       <CategoryList
-        categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         isLoading={isLoading}

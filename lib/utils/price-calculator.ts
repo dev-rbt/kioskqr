@@ -1,27 +1,24 @@
-import type { CartItem } from '@/types/cart';
-import type { ComboSelections } from '@/types/combo';
+import { CartProduct } from '@/types/cart';
 
 // Tek bir ürünün fiyatını hesapla
-export function calculateItemPrice(item: CartItem): number {
-  let price = item.product.price;
+export function calculateItemPrice(item: CartProduct): number {
+  let price = item.Price * item?.Quantity;
   
-  // Combo seçimleri varsa ekstra ücretleri ekle
-  if (item.product.comboSelections) {
-    price += calculateComboSelectionsPrice(item.product.comboSelections);
+  // Seçili ürünler varsa fiyatlarını ekle
+  if (item?.IsMainCombo && item?.Items.length > 0) {
+    price += calculateSelectedItemsPrice(item);
   }
   
-  return price * item.quantity;
+  return price;
 }
 
-// Combo seçimlerinin ekstra ücretlerini hesapla
-export function calculateComboSelectionsPrice(selections: ComboSelections): number {
-  return Object.values(selections)
-    .flat()
-    .reduce((total, selection) => 
-      total + (selection.item.ExtraPriceTakeOut_TL * selection.quantity), 0);
+// Seçili ürünlerin toplam fiyatını hesapla
+export function calculateSelectedItemsPrice(item: CartProduct): number {
+  return item.Items.reduce((total, item) => 
+    total + (item.Price * item.Quantity), 0);
 }
 
 // Toplam sepet tutarını hesapla
-export function calculateCartTotal(items: CartItem[]): number {
+export function calculateCartTotal(items: CartProduct[]): number {
   return items.reduce((total, item) => total + calculateItemPrice(item), 0);
 }

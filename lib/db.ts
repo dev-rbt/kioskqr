@@ -166,14 +166,24 @@ export const db = {
     ): Promise<T[]> => {
         const { setClause, values: setValues } = buildSetClause(data);
         const { whereClause, values: whereValues } = buildWhereClause(conditions);
-
-        return query<T[]>(
-            `UPDATE "${table}" 
-       SET ${setClause} 
-       ${whereClause} 
-       RETURNING *`,
-            [...setValues, ...whereValues]
+        const allValues = [...setValues, ...whereValues];
+        
+        // Adjust the parameter indices in the WHERE clause
+        const adjustedWhereClause = whereClause.replace(/\$(\d+)/g, (_, num) => 
+            `$${parseInt(num) + setValues.length}`
         );
+
+        const sql = `
+            UPDATE "${table}" 
+            SET ${setClause} 
+            ${adjustedWhereClause} 
+            RETURNING *
+        `;
+        
+        console.log('Update SQL:', sql);
+        console.log('Update params:', allValues);
+        
+        return query<T[]>(sql, allValues);
     },
 
     // Delete records

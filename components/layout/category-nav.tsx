@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { CategoryIcon } from './category-icon';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useMenuStore } from '@/store/menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Menu } from 'lucide-react';
+import useBranchStore from '@/store/branch';
 
 export default function CategoryNav() {
   const pathname = usePathname();
+  const { t } = useBranchStore()
   const { categories, isLoading } = useMenuStore();
   const isHome = !pathname.includes('/category/');
 
@@ -76,12 +78,12 @@ export default function CategoryNav() {
                     "group-hover:bg-primary/20",
                     "group-hover:scale-110 group-hover:rotate-3"
                   )}>
-                    <CategoryIcon categoryId="menu" className="h-5 w-5" />
+                    <Menu className="h-5 w-5" />
                   </div>
 
                   {/* Text */}
                   <span className="relative text-base font-medium whitespace-nowrap">
-                    Tüm Menü
+                    {t.common.menu}
                   </span>
                 </Link>
               </motion.div>
@@ -114,7 +116,7 @@ export default function CategoryNav() {
                         "group-hover:bg-primary/20",
                         "group-hover:scale-110 group-hover:rotate-3"
                       )}>
-                        <CategoryIcon categoryId={category.id} className="h-5 w-5" />
+                          {/* <Image src={translation?.ImageUrl} alt={category.name} width={24} height={24} /> */}
                       </div>
 
                       {/* Text */}

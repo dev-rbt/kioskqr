@@ -2,8 +2,39 @@ export const ar = {
   common: {
     search: "البحث في القائمة",
     menu: "القائمة",
+    digitalMenu: "القائمة الرقمية",
+    menuGroups: "مجموعات القائمة",
+    addToCartSuccess: "تمت إضافة القائمة إلى السلة بنجاح",
+    productAddToCartSuccess: "تمت إضافة المنتج إلى السلة",
+    addedToCart: "تمت الإضافة إلى سلتك",
     cart: "السلة",
+    returnToMenu: "العودة إلى القائمة الرئيسية",
     total: "المجموع",
+    paymentCompleted: "تم إكمال الدفع",
+    paymentPending: "في انتظار الدفع",
+    paymentConnecting: "جاري الاتصال",
+    retry: "حاول مرة أخرى",
+    cancelOrder: "إلغاء الطلب",
+    clearCart: "تفريغ السلة",
+    menuSelections: "اختيارات القائمة",
+    requiredSelectionCount: "اختيارات مطلوبة",
+    selectedProducts: "المنتجات المختارة",
+    totalAmount: "المبلغ الإجمالي",
+    allMenus: "القائمة الكاملة",
+    viewAllCategories: "تصفح الفئات",
+    viewProducts: "تصفح المنتجات",
+    showCart: "عرض السلة",
+    product: "منتج",
+    selectDeviceNumber: "أدخل رقم الجهاز",
+    step: "خطوة",
+    selectedDevice: "الجهاز المحدد",
+    nextButton: "التالي",
+    paymentMethod: "طريقة الدفع",
+    backToCart: "العودة إلى السلة",
+    enterDeviceNumberWarning: "الرجاء إدخال رقم الجهاز",
+    selectPaymentMethod: "اختر طريقة الدفع",
+    amountDue: "المبلغ المستحق",
+    changeDevice: "تغيير الجهاز",
     addToCart: "أضف إلى السلة",
     viewMenu: "عرض القائمة",
     placeOrder: "تأكيد الطلب",
@@ -23,8 +54,7 @@ export const ar = {
     selectLanguage: "اختر اللغة",
     activeLanguage: "اللغة النشطة",
     welcomeMessage: "يمكنك تقديم طلبك من هنا",
-    tapToViewMenu: "انقر لعرض القائمة",
-    digitalMenu: "القائمة الرقمية"
+    tapToViewMenu: "انقر لعرض القائمة"
   },
   product: {
     spicy: "حار",
@@ -38,5 +68,12 @@ export const ar = {
     maximum: "الحد الأقصى",
     maxQuantityError: "يمكنك اختيار {max} عناصر كحد أقصى من {group}",
     requiredSelectionError: "الرجاء تحديد اختيار لـ {group}"
+  },
+  errors: {
+    ORDER_FORMAT_INCORRECT: "تنسيق الطلب غير صحيح",
+    EMPLOYEE_NOT_FOUND: "الموظف ${employeeName} غير موجود",
+    PRODUCT_NOT_FOUND: "المنتجات ${productNames} غير موجودة",
+    PAYMENT_ERROR: "خطأ أثناء الدفع: ${errorMessage}",
+    ECR_NOT_CONNECTED: "آلة تسجيل النقد غير متصلة، يرجى إبلاغ موظفي المطعم"
   }
 };

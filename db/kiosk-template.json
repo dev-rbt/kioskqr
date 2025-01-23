@@ -1,0 +1,79 @@
+{
+	"name": "",
+	"logo": "",
+	"activeLanguages": [{
+		"Key": "",
+		"Code": "",
+		"Name": ""
+	}],
+	"themeSettings": {
+		"mainColor": "",
+		"accentColor": "",
+		"secondaryColor": ""
+	},
+	"banners": [
+		"",
+		""
+	],
+	"categories": [
+		{
+			"id": "2a7c5348-6b07-4e23-a9b5-dd17a0db6804",
+			"translations": {
+				"languageKey": {
+					"name": "EFSANE PİDEM",
+					"description": "EFSANE PİDEM",
+					"image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1080"
+				}
+			},
+			"products": [
+				{
+					"id": "d92527ac-f862-41f5-a91a-8547ad737850",
+					"translations": {
+						"languageKey": {
+							"name": "EFSANE PİDEM",
+							"description": "EFSANE PİDEM",
+							"image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1080",
+							"badges": [
+								{
+									"badgeKey": "",
+									"badgeName": ""
+								}
+							]
+						}
+					},
+					"takeOutPrice": 179,
+					"deliveryPrice": 179,
+					"weight": 100,
+					"rating": 4.9,
+					"calories": 550,
+					"prepTime": 23,
+					"isCombo": true,
+					"Combo": [{
+						"translations": {
+							"languageKey": {
+								"name": "PİDENİZİN YANINDA COLA - AYRAN NE İÇMEK İSTERSİNİZ ?"
+							}
+						},
+                        "IsForcedGroup": false,
+                        "MaxQuantity": 1,
+                        "ForcedQuantity": 0,
+						"Items": [{
+							"translations": {
+								"languageKey": {
+									"name": "AYRAN 285 ML",
+									"Description": "",
+									"image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1080"
+								}
+							},
+							"MenuItemKey": "f51a8364-c8ee-4c77-8ae0-10201fa3a9f5",
+							"ExtraPriceTakeOut_TL": 35,
+							"ExtraPriceDelivery_TL": 35,
+							"DefaultQuantity": 1,
+							"IsDefault": false
+						}]
+					}]
+				}
+			]
+		}
+	]
+}

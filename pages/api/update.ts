@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { dataset } from '../../lib/realtimeapi';
-import db from '../../lib/db';
+import { dataset } from '@/lib/realtimeapi';
+import db from '@/lib/db';
 
 interface Branch {
     BranchID?: number;
@@ -22,6 +22,7 @@ interface MenuItemLayout {
     MenuGroupKey?: string; // UUID
     MainMenuItemKey?: string; // UUID
     MenuItemKey?: string; // UUID
+    ComboKey?: string; // UUID
     IsTopMenu?: boolean;
     DisplayIndex?: number;
 }
@@ -32,6 +33,7 @@ interface Products {
     ExternalCode?: string;
     ProductName?: string;
     CategoryName?: string;
+    IsSaleProduct?: boolean;
     GroupName?: string;
     TaxPercent?: number;
     Barcode?: string;
@@ -66,6 +68,7 @@ interface MenuGroups {
 
 interface ComboHeaders {
     ComboKey?: string;
+    ComboName?: string;
     BranchID?: number;
 }
 
@@ -200,6 +203,7 @@ export default async function handler(
                 query: `SELECT 
                             p.ProductKey AS [ProductKey],
                             p.ProductCode AS [ProductCode],
+                            p.IsSaleProduct AS [IsSaleProduct],
                             p.ExternalCode AS [ExternalCode],
                             ISNULL(p.ECommerceProductName1, p.ProductName) AS [ProductName],
                             plc.PickValue AS [CategoryName],
@@ -264,16 +268,13 @@ export default async function handler(
                             ml.MainMenuItemKey,
                             ml.MenuItemKey,
                             ml.IsTopMenu,
-                            ml.DisplayIndex 
+                            m.ComboKey,
+                            ml.DisplayIndex
                         FROM
                             NewGlobalMenuItemLayout ml
-                            INNER JOIN NewGlobalMenuTemplates mt WITH (NOLOCK) 
-                                ON mt.TemplateKey = ml.TemplateKey 
-                                AND mt.TemplateMode = 2
-                            INNER JOIN posProducts p WITH (NOLOCK)
-                                ON p.ProductKey = ml.MenuItemKey
-                                AND ISNULL(p.IsActive, 0) = 1
-                                AND ISNULL(p.IsSaleProduct,0) = 1
+                        INNER JOIN NewGlobalMenuTemplates mt WITH (NOLOCK) ON mt.TemplateKey = ml.TemplateKey AND mt.TemplateMode = 2
+                        INNER JOIN NewGlobalMenuItems m WITH (NOLOCK) ON m.MenuItemKey = ml.MenuItemKey
+                        INNER JOIN posProducts p WITH (NOLOCK) ON p.ProductKey = m.MenuItemKey AND ISNULL(p.IsActive, 0) = 1
                         ORDER BY
                             ml.TemplateKey ASC,
                             ml.MenuGroupKey ASC,
@@ -415,7 +416,7 @@ export default async function handler(
                     // Transform data for each table
                     const headers = new Map<string, ComboHeaders>();
                     const groups = new Map<string, ComboGroups>();
-                    const details = [];
+                    const details = new Array<ComboDetails>();
 
                     for (const row of rows) {
                         // ComboHeaders
@@ -423,7 +424,8 @@ export default async function handler(
                         if (!headers.has(headerKey)) {
                             headers.set(headerKey, {
                                 ComboKey: row.ComboKey,
-                                BranchID: row.BranchID
+                                ComboName: row.ComboName,
+                                BranchID: row.BranchID,
                             });
                         }
 

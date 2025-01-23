@@ -2,15 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
+import useBranchStore from "@/store/branch";
 import { useCartStore } from "@/store/cart";
-import { useLanguageStore } from "@/store/language";
 import { motion } from "framer-motion";
 import { ShoppingBag, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export function CartTotal() {
-  const { total } = useCartStore();
-  const { t } = useLanguageStore();
+  const { cart } = useCartStore();
+  const { t } = useBranchStore();
+  const params = useParams();
   const router = useRouter();
 
   return (
@@ -26,14 +27,14 @@ export function CartTotal() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">{t.common.total}</p>
-            <Price amount={total} className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent" />
+            <Price amount={cart.AmountDue} className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent" />
           </div>
         </div>
       </div>
       <Button 
         size="lg" 
         className="w-full h-12 text-lg gap-2 group"
-        onClick={() => router.push('/payment')}
+        onClick={() => router.push(`/${params?.branchId}/payment`)}
       >
         {t.common.placeOrder}
         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

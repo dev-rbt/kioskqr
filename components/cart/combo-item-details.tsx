@@ -1,7 +1,7 @@
 "use client";
 
-import { ComboSelections } from '@/types/combo';
 import { Price } from '@/components/ui/price';
+import { ComboSelections } from '@/types/combo';
 
 interface ComboItemDetailsProps {
   selections: ComboSelections;
@@ -11,28 +11,28 @@ interface ComboItemDetailsProps {
 export function ComboItemDetails({ selections, className }: ComboItemDetailsProps) {
   return (
     <div className={className}>
-      {Object.entries(selections).map(([groupName, groupSelections]) => (
+      {Object.entries(selections).map(([groupName, items]) => (
         <div key={groupName} className="mt-2 first:mt-0">
           <p className="text-sm font-medium text-primary/90 mb-1.5">
             {groupName}
           </p>
           <ul className="space-y-1.5">
-            {groupSelections.map((selection) => (
+            {items.map((selectionItem) => (
               <li 
-                key={selection.item.MenuItemKey} 
+                key={selectionItem.Item.MenuItemKey} 
                 className="text-sm flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-1.5"
               >
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center justify-center bg-secondary/30 text-xs font-medium rounded-md w-5 h-5">
-                    {selection.quantity}x
+                    {selectionItem.Quantity}x
                   </span>
                   <span className="text-foreground/90">
-                    {selection.item.MenuItemText}
+                    {selectionItem.Item.OriginalName}
                   </span>
                 </div>
-                {selection.item.ExtraPriceTakeOut_TL > 0 && (
+                {selectionItem.Item.ExtraPriceTakeOut > 0 && (
                   <Price
-                    amount={selection.item.ExtraPriceTakeOut_TL * selection.quantity}
+                    amount={selectionItem.Item.ExtraPriceTakeOut * selectionItem.Quantity}
                     className="text-sm font-medium text-primary/90 ml-2"
                   />
                 )}

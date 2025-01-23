@@ -1,24 +1,23 @@
 "use client";
 
-import { ComboGroup as ComboGroupType, ComboItem } from '@/types/api';
-import { ComboSelections } from '@/types/combo';
 import { Badge } from '@/components/ui/badge';
 import { ComboGroupItem } from './combo-group-item';
-import { useLanguageStore } from '@/store/language';
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { ComboGroup as ComboGroupType, ComboItem } from '@/types/branch';
+import { ComboSelections } from '@/types/combo';
 
 interface ComboGroupProps {
   group: ComboGroupType;
   selections: ComboSelections;
-  onSelect: (groupName: string, item: ComboItem, quantity: number) => void;
+  onSelect: (GroupName: string, Item: ComboItem, Quantity: number) => void;
   progress: number;
 }
 
 export function ComboGroup({ group, selections, onSelect, progress }: ComboGroupProps) {
-  const currentSelections = selections[group.GroupName] || [];
-  const totalQuantity = currentSelections.reduce((sum, s) => sum + s.quantity, 0);
-  const { t } = useLanguageStore();
+
+  const currentSelections = selections[group.OriginalName] || [];
+  const totalQuantity = currentSelections.reduce((sum, s) => sum + s.Quantity, 0);
   
   const isComplete = group.IsForcedGroup 
     ? totalQuantity >= group.ForcedQuantity
@@ -33,7 +32,7 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
               <h3 className="text-2xl font-bold">
-                {group.GroupName}
+                {group.OriginalName}
               </h3>
               <div className="flex items-center gap-2">
                 {group.IsForcedGroup ? (
@@ -107,15 +106,20 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
       {/* Items Grid */}
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {group.Items.map((item) => (
-            <ComboGroupItem
-              key={item.MenuItemKey}
-              item={item}
-              group={group}
-              quantity={currentSelections.find(s => s.item.MenuItemKey === item.MenuItemKey)?.quantity || 0}
-              onSelect={(quantity) => onSelect(group.GroupName, item, quantity)}
-            />
-          ))}
+          {group.Items.map((item) => {
+            const selectedItem = selections[group.OriginalName]?.find(s => s.Item.MenuItemKey === item.MenuItemKey);
+            const selectedQuantity = selectedItem?.Quantity || 0;
+            return (
+              <ComboGroupItem
+                key={item.MenuItemKey}
+                item={item}
+                group={group}
+                onSelect={(quantity) => onSelect(group.OriginalName, item, quantity)}
+                totalGroupQuantity={totalQuantity}
+                selectedQuantity={selectedQuantity}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

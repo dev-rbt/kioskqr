@@ -2,8 +2,39 @@ export const az = {
   common: {
     search: "Menyuda Axtar",
     menu: "Menyu",
+    digitalMenu: "Rəqəmsal Menyu",
+    menuGroups: "Menyu Qrupları",
+    addToCartSuccess: "Menyu səbətə uğurla əlavə edildi",
+    productAddToCartSuccess: "Məhsul səbətə əlavə edildi",
+    addedToCart: "Səbətinizə əlavə edildi",
     cart: "Səbət",
+    returnToMenu: "Əsas Menyuya Qayıt",
     total: "Cəmi",
+    paymentCompleted: "Ödəniş Tamamlandı",
+    paymentPending: "Ödəniş Gözlənilir",
+    paymentConnecting: "Bağlantı qurulur",
+    retry: "Yenidən cəhd edin",
+    cancelOrder: "Sifarişi ləğv et",
+    clearCart: "Səbəti boşalt",
+    menuSelections: "Menyu Seçimləri",
+    requiredSelectionCount: "seçim tələb olunur",
+    selectedProducts: "Seçilmiş Məhsullar",
+    totalAmount: "Ümumi Məbləğ",
+    allMenus: "Bütün Menyu",
+    viewAllCategories: "Kateqoriyalara Baxın",
+    viewProducts: "Məhsullara baxın",
+    showCart: "Səbətə baxın",
+    product: "Məhsul",
+    selectDeviceNumber: "Cihaz Nömrəsini Daxil Edin",
+    step: "Addım",
+    selectedDevice: "Seçilmiş Cihaz",
+    nextButton: "İrəli",
+    paymentMethod: "Ödəniş Üsulu",
+    backToCart: "Səbətə Qayıt",
+    enterDeviceNumberWarning: "Zəhmət olmasa cihaz nömrəsini daxil edin",
+    selectPaymentMethod: "Ödəniş Üsulunu Seçin",
+    amountDue: "Ödəniləcək Məbləğ",
+    changeDevice: "Cihazı Dəyişdir",
     addToCart: "Səbətə əlavə et",
     viewMenu: "Menyuya bax",
     placeOrder: "Sifariş ver",
@@ -23,8 +54,7 @@ export const az = {
     selectLanguage: "Dil seçin",
     activeLanguage: "Aktiv dil",
     welcomeMessage: "Sifarişinizi Buradan Verə Bilərsiniz",
-    tapToViewMenu: "Menyunu görmək üçün toxunun",
-    digitalMenu: "RƏQƏMİ MENYU"
+    tapToViewMenu: "Menyunu görmək üçün toxunun"
   },
   product: {
     spicy: "Acılı",
@@ -38,5 +68,12 @@ export const az = {
     maximum: "Maksimum",
     maxQuantityError: "{group} üçün maksimum {max} ədəd seçə bilərsiniz",
     requiredSelectionError: "Zəhmət olmasa {group} üçün seçim edin"
+  },
+  errors: {
+    ORDER_FORMAT_INCORRECT: "Sifariş formatı yanlışdır",
+    EMPLOYEE_NOT_FOUND: "${employeeName} adlı işçi tapılmadı",
+    PRODUCT_NOT_FOUND: "${productNames} adlı məhsullar tapılmadı",
+    PAYMENT_ERROR: "Ödəniş zamanı xəta baş verdi: ${errorMessage}",
+    ECR_NOT_CONNECTED: "Kassa qoşulmayıb, xahiş edirik restoran işçilərinə bildirin"
   }
 };

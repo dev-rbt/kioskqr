@@ -5,14 +5,14 @@ import { CartItemCard } from "./cart-item-card";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function CartItems() {
-  const { items } = useCartStore();
+  const { cart } = useCartStore();
 
   return (
     <div className="space-y-6">
       <AnimatePresence initial={false}>
-        {items.map((item) => (
+        {cart.Items.map((item) => (
           <motion.div
-            key={`${item.product.id}-${JSON.stringify(item.product.comboSelections)}`}
+            key={`${item.MenuItemKey}-${JSON.stringify(item.Items)}`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

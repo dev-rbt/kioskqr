@@ -6,11 +6,12 @@ import Link from 'next/link';
 
 interface ProductHeaderProps {
   categoryId: string;
+  branchId: string;
 }
 
-export function ProductHeader({ categoryId }: ProductHeaderProps) {
+export function ProductHeader({ categoryId, branchId }: ProductHeaderProps) {
   return (
-    <Link href={`/menu/category/${categoryId}`}>
+    <Link href={`/${branchId}/menu/category/${categoryId}`}>
       <Button variant="ghost" size="sm" className="hover:translate-x-1 transition-transform">
         <ChevronLeft className="h-4 w-4 mr-2" />
         Geri Dön

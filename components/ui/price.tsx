@@ -6,9 +6,11 @@ interface PriceProps {
 }
 
 export function Price({ amount, className }: PriceProps) {
+  const formattedAmount = amount ? Number(amount).toFixed(2) : "0.00";
+  
   return (
     <span className={cn("font-medium", className)}>
-      {amount.toFixed(2)} ₺
+      {formattedAmount} ₺
     </span>
   );
 }

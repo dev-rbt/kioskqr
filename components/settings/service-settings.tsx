@@ -3,40 +3,13 @@
 import { useState } from 'react';
 import { TemplateList } from './branch-template/template-list';
 import { TemplateEdit } from './branch-template/template-edit';
-import { Template } from '@/types/template';
-import useLanguageStore from '@/store/useLanguageStore';
-import useBranchStore from '@/store/useBranchStore';
-import { toast } from 'sonner';
+import { SettingsTemplate, Template } from '@/types/settings';
 
 
 export function ServiceSettings() {
-  const { languages } = useLanguageStore();
-  const { branches, settings, languages: branchLanguages, banners: branchBanners } = useBranchStore();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [templateName, setTemplateName] = useState('');
-  const [isNewTemplate, setIsNewTemplate] = useState(false);
-  const [activeLanguages, setActiveLanguages] = useState<Array<{ LanguageKey: string; IsActive: boolean }>>(
-    languages.map(lang => ({
-      LanguageKey: lang.Key,
-      IsActive: false,
-    }))
-  );
 
-  const [currentActiveLanguage, setCurrentActiveLanguage] = useState(settings[selectedTemplate?.BranchID || -1]?.DefaultLanguageKey);
-  const [themeColors, setThemeColors] = useState({
-    primary: '#000000',
-    secondary: '#666666',
-    accent: '#CCCCCC',
-  });
-  const [logoUrl, setLogoUrl] = useState('');
-  const [banners, setBanners] = useState(branchBanners[selectedTemplate?.BranchID || -1] || []);
-  const [isSaving, setIsSaving] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [bannerFiles, setBannerFiles] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [deletedBanners, setDeletedBanners] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
+/*
   const handleActiveLanguageToggle = (languageKey: string) => {
     if (!selectedTemplate) {
       toast.error('Lütfen önce bir şablon seçin');
@@ -244,10 +217,10 @@ export function ServiceSettings() {
     } finally {
       setIsSaving(false);
     }
-  };
+  };*/
 
   const handleNewTemplate = () => {
-    const newTemplate: Template = {
+    const newTemplate: SettingsTemplate = {
       TemplateKey: crypto.randomUUID(),
       TemplateName: '',
       MainColor: '#000000',
@@ -256,7 +229,8 @@ export function ServiceSettings() {
       DefaultLanguageKey: '',
       LogoUrl: '',
       Languages: [],
-      Banners: []
+      Banners: [],
+      IsActive: true
     };
     setSelectedTemplate(newTemplate);
   };
@@ -268,8 +242,7 @@ export function ServiceSettings() {
           selectedTemplate={selectedTemplate}
           onSelectTemplate={setSelectedTemplate}
           onNewTemplate={handleNewTemplate}
-          isLoading={isLoading}
-        />
+         />
         <TemplateEdit
           template={selectedTemplate}
           onSave={(template) => {

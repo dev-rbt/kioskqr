@@ -2,8 +2,39 @@ export const ru = {
   common: {
     search: "Поиск в меню",
     menu: "Меню",
+    digitalMenu: "Цифровое меню",
+    menuGroups: "Группы меню",
+    addToCartSuccess: "Меню успешно добавлено в корзину",
+    productAddToCartSuccess: "Товар добавлен в корзину",
+    addedToCart: "Добавлено в корзину",
     cart: "Корзина",
+    returnToMenu: "Вернуться в главное меню",
     total: "Итого",
+    paymentCompleted: "Оплата завершена",
+    paymentPending: "Ожидание оплаты",
+    paymentConnecting: "Подключение",
+    retry: "Повторить",
+    cancelOrder: "Отменить заказ",
+    clearCart: "Очистить корзину",
+    menuSelections: "Выбор меню",
+    requiredSelectionCount: "выборов необходимо",
+    selectedProducts: "Выбранные продукты",
+    totalAmount: "Общая сумма",
+    allMenus: "Все меню",
+    viewAllCategories: "Просмотр категорий",
+    viewProducts: "Просмотр продуктов",
+    showCart: "Просмотр корзины",
+    product: "Продукт",
+    selectDeviceNumber: "Введите номер устройства",
+    step: "Шаг",
+    selectedDevice: "Выбранное устройство",
+    nextButton: "Далее",
+    paymentMethod: "Способ оплаты",
+    backToCart: "Вернуться в корзину",
+    enterDeviceNumberWarning: "Пожалуйста, введите номер устройства",
+    selectPaymentMethod: "Выберите способ оплаты",
+    amountDue: "Сумма к оплате",
+    changeDevice: "Сменить устройство",
     addToCart: "В корзину",
     viewMenu: "Смотреть меню",
     placeOrder: "Оформить заказ",
@@ -23,8 +54,7 @@ export const ru = {
     selectLanguage: "Выберите язык",
     activeLanguage: "Активный язык",
     welcomeMessage: "Сделайте заказ здесь",
-    tapToViewMenu: "Нажмите, чтобы посмотреть меню",
-    digitalMenu: "ЦИФРОВОЕ МЕНЮ"
+    tapToViewMenu: "Нажмите, чтобы посмотреть меню"
   },
   product: {
     spicy: "Острый",
@@ -38,5 +68,12 @@ export const ru = {
     maximum: "Максимум",
     maxQuantityError: "Вы можете выбрать максимум {max} позиций из {group}",
     requiredSelectionError: "Пожалуйста, сделайте выбор для {group}"
+  },
+  errors: {
+    ORDER_FORMAT_INCORRECT: "Неверный формат заказа",
+    EMPLOYEE_NOT_FOUND: "Сотрудник ${employeeName} не найден",
+    PRODUCT_NOT_FOUND: "Товары ${productNames} не найдены",
+    PAYMENT_ERROR: "Ошибка при оплате: ${errorMessage}",
+    ECR_NOT_CONNECTED: "Касса не подключена, пожалуйста, сообщите персоналу ресторана"
   }
 };

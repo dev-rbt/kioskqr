@@ -1,13 +1,13 @@
 "use client";
 
 import { CategoryCard } from '@/components/home/category-card';
-import { useMenuStore } from '@/store/menu';
+import useBranchStore from '@/store/branch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { HeroSlider } from './hero-slider';
 
 export default function HomeContent() {
-  const { categories, isLoading, error } = useMenuStore();
+  const { branchData, isLoading, error,t } = useBranchStore();
 
   if (error) {
     return (
@@ -18,11 +18,11 @@ export default function HomeContent() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !branchData) {
     return (
-      <main className="container mx-auto px-4 pt-40">
+      <main className="container mx-auto px-4 pt-40 ">
         <Skeleton className="h-12 w-48 mx-auto mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-48 w-full" />
           ))}
@@ -34,8 +34,8 @@ export default function HomeContent() {
   return (
     <main className="relative min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative h-[500px] bg-white">
-        <HeroSlider />
+      <div className="relative w-full h-[500px] bg-white overflow-hidden">
+        <HeroSlider banners={branchData.Banners}/>
       </div>
 
       {/* Categories Section */}
@@ -45,13 +45,13 @@ export default function HomeContent() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-3">Kategoriler</h2>
+          <h2 className="text-3xl font-bold mb-3">{t.common.categories}</h2>
           <div className="h-1 w-20 bg-primary rounded-full mx-auto" />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category, index) => (
-            <CategoryCard key={category.id} category={category} index={index} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          {branchData.Categories.map((category, index) => (
+            <CategoryCard key={category.CategoryID} category={category} index={index} branchId={branchData.BranchID.toString()} />
           ))}
         </div>
       </div>

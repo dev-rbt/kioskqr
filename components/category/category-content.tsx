@@ -1,33 +1,23 @@
 "use client";
 
-import { useMenuStore } from '@/store/menu';
 import { ProductCard } from '@/components/product/product-card';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/store/cart';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect } from 'react';
+import useBranchStore from '@/store/branch';
 
-export default function CategoryContent({ params }: { params: { id: string } }) {
-  const { categories, products, isLoading, error, fetchData } = useMenuStore();
-  const addToCart = useCartStore((state) => state.addItem);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const category = categories.find((c) => c.id === params.id);
-  const categoryProducts = products.filter((product) => product.category === params.id);
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-8 py-8">
-        <h1 className="text-2xl font-bold text-red-500">{error}</h1>
-        <p className="text-muted-foreground mt-2">Lütfen daha sonra tekrar deneyin.</p>
-      </div>
-    );
+interface CategoryContentProps {
+  params: { 
+    branchId: string;
+    categoryId: string;
   }
+}
 
-  if (isLoading) {
+export default function CategoryContent({ params }: CategoryContentProps) {
+  const { branchData, selectedLanguage } = useBranchStore();
+  const {addItem} = useCartStore();
+
+  if (!branchData || !selectedLanguage) {
     return (
       <main className="container mx-auto px-8 py-8">
         <Skeleton className="h-12 w-48 mb-8" />
@@ -40,6 +30,21 @@ export default function CategoryContent({ params }: { params: { id: string } }) 
     );
   }
 
+  const category = branchData.Categories.find(
+    (c) => c.CategoryID === params.categoryId
+  );
+
+  if (!category) {
+    return (
+      <div className="container mx-auto px-8 py-8">
+        <h1 className="text-2xl font-bold text-red-500">Kategori bulunamadı</h1>
+        <p className="text-muted-foreground mt-2">Lütfen geçerli bir kategori seçin.</p>
+      </div>
+    );
+  }
+
+  const translation = category.Translations[selectedLanguage.Key];
+
   return (
     <main className="container mx-auto px-8 py-8">
       <motion.div 
@@ -47,19 +52,26 @@ export default function CategoryContent({ params }: { params: { id: string } }) 
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="text-3xl font-bold mb-2">{category?.name}</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {translation?.Name || category.OriginalName}
+        </h1>
+        {translation?.Description && (
+          <p className="text-muted-foreground mb-4">{translation.Description}</p>
+        )}
         <div className="h-1 w-20 bg-primary rounded-full"></div>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {categoryProducts.map((product, index) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            index={index}
-            onAddToCart={addToCart}
-          />
-        ))}
+        {category.Products.map((product, index) => {
+          return (
+            <ProductCard
+              key={product.ProductID}
+              product={product}
+              categoryId={params.categoryId}
+              index={index}
+            />
+          );
+        })}
       </div>
     </main>
   );

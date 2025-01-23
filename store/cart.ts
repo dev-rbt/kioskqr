@@ -1,89 +1,219 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { CartItem } from '@/types/cart';
-import { Product } from '@/types';
 import { calculateCartTotal } from '@/lib/utils/price-calculator';
+import { Cart, CartProduct } from '@/types/cart';
 
 interface CartStore {
-  items: CartItem[];
-  total: number;
-  addItem: (product: Product) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  cart: Cart;
+  addCartProduct: (product: CartProduct) => void;
+  removeCartProduct: (productId: string) => void;
+  updateCartProduct: (productId: string, updatedProduct: CartProduct) => void;
+  addSelectedItem: (productId: string, selectedItem: CartProduct) => void;
+  removeSelectedItem: (productId: string, selectedItemId: string) => void;
+  updateSelectedItem: (productId: string, selectedItem: CartProduct) => void;
   clearCart: () => void;
-  updateTotal: () => void;
+  updateCart: (updatedCart: Partial<Cart>) => Promise<void>;
 }
 
 export const useCartStore = create<CartStore>()(
-  subscribeWithSelector((set, get) => ({
-    items: [],
-    total: 0,
+  subscribeWithSelector((set) => ({
+    cart: {
+      AmountDue: 0,
+      Notes: '',
+      CallNumber: '',
+      Items: [],
+      OrderType: 'Delivery',
+      PaymentType: 'CREDIT_CARD',
+      PaymentMethod: {
+        Key: '',
+        PaymentMethodID: 0,
+        PaymentName: '',
+        Name: '',
+        Type: ''
+      }
+    },
 
-    updateTotal: () => {
-      set({ total: calculateCartTotal(get().items) });
-    },
-    
-    addItem: (product) => {
+    addCartProduct: (product) => {
       set((state) => {
-        const newState = {
-          items: product.comboSelections
-            ? [...state.items, { product, quantity: 1 }]
-            : (() => {
-                const existingItem = state.items.find(
-                  (item) => item.product.id === product.id && !item.product.comboSelections
-                );
-                
-                if (existingItem) {
-                  return state.items.map((item) =>
-                    item.product.id === product.id && !item.product.comboSelections
-                      ? { ...item, quantity: item.quantity + 1 }
-                      : item
-                  );
-                }
-                
-                return [...state.items, { product, quantity: 1 }];
-              })()
-        };
-        
+        const existingProductIndex = (state.cart.Items || []).findIndex(
+          (item) => item.MenuItemKey === product.MenuItemKey
+        ) ?? -1;
+
+        let newItems;
+        if (product.IsMainCombo || existingProductIndex === -1) {
+          newItems = [...(state.cart.Items || []), product];
+        } else {
+          newItems = (state.cart.Items || []).map((item, index) =>
+            index === existingProductIndex
+              ? { ...item, Quantity: item.Quantity + 1 }
+              : item
+          );
+        }
+
         return {
-          ...newState,
-          total: calculateCartTotal(newState.items)
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
         };
       });
     },
-    
-    removeItem: (productId) => {
+
+    updateCartProduct: (productId, updatedProduct) => {
       set((state) => {
-        const newState = {
-          items: state.items.filter((item) => item.product.id !== productId)
-        };
-        
+        const newItems = (state.cart.Items || []).map((product) =>
+          product.MenuItemKey === productId ? updatedProduct : product
+        );
+
         return {
-          ...newState,
-          total: calculateCartTotal(newState.items)
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
         };
       });
     },
-    
-    updateQuantity: (productId, quantity) => {
+
+    addSelectedItem: (productId, selectedItem) => {
       set((state) => {
-        const newState = {
-          items: quantity === 0
-            ? state.items.filter((item) => item.product.id !== productId)
-            : state.items.map((item) =>
-                item.product.id === productId ? { ...item, quantity } : item
-              )
-        };
-        
+        const newItems = (state.cart.Items || []).map((product) => {
+          if (product.MenuItemKey === productId) {
+            const existingItemIndex = (product.Items || []).findIndex(
+              (item) => item.MenuItemKey === selectedItem.MenuItemKey
+            ) ?? -1;
+
+            if (existingItemIndex === -1) {
+              return {
+                ...product,
+                Items: [...(product.Items || []), selectedItem],
+              };
+            }
+
+            return {
+              ...product,
+              Items: (product.Items || []).map((item, index) =>
+                index === existingItemIndex
+                  ? { ...item, Quantity: item.Quantity + 1 }
+                  : item
+              ),
+            };
+          }
+          return product;
+        });
+
         return {
-          ...newState,
-          total: calculateCartTotal(newState.items)
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
+        };
+      });
+    },
+
+    removeSelectedItem: (productId, selectedItemId) => {
+      set((state) => {
+        const newItems = (state.cart.Items || []).map((product) => {
+          if (product.MenuItemKey === productId) {
+            return {
+              ...product,
+              Items: (product.Items || []).filter(
+                (item) => item.MenuItemKey !== selectedItemId
+              ),
+            };
+          }
+          return product;
+        });
+
+        return {
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
+        };
+      });
+    },
+
+    updateSelectedItem: (productId, selectedItem) => {
+      set((state) => {
+        const newItems = (state.cart.Items || []).map((product) => {
+          if (product.MenuItemKey === productId) {
+            const newSelectedItems = (product.Items || []).map((item) =>
+              item.MenuItemKey === selectedItem.MenuItemKey
+                ? selectedItem
+                : item
+            );
+
+            return {
+              ...product,
+              Items: newSelectedItems,
+            };
+          }
+          return product;
+        });
+
+        return {
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
+        };
+      });
+    },
+
+    removeCartProduct: (productId) => {
+      set((state) => {
+        const newItems = (state.cart.Items || []).filter(
+          (item) => item.MenuItemKey !== productId
+        );
+
+        return {
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems)
+          }
         };
       });
     },
     
     clearCart: () => {
-      set({ items: [], total: 0 });
+      set(() => ({
+        cart: {
+          AmountDue: 0,
+          Notes: '',
+          CallNumber: '',
+          Items: [],
+          OrderType: 'TakeOut',
+          PaymentType: 'CREDIT_CARD',
+          PaymentMethod: {
+            Key: '',
+            PaymentMethodID: 0,
+            PaymentName: '',
+            Name: '',
+            Type: ''
+          }
+        }
+      }));
     },
+    
+    updateCart: (updatedCart) => {
+      return new Promise((resolve) => {
+        set((state) => ({
+          cart: {
+            ...state.cart,
+            ...updatedCart,
+            AmountDue: updatedCart.Items 
+              ? calculateCartTotal(updatedCart.Items)
+              : state.cart.AmountDue
+          }
+        }));
+        resolve();
+      });
+    }
   }))
 );
