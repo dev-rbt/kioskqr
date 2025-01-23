@@ -4,16 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { ProductImage } from './product-card/product-image';
 import { ProductPrice } from './product-card/product-price';
-import { ProductInfo } from './product-card/product-info';
-import { ProductBadges } from './product-card/product-badges';
 import { AddToCartButton } from './product-card/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
 import { UtensilsCrossed, Check, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { Product, Translation } from '@/types/branch';
+import { Product } from '@/types/branch';
 import { useState } from 'react';
 import useBranchStore from '@/store/branch';
 import { useCartStore } from '@/store/cart';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ProductCardProps {
   product: Product;
@@ -32,10 +31,16 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   const handleAddToCart = () => {
     setShowAddedAnimation(true);
     addCartProduct({
+      TransactionKey: uuidv4(),
       MenuItemKey: product.ProductID,
       MenuItemText: productTranslation?.Name || product.OriginalName,
       Price: product.TakeOutPrice,
       Quantity: 1,
+      TaxPercent: product.TaxPercent,
+      OrderByWeight: product.OrderByWeight,
+      DiscountLineAmount: 0,
+      DiscountCashAmount: 0,
+      DiscountOrderAmount: 0,
       Notes: '',
       IsMainCombo: false,
       Items: []

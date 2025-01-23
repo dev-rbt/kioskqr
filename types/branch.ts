@@ -73,6 +73,8 @@ export interface Product {
     Weight: number;
     Rating: number;
     Calories: number;
+    TaxPercent: number;
+    OrderByWeight: boolean;
     PreperationTime: number;
     IsCombo: boolean;
     Combo?: ComboGroup[];

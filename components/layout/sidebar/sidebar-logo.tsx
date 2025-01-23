@@ -10,7 +10,7 @@ export function SidebarLogo() {
   const { branchData,t  } = useBranchStore();
 
   return (
-    <Link href="/menu">
+    <Link href="#">
       <motion.div 
         className="p-6 border-b flex items-center gap-4 group"
         whileHover={{ backgroundColor: 'hsl(var(--primary) / 0.1)' }}

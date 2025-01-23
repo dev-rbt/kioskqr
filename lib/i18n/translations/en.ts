@@ -54,7 +54,10 @@ export const en = {
     selectLanguage: "Select Language",
     activeLanguage: "Active Language",
     welcomeMessage: "Place Your Order Here",
-    tapToViewMenu: "Tap to view the menu"
+    tapToViewMenu: "Tap to view the menu",
+    changePaymentMethod: "Change Payment Method",
+    deviceNumberZeroError: "Device number cannot be 0",
+    paymentPrinting: "Payment Printing"
   },
   product: {
     spicy: "Spicy",
@@ -74,6 +77,11 @@ export const en = {
     EMPLOYEE_NOT_FOUND: "Employee ${employeeName} not found",
     PRODUCT_NOT_FOUND: "Products ${productNames} not found",
     PAYMENT_ERROR: "Error during payment: ${errorMessage}",
-    ECR_NOT_CONNECTED: "Cash register is not connected, please notify restaurant staff"
+    ECR_NOT_CONNECTED: "Cash register is not connected, please notify restaurant staff",
+    ERROR_10000: "Cash register is out of paper. Please notify the staff.",
+    ERROR_10001: "Paper Loaded. Process Continuing.",
+    ERROR_202: "Cash register is out of paper. Please notify the staff.",
+    ERROR_80: "Customer Cancelled the Transaction.",
+    ERROR_99: "Payment Process Failed."
   }
 };

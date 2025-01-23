@@ -44,6 +44,20 @@ const PaymentPending = ({ amount,t  }: { amount: number; t: Translation }) => (
   </motion.div>
 );
 
+const PaymentPrinting = ({ amount,t  }: { amount: number; t: Translation }) => (
+  <motion.div
+    key="printing"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    className="space-y-8 backdrop-blur-sm bg-white/30 p-8 rounded-3xl shadow-xl border border-white/20"
+  >
+    <div className="text-center space-y-2 bg-white/20 rounded-2xl p-4 backdrop-blur-sm">
+      <div className="text-3xl font-bold text-primary">₺ {amount.toFixed(2)}</div>
+      <div className="text-sm text-muted-foreground font-medium">{t.common.paymentPrinting}...</div>
+    </div>
+  </motion.div>
+);
 
 const PaymentConnecting = ({ amount, t }: { amount: number; t: Translation }) => (
   <motion.div
@@ -60,11 +74,12 @@ const PaymentConnecting = ({ amount, t }: { amount: number; t: Translation }) =>
   </motion.div>
 );
 
-const Error = ({ amount, error, onRetry, onCancel, t }: {
+const Error = ({ amount, error, onRetry, onCancel, onChangePaymentMethod, t }: {
   amount: number;
   error: string;
-  onRetry: () => void;
-  onCancel: () => void;
+  onRetry?: () => void;
+  onCancel?: () => void;
+  onChangePaymentMethod?: () => void;
   t: Translation
 }) => (
   <motion.div
@@ -84,16 +99,24 @@ const Error = ({ amount, error, onRetry, onCancel, t }: {
       </div>
     </div>
     <div className="flex flex-col gap-3">
-      <Button onClick={onRetry} className="gap-2 bg-primary hover:bg-primary/90">
-        {t.common.retry}
-      </Button>
-      <Button
-        onClick={onCancel}
-        variant="outline"
-        className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10"
-      >
-        {t.common.cancelOrder}
-      </Button>
+      {onRetry && (
+        <Button onClick={onRetry} className="gap-2 bg-primary hover:bg-primary/90">
+          {t.common.retry}
+        </Button>
+      )}
+      {onCancel && (  
+        <Button onClick={onCancel} variant="outline" className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10">
+          {t.common.cancelOrder}
+        </Button>
+      )}
+      {onChangePaymentMethod && (
+        <Button
+          onClick={onChangePaymentMethod}
+          className="gap-2 bg-primary hover:bg-primary/90"
+        >
+          {t.common.changePaymentMethod}
+        </Button>
+      )}
     </div>
   </motion.div>
 );
@@ -147,6 +170,13 @@ export default function PaymentTransactionPage() {
     router.push(`/${params?.branchId}/menu`);
   };
 
+
+  // Ödemeye fonksiyonu
+  const handlePaymentMenu = () => {
+    router.push(`/${params?.branchId}/payment?stepNumber=2`);
+  };
+  
+
   // Yeniden deneme fonksiyonu
   const handleRetry = () => {
     setIsRetrying(true);
@@ -192,6 +222,8 @@ export default function PaymentTransactionPage() {
                       return <PaymentSuccess amount={cart.AmountDue} onReturn={handleReturnToMenu} t={t}/>;
                     case CefSharpMessageType.PAYMENT_PENDING:
                       return <PaymentPending amount={cart.AmountDue} t={t} />;
+                    case CefSharpMessageType.PAYMENT_PRINTING:
+                      return <PaymentPrinting amount={cart.AmountDue} t={t} />;
                     case CefSharpMessageType.VALIDATION_ERROR:
                       return (
                         <Error
@@ -199,6 +231,7 @@ export default function PaymentTransactionPage() {
                           error={errorMessage}
                           onRetry={handleRetry}
                           onCancel={handleReturnToMenu}
+                          onChangePaymentMethod={handlePaymentMenu}
                           t={t}
                         />
                       );
@@ -208,6 +241,7 @@ export default function PaymentTransactionPage() {
                         error={errorMessage}
                         onRetry={handleRetry}
                         onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
                         t={t}
                       />;
                     case CefSharpMessageType.ORDER_SAVE_ERROR:
@@ -216,6 +250,25 @@ export default function PaymentTransactionPage() {
                         error={errorMessage}
                         onRetry={handleRetry}
                         onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
+                        t={t}
+                      />;
+                    case CefSharpMessageType.ECR_ERROR:
+                        return <Error
+                          amount={cart.AmountDue}
+                          error={errorMessage}
+                          onRetry={handleRetry}
+                          onCancel={handleReturnToMenu}
+                          onChangePaymentMethod={handlePaymentMenu}
+                          t={t}
+                        />;
+                    case CefSharpMessageType.ACTION_RESPONSE:
+                      return <Error
+                        amount={cart.AmountDue}
+                        error={errorMessage}
+                        onRetry={handleRetry}
+                        onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
                         t={t}
                       />;
                     default:

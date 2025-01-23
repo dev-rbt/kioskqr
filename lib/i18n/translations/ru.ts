@@ -54,7 +54,10 @@ export const ru = {
     selectLanguage: "Выберите язык",
     activeLanguage: "Активный язык",
     welcomeMessage: "Сделайте заказ здесь",
-    tapToViewMenu: "Нажмите, чтобы посмотреть меню"
+    tapToViewMenu: "Нажмите, чтобы посмотреть меню",
+    changePaymentMethod: "Изменить способ оплаты",
+    deviceNumberZeroError: "Номер устройства не может быть 0",
+    paymentPrinting: "Печать чека"
   },
   product: {
     spicy: "Острый",
@@ -74,6 +77,11 @@ export const ru = {
     EMPLOYEE_NOT_FOUND: "Сотрудник ${employeeName} не найден",
     PRODUCT_NOT_FOUND: "Товары ${productNames} не найдены",
     PAYMENT_ERROR: "Ошибка при оплате: ${errorMessage}",
-    ECR_NOT_CONNECTED: "Касса не подключена, пожалуйста, сообщите персоналу ресторана"
+    ECR_NOT_CONNECTED: "Касса не подключена, пожалуйста, сообщите персоналу ресторана",
+    ERROR_10000: "В кассе закончилась бумага. Пожалуйста, сообщите персоналу.",
+    ERROR_10001: "Бумага загружена. Процесс продолжается.",
+    ERROR_202: "В кассе закончилась бумага. Пожалуйста, сообщите персоналу.",
+    ERROR_80: "Клиент отменил транзакцию.",
+    ERROR_99: "Ошибка платежного процесса."
   }
 };

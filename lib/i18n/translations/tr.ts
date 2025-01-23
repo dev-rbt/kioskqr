@@ -54,7 +54,10 @@ export const tr = {
     selectLanguage: "Dil Seçin",
     activeLanguage: "Aktif Dil",
     welcomeMessage: "Siparişinizi Buradan Verebilirsiniz",
-    tapToViewMenu: "Menüyü görüntülemek için dokunun"
+    tapToViewMenu: "Menüyü görüntülemek için dokunun",
+    changePaymentMethod: "Ödeme Yöntemini Değiştir",
+    deviceNumberZeroError: "Cihaz numarası 0 seçilemez",
+    paymentPrinting: "Ödeme Yazdırılıyor"
   },
   product: {
     spicy: "Acılı",
@@ -74,6 +77,11 @@ export const tr = {
     EMPLOYEE_NOT_FOUND: "${employeeName} İsimli Personel Bulunamadı",
     PRODUCT_NOT_FOUND: "${productNames} İsimli Ürünler Bulunamadı",
     PAYMENT_ERROR: "Ödeme Sırasında Hata Oluştu: ${errorMessage}",
-    ECR_NOT_CONNECTED: "Yazar Kasa Bağlı Değil Restoran Personeline Bildiriniz"
+    ECR_NOT_CONNECTED: "Yazar Kasa Bağlı Değil Restoran Personeline Bildiriniz",
+    ERROR_10000: "Yazar Kasada Kağıt Bitti. Lütfen Personele Bilgi Veriniz.",
+    ERROR_10001: "Kağıt Takıldı. İşlem Devam Ediyor.",
+    ERROR_202: "Yazar Kasada Kağıt Bitti. Lütfen Personele Bilgi Veriniz.",
+    ERROR_80: "Müşteri İşlemden Vazgeçti.",
+    ERROR_99: "Ödeme İşlemi Başarısız."
   }
 };

@@ -19,11 +19,14 @@ export const useCartStore = create<CartStore>()(
   subscribeWithSelector((set) => ({
     cart: {
       AmountDue: 0,
+      SubTotal: 0,
+      DiscountOrderAmount: 0,
+      DiscountLineAmount: 0,
       Notes: '',
       CallNumber: '',
-      Items: [],
       OrderType: 'Delivery',
       PaymentType: 'CREDIT_CARD',
+      Items: [],
       PaymentMethod: {
         Key: '',
         PaymentMethodID: 0,
@@ -45,7 +48,7 @@ export const useCartStore = create<CartStore>()(
         } else {
           newItems = (state.cart.Items || []).map((item, index) =>
             index === existingProductIndex
-              ? { ...item, Quantity: item.Quantity + 1 }
+              ? { ...item, Quantity: (item.Quantity ?? 0) + 1 }
               : item
           );
         }
@@ -54,7 +57,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -70,7 +76,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -95,7 +104,7 @@ export const useCartStore = create<CartStore>()(
               ...product,
               Items: (product.Items || []).map((item, index) =>
                 index === existingItemIndex
-                  ? { ...item, Quantity: item.Quantity + 1 }
+                  ? { ...item, Quantity: (item.Quantity ?? 0) + 1 }
                   : item
               ),
             };
@@ -107,7 +116,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -131,7 +143,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -159,7 +174,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -175,7 +193,10 @@ export const useCartStore = create<CartStore>()(
           cart: {
             ...state.cart,
             Items: newItems,
-            AmountDue: calculateCartTotal(newItems)
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
           }
         };
       });
@@ -185,11 +206,14 @@ export const useCartStore = create<CartStore>()(
       set(() => ({
         cart: {
           AmountDue: 0,
+          SubTotal: 0,
+          DiscountOrderAmount: 0,
+          DiscountLineAmount: 0,
           Notes: '',
           CallNumber: '',
-          Items: [],
-          OrderType: 'TakeOut',
+          OrderType: 'Delivery',
           PaymentType: 'CREDIT_CARD',
+          Items: [],
           PaymentMethod: {
             Key: '',
             PaymentMethodID: 0,
