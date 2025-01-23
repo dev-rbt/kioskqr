@@ -2,8 +2,39 @@ export const en = {
   common: {
     search: "Search Menu",
     menu: "Menu",
+    digitalMenu: "Digital Menu",
+    menuGroups: "Menu Groups",
+    addToCartSuccess: "Menu successfully added to cart",
+    productAddToCartSuccess: "Product added to cart",
+    addedToCart: "Added to your cart",
     cart: "My Cart",
+    returnToMenu: "Return to Main Menu",
     total: "Total Amount",
+    paymentCompleted: "Payment Completed",
+    paymentPending: "Payment Pending",
+    paymentConnecting: "Connecting",
+    retry: "Try Again",
+    cancelOrder: "Cancel Order",
+    clearCart: "Clear Cart",
+    menuSelections: "Menu Selections",
+    requiredSelectionCount: "selections required",
+    selectedProducts: "Selected Products",
+    totalAmount: "Total Amount",
+    allMenus: "All Menu",
+    viewAllCategories: "Browse Categories",
+    viewProducts: "Browse Products",
+    showCart: "View Cart",
+    product: "Product",
+    selectDeviceNumber: "Enter Device Number",
+    step: "Step",
+    selectedDevice: "Selected Device",
+    nextButton: "Next",
+    paymentMethod: "Payment Method",
+    backToCart: "Back to Cart",
+    enterDeviceNumberWarning: "Please enter device number",
+    selectPaymentMethod: "Select Payment Method",
+    amountDue: "Amount Due",
+    changeDevice: "Change Device",
     addToCart: "Add to Cart",
     viewMenu: "View Menu",
     placeOrder: "Place Order",
@@ -23,8 +54,7 @@ export const en = {
     selectLanguage: "Select Language",
     activeLanguage: "Active Language",
     welcomeMessage: "Place Your Order Here",
-    tapToViewMenu: "Tap to view the menu",
-    digitalMenu: "DIGITAL MENU"
+    tapToViewMenu: "Tap to view the menu"
   },
   product: {
     spicy: "Spicy",
@@ -38,5 +68,12 @@ export const en = {
     maximum: "Maximum",
     maxQuantityError: "You can select maximum {max} items from {group}",
     requiredSelectionError: "Please make a selection for {group}"
+  },
+  errors: {
+    ORDER_FORMAT_INCORRECT: "Order format is incorrect",
+    EMPLOYEE_NOT_FOUND: "Employee ${employeeName} not found",
+    PRODUCT_NOT_FOUND: "Products ${productNames} not found",
+    PAYMENT_ERROR: "Error during payment: ${errorMessage}",
+    ECR_NOT_CONNECTED: "Cash register is not connected, please notify restaurant staff"
   }
 };

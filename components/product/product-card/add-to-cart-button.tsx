@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Plus, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useLanguageStore } from '@/store/language';
+import useBranchStore from '@/store/branch';
 
 interface AddToCartButtonProps {
   onClick: () => void;
@@ -11,8 +11,8 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ onClick, isCombo }: AddToCartButtonProps) {
-  const { t } = useLanguageStore();
-  
+  const { t, branchData } = useBranchStore();
+
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -22,11 +22,11 @@ export function AddToCartButton({ onClick, isCombo }: AddToCartButtonProps) {
     >
       <Button
         onClick={onClick}
-        className={`w-full h-10 hover:scale-105 active:scale-95 transition-all duration-200 gap-2 ${
-          isCombo 
-            ? 'bg-primary/90 hover:bg-primary' 
-            : 'bg-primary/90 hover:bg-primary'
-        }`}
+        className="w-full h-10 hover:scale-105 active:scale-95 transition-all duration-200 gap-2 text-white"
+        style={{ 
+          backgroundColor: branchData?.AccentColor || '#000',
+          color: 'white'
+        }}
       >
         {isCombo ? (
           <>

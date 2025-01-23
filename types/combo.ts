@@ -1,9 +1,9 @@
-import { ComboItem as ApiComboItem } from './api';
+import { ComboItem } from './branch';
 
 export interface ComboSelection {
-  groupName: string;
-  item: ApiComboItem;
-  quantity: number;
+  GroupName: string;
+  Item: ComboItem;
+  Quantity: number;
 }
 
 export interface ComboSelections {

@@ -1,10 +1,10 @@
 "use client";
 
+import useBranchStore from "@/store/branch";
 import { ShoppingCart } from "lucide-react";
-import { useLanguageStore } from "@/store/language";
 
 export function CartEmpty() {
-  const { t } = useLanguageStore();
+  const { t } = useBranchStore();
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center">

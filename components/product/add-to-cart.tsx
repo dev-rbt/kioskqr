@@ -5,24 +5,24 @@ import { Price } from '@/components/ui/price';
 import { Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { useRouter } from 'next/navigation';
-import type { Product } from '@/types';
+import { CartProduct } from '@/types/cart';
 
 interface AddToCartProps {
-  product: Product;
+  product: CartProduct;
 }
 
 export function AddToCart({ product }: AddToCartProps) {
-  const addToCart = useCartStore((state) => state.addItem);
+  const {addCartProduct} = useCartStore();
   const router = useRouter();
 
   const handleAddToCart = () => {
-    addToCart(product);
-    router.push(`/category/${product.category}`);
+    addCartProduct(product);
+    router.push(`/category/${product.categoryId}`);
   };
 
   return (
     <div className="flex items-center justify-between pt-4 border-t">
-      <Price amount={product.price} className="text-2xl" />
+      <Price amount={product.Price || 0} className="text-2xl" />
       <Button 
         onClick={handleAddToCart} 
         size="lg" 

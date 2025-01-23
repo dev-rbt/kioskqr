@@ -20,7 +20,9 @@ DROP TABLE IF EXISTS "Badges" CASCADE;
 DROP TABLE IF EXISTS "Languages" CASCADE;
 DROP TABLE IF EXISTS "ComboHeaders" CASCADE;
 DROP TABLE IF EXISTS "ComboGroups" CASCADE;
+DROP TABLE IF EXISTS "ComboTranslations" CASCADE;
 DROP TABLE IF EXISTS "ComboDetails" CASCADE;
+DROP TABLE IF EXISTS "ProductsExtends" CASCADE;
 
 -- Create Tables for PostgreSQL
 
@@ -29,6 +31,7 @@ CREATE TABLE "Languages" (
     "Key" uuid NOT NULL,
     "Code" character varying(2),
     "Name" character varying(50),
+    "Dir" character varying(3),
     "IsActive" boolean DEFAULT true,
     "DisplayOrderId" integer NOT NULL,
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -98,9 +101,10 @@ CREATE TABLE "ProductsTranslations" (
     "LanguageKey" uuid,
     "Name" character varying(255),
     "Description" text,
+    "ImageUrl" VARCHAR(255),
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "PK_ProductsTranslations" PRIMARY KEY ("ProductKey", "LanguageKey")
+    "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- ProductBadges Table
@@ -111,6 +115,22 @@ CREATE TABLE "ProductBadges" (
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "PK_ProductBadges" PRIMARY KEY ("ProductKey", "BadgeKey")
+);
+
+-- ProductsExtends Table
+CREATE TABLE "ProductsExtends" (
+    "ProductKey" uuid NOT NULL,
+    "GroupID" INTEGER NOT NULL,
+    "CategoryID" INTEGER NOT NULL,
+    "ProductCode" VARCHAR(50) NOT NULL,
+    "PreparationTime" INTEGER,
+    "Weight" INTEGER,
+    "Calories" INTEGER,
+    "Rating" DECIMAL(3,1),
+    "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ProductsExtends_pkey" PRIMARY KEY ("ProductKey", "GroupID", "CategoryID", "ProductCode"),
+    CONSTRAINT "check_rating_range" CHECK ("Rating" >= 0.0 AND "Rating" <= 5.0)
 );
 
 -- Branches Table
@@ -148,8 +168,6 @@ CREATE TABLE "BranchSettingsTemplates" (
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "PK_BranchSettingsTemplates" PRIMARY KEY ("BranchID", "TemplateKey"),
-    CONSTRAINT "FK_BranchSettingsTemplates_Branches" FOREIGN KEY ("BranchID")
-        REFERENCES "Branches" ("BranchID") ON DELETE CASCADE,
     CONSTRAINT "FK_BranchSettingsTemplates_Template" FOREIGN KEY ("TemplateKey")
         REFERENCES "SettingsTemplates" ("TemplateKey") ON DELETE CASCADE
 );
@@ -215,8 +233,6 @@ CREATE TABLE "MenuGroupsTranslations" (
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "PK_MenuGroupsTranslations" PRIMARY KEY ("MenuGroupKey", "LanguageKey"),
-    CONSTRAINT "FK_MenuGroupsTranslations_MenuGroups" FOREIGN KEY ("MenuGroupKey")
-        REFERENCES "MenuGroups" ("MenuGroupKey") ON DELETE CASCADE,
     CONSTRAINT "FK_MenuGroupsTranslations_Languages" FOREIGN KEY ("LanguageKey")
         REFERENCES "Languages" ("Key") ON DELETE CASCADE
 );
@@ -227,6 +243,7 @@ CREATE TABLE "MenuItemLayout" (
     "MenuGroupKey" uuid,
     "MainMenuItemKey" uuid,
     "MenuItemKey" uuid,
+    "ComboKey" uuid,
     "IsTopMenu" BOOLEAN DEFAULT FALSE,
     "DisplayIndex" INTEGER,
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -288,6 +305,7 @@ CREATE TABLE "PaymentMethodsTranslations" (
 -- Combo Tables
 CREATE TABLE "ComboHeaders" (
     "ComboKey" uuid,
+    "ComboName" VARCHAR(255),
     "BranchID" INTEGER DEFAULT 0,
     "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -307,6 +325,20 @@ CREATE TABLE "ComboGroups" (
     "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "FK_ComboGroups_ComboHeaders" FOREIGN KEY ("ComboKey", "BranchID") 
         REFERENCES "ComboHeaders" ("ComboKey", "BranchID") ON DELETE CASCADE
+);
+
+CREATE TABLE "ComboTranslations" (
+    "ComboKey" uuid,
+    "LanguageKey" uuid,
+    "Name" character varying(255),
+    "GroupName" character varying(255),
+    "Description" text,
+    "ImageUrl" VARCHAR(255),
+    "CreatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "PK_ComboTranslations" PRIMARY KEY ("ComboKey", "LanguageKey"),
+    CONSTRAINT "FK_ComboTranslations_Languages" FOREIGN KEY ("LanguageKey")
+        REFERENCES "Languages" ("Key") ON DELETE CASCADE
 );
 
 CREATE TABLE "ComboDetails" (
@@ -356,6 +388,12 @@ CREATE INDEX idx_combo_headers_branch ON "ComboHeaders" ("BranchID");
 CREATE INDEX idx_combo_groups_combo ON "ComboGroups" ("ComboKey");
 CREATE INDEX idx_combo_details_combo ON "ComboDetails" ("ComboKey");
 CREATE INDEX idx_combo_details_product ON "ComboDetails" ("ProductKey");
+CREATE INDEX idx_combo_translations_language ON "ComboTranslations" ("LanguageKey");
+CREATE INDEX idx_combo_translations_combo ON "ComboTranslations" ("ComboKey");
+CREATE INDEX idx_products_extends_product ON "ProductsExtends" ("ProductKey");
+CREATE INDEX idx_products_extends_group ON "ProductsExtends" ("GroupID");
+CREATE INDEX idx_products_extends_category ON "ProductsExtends" ("CategoryID");
+CREATE INDEX idx_products_extends_code ON "ProductsExtends" ("ProductCode");
 
 -- Add Foreign Keys
 ALTER TABLE "Branches"
@@ -382,23 +420,16 @@ ALTER TABLE "BadgesTranslations"
 
 ALTER TABLE "ProductBadges"
     ADD CONSTRAINT "FK_ProductBadges_Badges" FOREIGN KEY ("BadgeKey")
-        REFERENCES "Badges" ("BadgeKey") ON DELETE CASCADE,
-    ADD CONSTRAINT "FK_ProductBadges_Products" FOREIGN KEY ("ProductKey")
-        REFERENCES "Products" ("ProductKey") ON DELETE CASCADE;
+        REFERENCES "Badges" ("BadgeKey") ON DELETE CASCADE;
 
-ALTER TABLE "ProductsTranslations"
-    ADD CONSTRAINT "FK_ProductsTranslations_Products" FOREIGN KEY ("ProductKey")
-        REFERENCES "Products" ("ProductKey") ON DELETE CASCADE,
-    ADD CONSTRAINT "FK_ProductsTranslations_Languages" FOREIGN KEY ("LanguageKey")
-        REFERENCES "Languages" ("Key") ON DELETE CASCADE;
 
 -- Insert Language Data
-INSERT INTO "Languages" ("Key", "Code", "Name", "IsActive", "DisplayOrderId") VALUES
-('550e8400-e29b-41d4-a716-446655440010', '🇹🇷', 'Türkçe', true, 1),
-('550e8400-e29b-41d4-a716-446655440011', '🇦🇿', 'Azərbaycan', true, 2),
-('550e8400-e29b-41d4-a716-446655440012', '🇬🇧', 'English', true, 3),
-('550e8400-e29b-41d4-a716-446655440013', '🇸🇦', 'العربية', true, 4),
-('550e8400-e29b-41d4-a716-446655440014', '🇷🇺', 'Русский', true, 5);
+INSERT INTO "Languages" ("Key", "Code", "Name", "IsActive", "Dir", "DisplayOrderId") VALUES
+('550e8400-e29b-41d4-a716-446655440010', 'TR', 'Türkçe', true, 'ltr', 1),
+('550e8400-e29b-41d4-a716-446655440011', 'AZ', 'Azərbaycan',true, 'ltr', 2),
+('550e8400-e29b-41d4-a716-446655440012', 'GB', 'English', true, 'ltr', 3),
+('550e8400-e29b-41d4-a716-446655440013', 'SA', 'العربية', true, 'rtl', 4),
+('550e8400-e29b-41d4-a716-446655440014', 'RU', 'Русский', true, 'ltr', 5);
 
 -- Insert Badge Data
 INSERT INTO "Badges" ("BadgeKey", "Code", "IsActive") VALUES

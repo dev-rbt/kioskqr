@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react';
 import { ProductBadge } from '@/components/ui/product-badge';
 import { Price } from '@/components/ui/price';
-import type { Product } from '@/types';
+import { Product } from '@/types/branch';
 
 interface ProductInfoProps {
   product: Product;
@@ -13,20 +13,20 @@ export function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="space-y-4">
       {/* Rating */}
-      {product.rating && (
+      {product.Rating && (
         <div className="flex items-center gap-1 text-yellow-500">
           <Star className="h-5 w-5 fill-current" />
-          <span className="font-medium text-lg">{product.rating}</span>
+          <span className="font-medium text-lg">{product.Rating}</span>
         </div>
       )}
 
       {/* Price */}
       <div>
         <Price 
-          amount={product.price} 
+          amount={product.TakeOutPrice} 
           className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
         />
-        {product.isCombo && (
+        {product.IsCombo && (
           <p className="text-sm text-muted-foreground mt-1">
             * Seçimlerinize göre fiyat değişebilir
           </p>
@@ -35,13 +35,15 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Badges */}
       <div className="flex flex-wrap gap-2">
-        {product.prepTime && (
-          <ProductBadge icon="time" value={`${product.prepTime} dk`} />
+        {product.PreperationTime && (
+          <ProductBadge icon="time" value={`${product.PreperationTime} dk`} />
         )}
-        {product.calories && (
-          <ProductBadge icon="calories" value={`${product.calories} kcal`} />
+        {product.Calories && (
+          <ProductBadge icon="calories" value={`${product.Calories} kcal`} />
         )}
-        {product.isSpicy && (
+
+    
+        {/* {product.isSpicy && (
           <ProductBadge 
             icon="spicy" 
             value="Acılı" 
@@ -54,7 +56,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             value="Vejetaryen" 
             className="bg-green-100 text-green-700" 
           />
-        )}
+        )} */}
       </div>
     </div>
   );

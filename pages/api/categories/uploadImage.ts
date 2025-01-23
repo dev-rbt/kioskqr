@@ -3,6 +3,7 @@ import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import sharp from 'sharp';
 
 export const config = {
   api: {
@@ -22,14 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const templateKey = fields.templateKey?.[0];
     const menuGroupKey = fields.menuGroupKey?.[0];
     const menuGroupText = fields.menuGroupText?.[0];
-    const langCode = fields.langCode?.[0];
+    const langKey = fields.langKey?.[0];
 
-    if (!templateKey || !menuGroupKey || !menuGroupText || !langCode) {
+    if (!templateKey || !menuGroupKey || !menuGroupText || !langKey) {
       return res.status(400).json({ message: 'Required fields are missing' });
     }
 
     // Create directory structure
-    const publicDir = path.join(process.cwd(), 'uploads');
+    const publicDir = path.join(process.cwd(), 'public', 'uploads');
     const categoryDir = path.join(publicDir, 'category');
     const imageDir = path.join(categoryDir, `${templateKey}_${menuGroupKey}_${menuGroupText}`);
 
@@ -45,22 +46,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Process the image file
     if (files.file) {
       const file = files.file[0];
-      const ext = path.extname(file.originalFilename || '');
-      const filename = `${langCode}_${uuidv4()}${ext}`;
+      const filename = `${langKey}_${uuidv4()}.webp`;
       const newPath = path.join(imageDir, filename);
 
       // Remove old image with same language code if exists
       const existingFiles = fs.readdirSync(imageDir);
       existingFiles
-        .filter(file => file.startsWith(`${langCode}_`))
+        .filter(file => file.startsWith(`${langKey}_`))
         .forEach(file => {
           const filePath = path.join(imageDir, file);
           fs.unlinkSync(filePath);
         });
 
-      // Copy new image
-      await fs.promises.copyFile(file.filepath, newPath);
-      imagePath = `/category/${templateKey}_${menuGroupKey}_${menuGroupText}/${filename}`;
+      // Optimize and save image
+      await sharp(file.filepath)
+        .resize(800, 600, { 
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .webp({ 
+          quality: 100,
+          effort: 6
+        })
+        .toFile(newPath);
+
+      imagePath = `/uploads/category/${templateKey}_${menuGroupKey}_${menuGroupText}/${filename}`;
     }
 
     return res.status(200).json({

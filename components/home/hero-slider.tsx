@@ -2,25 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Banner } from '@/types/branch';
 
-const images = [
-  '/img/slider/slider1.jpg',
-  '/img/slider/slider2.jpg'
-];
 
-export function HeroSlider() {
+
+export function HeroSlider({banners}: {banners: Banner[]}) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % banners.length);
     }, 5000);
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="w-full h-full">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}
@@ -28,26 +26,22 @@ export function HeroSlider() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-0"
+          className="w-full h-full"
         >
-          <div className="relative w-full h-full">
-            <div className="absolute inset-0 flex items-center justify-center bg-white">
-              <img 
-                src={images[currentIndex]}
-                alt="Hero slider"
-                className="max-w-full max-h-full w-auto h-auto object-contain"
-                loading="eager"
-              />
-            </div>
-            {/* Overlay gradient - more subtle now */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+          <div className="w-full h-full flex items-center justify-center">
+            <img 
+              src={banners[currentIndex].BannerUrl}
+              alt="Hero slider"
+              className="w-full max-h-full"
+              loading="eager"
+            />
           </div>
         </motion.div>
       </AnimatePresence>
 
       {/* Slider Indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {images.map((_, index) => (
+        {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}

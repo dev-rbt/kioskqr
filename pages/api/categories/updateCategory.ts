@@ -14,15 +14,15 @@ export default async function handler(
     const category: Category = req.body;
 
     // 1. Get all active languages
-    const languagesResult = await db.executeQuery(
-      'SELECT "Key" as "LanguageKey", "Code" FROM "Languages" WHERE "IsActive" = true',
+    const languagesResult = await db.executeQuery<{Key: string; Code: string}>(
+      'SELECT "Key", "Code" FROM "Languages" WHERE "IsActive" = true',
       [],
       false
     );
 
     // 2. Update translations for each language
     for (const language of languagesResult) {
-      const translation = category.Translations[language.Code] || {};
+      const translation = category.Translations[language.Key] || {};
 
       await db.executeQuery(
         `INSERT INTO "MenuGroupsTranslations" (
@@ -55,7 +55,7 @@ export default async function handler(
           "UpdatedAt" = CURRENT_TIMESTAMP`,
         [
           category.MenuGroupKey,
-          language.LanguageKey,
+          language.Key,
           translation.Name || '',
           translation.Description || '',
           translation.ImageUrl || '',

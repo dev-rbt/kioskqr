@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Search } from 'lucide-react';
-import { useLanguageStore } from '@/store/language';
+import useBranchStore from '@/store/branch';
 
 export function SearchDialog() {
   const [open, setOpen] = useState(false);
-  const { t } = useLanguageStore();
+  const { t } = useBranchStore();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {

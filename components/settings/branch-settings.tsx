@@ -14,22 +14,14 @@ import {
 } from "@/components/ui/table";
 import { RefreshCwIcon, Search } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton"
-import useBranchStore from "@/store/useBranchStore";
-
-interface Branch {
-  BranchID: number;
-  BranchName: string;
-  IsActive: boolean;
-  MenuTemplateName: string;
-  PriceTemplateName: string;
-  UpdatedAt?: string;
-}
+import useSettingBranchStore from "@/store/settings/branch";
 
 const TableRowSkeleton = () => (
   <TableRow>
     <TableCell><Skeleton className="h-4 w-[250px]" /></TableCell>
     <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
     <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+    <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
     <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
     <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
   </TableRow>
@@ -40,7 +32,7 @@ export function BranchSettings() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const {branches} = useBranchStore();
+  const {branches} = useSettingBranchStore();
 
   const filteredBranches = branches.filter(branch =>
     branch.BranchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -167,6 +159,7 @@ export function BranchSettings() {
               <TableHead>Son Güncelleme</TableHead>
               <TableHead>Menü Şablonu</TableHead>
               <TableHead>Fiyat Listesi</TableHead>
+              <TableHead>Ayar Şablonu</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -183,6 +176,7 @@ export function BranchSettings() {
                   <TableCell>{formatDate(branch.UpdatedAt)}</TableCell>
                   <TableCell>{branch.MenuTemplateName || '-'}</TableCell>
                   <TableCell>{branch.PriceTemplateName || '-'}</TableCell>
+                  <TableCell>{branch.SettingsTemplateName || '-'}</TableCell>
                 </TableRow>
               ))
             )}

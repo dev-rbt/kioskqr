@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Search, RefreshCwIcon } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton"
-import usePriceTemplateStore from '@/store/usePriceTemplateStore';
+import usePriceTemplateStore from '@/store/settings/price-template';
 
 const TableRowSkeleton = () => (
   <TableRow>

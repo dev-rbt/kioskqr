@@ -10,22 +10,36 @@ import { AddToCartButton } from './product-card/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
 import { UtensilsCrossed, Check, Clock } from 'lucide-react';
 import Link from 'next/link';
-import type { Product } from '@/types';
+import { Product, Translation } from '@/types/branch';
 import { useState } from 'react';
+import useBranchStore from '@/store/branch';
+import { useCartStore } from '@/store/cart';
 
 interface ProductCardProps {
   product: Product;
+  categoryId: string;
   index: number;
-  onAddToCart: (product: Product) => void;
 }
 
-export function ProductCard({ product, index, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   const [showAddedAnimation, setShowAddedAnimation] = useState(false);
-
+  const {branchData, selectedLanguage, t} = useBranchStore();
+  const {addCartProduct} = useCartStore();
+  let productTranslation = product.Translations?.[selectedLanguage?.Key || 'en-US'];
+  
+  // Get Turkish translation as fallback
+  const turkishTranslation = product.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US'];
   const handleAddToCart = () => {
     setShowAddedAnimation(true);
-    onAddToCart(product);
-    
+    addCartProduct({
+      MenuItemKey: product.ProductID,
+      MenuItemText: productTranslation?.Name || product.OriginalName,
+      Price: product.TakeOutPrice,
+      Quantity: 1,
+      Notes: '',
+      IsMainCombo: false,
+      Items: []
+    });
     setTimeout(() => {
       setShowAddedAnimation(false);
     }, 1500);
@@ -36,14 +50,25 @@ export function ProductCard({ product, index, onAddToCart }: ProductCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
-      className="group h-[440px]" // Reduced card height
+      className="group h-[440px] "
     >
-      <div className="relative h-full">
+      <div className="relative h-full ">
         {/* Enhanced Glow Effect */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-primary/30 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
+        <div 
+          className="absolute -inset-0.5 rounded-2xl blur opacity-0 group-hover:opacity-80 transition duration-500" 
+          style={{
+            background: `linear-gradient(to right, ${branchData?.SecondColor}, ${branchData?.SecondColor})`
+          }}
+        />
         
         {/* Main Card */}
-        <Card className="relative h-full flex flex-col overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-white/10 hover:border-primary/30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl">
+        <Card 
+          className="relative h-full flex flex-col overflow-hidden transition-all duration-300 border-2 border-transparent hover:border-[var(--border-color)] rounded-xl"
+          style={{ 
+            backgroundColor: 'white',
+            ['--border-color' as any]: 'transparent'
+          }}
+        >
           {/* Added to Cart Animation Overlay */}
           <AnimatePresence>
             {showAddedAnimation && (
@@ -70,51 +95,54 @@ export function ProductCard({ product, index, onAddToCart }: ProductCardProps) {
 
           {/* Image Section - Reduced height */}
           <div className="relative h-[180px]">
-            <ProductImage product={product} />
-            <ProductPrice price={product.price} />
-            {product.isCombo && (
+            <ProductImage 
+              imageUrl={productTranslation?.ImageUrl || turkishTranslation?.ImageUrl} 
+              alt={productTranslation?.Name || product.OriginalName} 
+            />
+            <ProductPrice price={product.TakeOutPrice} />
+            {product.IsCombo && (
               <Badge 
-                className="absolute top-4 left-4 bg-primary text-primary-foreground gap-1.5"
+                className="absolute top-4 left-4 text-primary-foreground gap-1.5"
                 variant="secondary"
+                style={{ color: 'white', backgroundColor: branchData?.SecondColor }}
               >
                 <UtensilsCrossed className="h-3.5 w-3.5" />
-                Menü
+                {t.common.menu}
               </Badge>
             )}
           </div>
 
-          {/* Content Section - Optimized spacing */}
+          {/* Content Section */}
           <div className="flex flex-col flex-1 p-3">
-            {/* Title - 2 lines */}
-            <h3 className="text-lg font-bold line-clamp-2 min-h-[48px] mb-2">
-              {product.name}
+            {/* Title */}
+            <h3 className="text-lg font-bold line-clamp-2 min-h-[48px] mb-2"
+                style={{ color: branchData?.SecondColor || 'inherit' }}>
+              {productTranslation?.Name || product.OriginalName}
             </h3>
 
-            {/* Description - 3 lines */}
-            <p className="text-sm text-muted-foreground line-clamp-3 min-h-[48px] mb-2">
-              {product.description}
-            </p>
+            {/* Description */}
+            {productTranslation?.Description && (
+              <p className="text-sm line-clamp-3 min-h-[48px] mb-2"
+                 style={{ color: branchData?.SecondColor || 'inherit' }}>
+                {productTranslation.Description}
+              </p>
+            )}
 
             {/* Meta Info Row */}
-            <div className="flex items-center justify-between mb-2">
-              {/* Prep Time */}
-              {product.prepTime && (
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3 mb-3 text-sm"
+                 style={{ color: branchData?.SecondColor || 'inherit' }}>
+              {product.PreperationTime > 0 && (
+                <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  <span>{product.prepTime} dk</span>
+                  <span>{product.PreperationTime} {t.product.minutes}</span>
                 </div>
               )}
-
-              {/* Badges */}
-              <div className="flex gap-2">
-                <ProductBadges product={product} />
-              </div>
             </div>
 
-            {/* Button Section */}
-            <div className="mt-auto pt-2">
-              {product.isCombo ? (
-                <Link href={`/menu/product/${product.id}`} className="block">
+            {/* Add to Cart Button */}
+            <div className="mt-auto">
+              {product.IsCombo ? (
+                <Link href={`/${branchData?.BranchID}/product/${categoryId}/${product.ProductID}`} className="block">
                   <AddToCartButton onClick={() => {}} isCombo={true} />
                 </Link>
               ) : (

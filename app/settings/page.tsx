@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {CategorySettings} from '@/components/settings/category-settings';
-import { ProductSettings } from '@/components/settings/product-settings';
+import ProductSettings from '@/components/settings/product-settings';
 import { ComboSettings } from '@/components/settings/combo-settings';
 import { TemplateSettings } from '@/components/settings/template-settings';
 import { PriceListSettings } from '@/components/settings/price-list-settings';
@@ -17,14 +17,16 @@ import {
   Package, 
   UtensilsCrossed,
   Globe,
-  RefreshCw
+  RefreshCw,
+  Tablet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import useLanguageStore from '@/store/useLanguageStore';
-import useBranchStore from "@/store/useBranchStore";
-import useTemplateStore from "@/store/useTemplateStore";
-import usePriceTemplateStore from "@/store/usePriceTemplateStore";
+import useSettingLanguageStore from '@/store/settings/language';
+import useSettingBranchStore from "@/store/settings/branch";
+import useTemplateStore from "@/store/settings/template";
+import usePriceTemplateStore from "@/store/settings/price-template";
 import { Button } from "@/components/ui/button";
+import { KioskSettings } from "@/components/settings/kiosk-settings";
 
 const menuItems = [
   { id: 'branches', label: 'Şubeler', icon: Building2, component: BranchSettings },
@@ -34,13 +36,14 @@ const menuItems = [
   { id: 'products', label: 'Ürünler', icon: Package, component: ProductSettings },
   { id: 'combos', label: 'Combo Menüler', icon: UtensilsCrossed, component: ComboSettings },
   { id: 'services', label: 'Şube Ayarları', icon: Globe, component: ServiceSettings },
+  { id: 'settings', label: 'Kiosk Ayarları', icon: Tablet, component: KioskSettings },
 ];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<string>('categories');
+  const [activeTab, setActiveTab] = useState<string>('products');
   const [isUpdating, setIsUpdating] = useState(false);
-  const { fetchLanguages } = useLanguageStore();
-  const { fetchBranches } = useBranchStore();
+  const { fetchLanguages } = useSettingLanguageStore();
+  const { fetchBranches } = useSettingBranchStore();
   const { fetchTemplates } = useTemplateStore();
   const { fetchPriceTemplates } = usePriceTemplateStore();
 
@@ -77,8 +80,8 @@ export default function SettingsPage() {
       {/* Navigation */}
       <div className="border-b">
         <div className="container mx-auto">
-          <nav className="flex items-center justify-between overflow-x-auto py-4">
-            <div className="flex items-center space-x-2 overflow-x-auto">
+          <nav className="flex items-center justify-between  py-4">
+            <div className="flex items-center space-x-2 ">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
