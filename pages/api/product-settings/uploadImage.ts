@@ -32,7 +32,7 @@ export default async function handler(
     }
 
     // Create directory structure
-    const publicDir = path.join(process.cwd(), 'public', 'uploads');
+    const publicDir = path.join(process.env.FILE_UPLOAD_DIR || process.cwd());
     const productsDir = path.join(publicDir, 'products');
     const imageDir = path.join(productsDir, productKey);
 

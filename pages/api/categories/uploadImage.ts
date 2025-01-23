@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Create directory structure
-    const publicDir = path.join(process.cwd(), 'public', 'uploads');
+    const publicDir = path.join(process.env.FILE_UPLOAD_DIR || process.cwd());
     const categoryDir = path.join(publicDir, 'category');
     const imageDir = path.join(categoryDir, `${templateKey}_${menuGroupKey}_${menuGroupText}`);
 

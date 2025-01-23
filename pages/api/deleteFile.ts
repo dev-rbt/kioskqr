@@ -15,10 +15,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Güvenlik kontrolü: filePath'in public/uploads dizini içinde olduğundan emin olun
-    const absolutePath = path.join(process.cwd(), 'public', filePath);
+    const absolutePath = path.join(process.env.FILE_UPLOAD_DIR || process.cwd(), filePath);
     const normalizedPath = path.normalize(absolutePath);
     
-    if (!normalizedPath.startsWith(path.join(process.cwd(), 'public'))) {
+    if (!normalizedPath.startsWith(path.join(process.env.FILE_UPLOAD_DIR || process.cwd()))) {
       return res.status(403).json({ message: 'Invalid file path' });
     }
 
