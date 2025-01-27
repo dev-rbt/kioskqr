@@ -96,14 +96,17 @@ export const en = {
     priceVariesBySelection: "* Price may vary based on your selections",
   },
   errors: {
-    ORDER_FORMAT_INCORRECT: "Order format is incorrect",
-    EMPLOYEE_NOT_FOUND: "Employee ${employeeName} not found",
-    PRODUCT_NOT_FOUND: "Products ${productNames} not found",
-    PAYMENT_ERROR: "Error during payment: ${errorMessage}",
+    ORDER_FORMAT_INCORRECT: "Order Format is Incorrect",
+    EMPLOYEE_NOT_FOUND: "Employee ${employeeName} Not Found",
+    PRODUCT_NOT_FOUND: "Products ${productNames} Not Found",
+    PAYMENT_ERROR: "Payment Error: ${errorMessage}",
     ECR_NOT_CONNECTED: "Cash register is not connected, please notify restaurant staff",
     ERROR_10000: "Cash register is out of paper. Please notify the staff.",
     ERROR_10001: "Paper Loaded. Process Continuing.",
     ERROR_202: "Cash register is out of paper. Please notify the staff.",
+    ERROR_2085: "User Cancelled Operation",
+    ERROR_2086: "Payment Failed",
+    ERROR_32: "Out of Paper",
     ERROR_80: "Customer Cancelled the Transaction.",
     ERROR_99: "Payment Process Failed."
   }

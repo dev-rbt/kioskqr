@@ -98,12 +98,14 @@ export const tr = {
     ORDER_FORMAT_INCORRECT: "Gönderilen Sipariş Formatı Hatalı",
     EMPLOYEE_NOT_FOUND: "${employeeName} İsimli Personel Bulunamadı",
     PRODUCT_NOT_FOUND: "${productNames} İsimli Ürünler Bulunamadı",
-    PAYMENT_ERROR: "Ödeme Sırasında Hata Oluştu: ${errorMessage}",
-    ECR_NOT_CONNECTED: "Yazar Kasa Bağlı Değil Restoran Personeline Bildiriniz",
-    ERROR_10000: "Yazar Kasada Kağıt Bitti. Lütfen Personele Bilgi Veriniz.",
-    ERROR_10001: "Kağıt Takıldı. İşlem Devam Ediyor.",
-    ERROR_202: "Yazar Kasada Kağıt Bitti. Lütfen Personele Bilgi Veriniz.",
-    ERROR_80: "Müşteri İşlemden Vazgeçti.",
-    ERROR_99: "Ödeme İşlemi Başarısız."
+    PAYMENT_ERROR: "Ödeme Sırasında Hata Oluştu: ${errorMessage}",
+    ECR_NOT_CONNECTED: "Yazar kasa bağlı değil, lütfen restoran personeline bildiriniz",
+    ERROR_10000: "Yazar kasada kağıt bitti. Lütfen personele bildiriniz.",
+    ERROR_10001: "Kağıt Yüklendi. İşlem Devam Ediyor.",
+    ERROR_80: "Müşteri İşlemi İptal Etti.",
+    ERROR_99: "Ödeme İşlemi Başarısız.",
+    ERROR_2086: "Ödeme Alınamadı",
+    ERROR_2085: "Kullanıcı işlemden vazgeçti",
+    ERROR_32: "Kağıt Bitti"
   }
 };
