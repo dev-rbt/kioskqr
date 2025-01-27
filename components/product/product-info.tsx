@@ -11,7 +11,7 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const {selectedOrderType} = useBranchStore();
+  const {selectedOrderType, t} = useBranchStore();
   return (
     <div className="space-y-4">
       {/* Rating */}
@@ -30,7 +30,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         />
         {product.IsCombo && (
           <p className="text-sm text-muted-foreground mt-1">
-            * Seçimlerinize göre fiyat değişebilir
+            {t.product.priceVariesBySelection}
           </p>
         )}
       </div>
@@ -38,10 +38,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {/* Badges */}
       <div className="flex flex-wrap gap-2">
         {product.PreperationTime && (
-          <ProductBadge icon="time" value={`${product.PreperationTime} dk`} />
+          <ProductBadge icon="time" value={`${product.PreperationTime} ${t.product.minutes.toLowerCase()}`} />
         )}
         {product.Calories && (
-          <ProductBadge icon="calories" value={`${product.Calories} kcal`} />
+          <ProductBadge icon="calories" value={`${product.Calories} ${t.product.calories.toLowerCase()}`} />
         )}
 
     

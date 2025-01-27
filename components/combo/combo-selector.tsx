@@ -25,8 +25,8 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
   const [note, setNote] = useState("");
   const { toast } = useToast();
   const { t } = useBranchStore();
-  const {selectedLanguage} = useBranchStore();
-  const allGroups = [...groups, { OriginalName: "Siparişi Tamamla", IsForcedGroup: false, ForcedQuantity: 0, MaxQuantity: 0, Items: [] }];
+  const {branchData, selectedLanguage} = useBranchStore();
+  const allGroups = [...groups, { OriginalName: t.common.completeOrder, IsForcedGroup: false, ForcedQuantity: 0, MaxQuantity: 0, Items: [] }];
   const noteInputRef = useRef<HTMLTextAreaElement>(null);
   const { setInputRef, setIsOpen } = useKeyboardStore();
 
@@ -78,14 +78,14 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
   }, [groups, toast, t, activeGroupIndex, allGroups]);
 
   const isGroupComplete = useCallback((group: ComboGroupType) => {
-    if (group.OriginalName === "Siparişi Tamamla") return false;
+    if (group.OriginalName === t.common.completeOrder) return false;
     const groupSelections = selections[group.OriginalName] || [];
     const totalQuantity = groupSelections.reduce((sum, s) => sum + s.Quantity, 0);
     
     return group.IsForcedGroup 
       ? totalQuantity >= group.ForcedQuantity
       : totalQuantity > 0;
-  }, [selections]);
+  }, [selections, t]);
 
   const handleAddToCart = useCallback(() => {
     const requiredGroups = groups.filter(group => group.IsForcedGroup || group.ForcedQuantity > 0);
