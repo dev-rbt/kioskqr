@@ -140,7 +140,6 @@ export default function PaymentTransactionPage() {
 
   useEffect(() => {
     const updatedCart = useCartStore.getState().cart;
-
     const cefSharpMessageHandler = (Type: CefSharpMessageType, Code: string, Arg: string) => {
       console.log(updatedCart)
       console.log({ Type, Code, Arg })
