@@ -25,6 +25,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
 
   const product = branchData?.Categories.find((c) => c.CategoryID === params.categoryId)?.Products.find((p) => p.ProductID === params.id);
   const productTranslation = product?.Translations?.[selectedLanguage?.Key || 'en-US'];
+  const turkishTranslation = product?.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US'];
 
   if (!product) {
     notFound();
@@ -156,7 +157,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
         onClick={() => router.back()}
       >
         <ArrowLeft className="w-4 h-4" />
-        Geri Dön
+        {t.common.goBack}
       </Button>
 
       <div className="mx-auto">
@@ -165,7 +166,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
             <div className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden">
               <div className="grid lg:grid-cols-2 gap-8 items-start p-6">
                 <div className="relative">
-                  <ProductImage src={productTranslation?.ImageUrl || ''} alt={product.OriginalName || ''} />
+                  <ProductImage src={productTranslation?.ImageUrl || turkishTranslation?.ImageUrl || ''} alt={product.OriginalName || ''} />
                   <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground px-4 py-2 rounded-full font-bold shadow-lg">
                     {(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice} ₺
                   </div>
@@ -174,7 +175,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
                   <div className="space-y-4">
                     <h1 className="text-4xl font-bold">{product.OriginalName}</h1>
                     <p className="text-lg text-muted-foreground">
-                      {'DESCRİPTION'}
+                      {productTranslation?.Description || turkishTranslation?.Description || ''}
                     </p>
                   </div>
 

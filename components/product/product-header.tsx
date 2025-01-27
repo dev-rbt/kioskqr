@@ -14,7 +14,7 @@ export function ProductHeader({ categoryId, branchId }: ProductHeaderProps) {
     <Link href={`/${branchId}/menu/category/${categoryId}`}>
       <Button variant="ghost" size="sm" className="hover:translate-x-1 transition-transform">
         <ChevronLeft className="h-4 w-4 mr-2" />
-        Geri Dön
+        {t.common.goBack}
       </Button>
     </Link>
   );

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { ComboGroup as ComboGroupType, ComboItem } from '@/types/branch';
 import { ComboSelections } from '@/types/combo';
+import useBranchStore from '@/store/branch';
 
 interface ComboGroupProps {
   group: ComboGroupType;
@@ -15,7 +16,7 @@ interface ComboGroupProps {
 }
 
 export function ComboGroup({ group, selections, onSelect, progress }: ComboGroupProps) {
-
+  const { t } = useBranchStore();
   const currentSelections = selections[group.OriginalName] || [];
   const totalQuantity = currentSelections.reduce((sum, s) => sum + s.Quantity, 0);
   
@@ -42,14 +43,14 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
                     <AlertCircle className="w-4 h-4" />
                     <span className="font-medium">
                       {isComplete 
-                        ? 'Seçim tamamlandı'
-                        : `${group.ForcedQuantity} adet seçim yapmalısınız`}
+                        ? t.common.selectionCompleted
+                        : `${group.ForcedQuantity} ${t.common.requiredSelections}`}
                     </span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm">
                     <CheckCircle className="w-4 h-4" />
-                    <span>İsteğe bağlı seçim</span>
+                    <span>{t.common.optionalSelection}</span>
                   </div>
                 )}
               </div>
@@ -64,7 +65,7 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
                 </span>
               </div>
               <div className="text-sm text-muted-foreground">
-                seçim yapıldı
+                {t.common.selectionsCount}
               </div>
             </div>
           </div>
@@ -83,17 +84,17 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
           <div className="flex flex-wrap gap-2">
             {group.IsForcedGroup && (
               <Badge variant="default" className="bg-orange-500 hover:bg-orange-600">
-                Zorunlu Seçim
+                {t.common.requiredSelection}
               </Badge>
             )}
             {group.MaxQuantity > 0 && (
               <Badge variant="secondary">
-                Maksimum {group.MaxQuantity} adet
+                {t.common.maximumCount} {group.MaxQuantity} {t.common.pieces}
               </Badge>
             )}
             {group.ForcedQuantity > 0 && (
               <Badge variant="secondary">
-                {group.ForcedQuantity} adet seçilmeli
+                {group.ForcedQuantity} {t.common.mustSelect}
               </Badge>
             )}
           </div>
