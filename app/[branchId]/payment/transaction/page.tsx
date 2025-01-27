@@ -175,7 +175,7 @@ export default function PaymentTransactionPage() {
 
   // Ödemeye fonksiyonu
   const handlePaymentMenu = () => {
-    router.push(`/${params?.branchId}/payment?stepNumber=2`);
+    router.push(`/${params?.branchId}/payment?stepNumber=3`);
   };
   
 
