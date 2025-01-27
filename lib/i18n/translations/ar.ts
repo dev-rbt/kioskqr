@@ -6,7 +6,7 @@ export const ar = {
     menuGroups: "مجموعات القائمة",
     addToCartSuccess: "تمت إضافة القائمة إلى السلة بنجاح",
     productAddToCartSuccess: "تمت إضافة المنتج إلى السلة",
-    addedToCart: "تمت الإضافة إلى سلتك",
+    addedToCart: "تمت الإضافة إلى السلة",
     cart: "السلة",
     returnToMenu: "العودة إلى القائمة الرئيسية",
     total: "المجموع",
@@ -65,9 +65,10 @@ export const ar = {
     enterProductNote: "يمكنك كتابة ملاحظة المنتج هنا...",
     orderNotes: "ملاحظات الطلب",
     enterOrderNotes: "يمكنك كتابة ملاحظات طلبك هنا...",
-    noOrderNotes: "لم تتم إضافة ملاحظات للطلب",
+    noOrderNotes: "لا توجد ملاحظات للطلب",
     edit: "تعديل",
-    done: "تم"
+    done: "تم",
+    ok: "موافق",
   },
   product: {
     spicy: "حار",

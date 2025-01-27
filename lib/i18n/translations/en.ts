@@ -6,7 +6,7 @@ export const en = {
     menuGroups: "Menu Groups",
     addToCartSuccess: "Menu successfully added to cart",
     productAddToCartSuccess: "Product added to cart",
-    addedToCart: "Added to your cart",
+    addedToCart: "Added to cart",
     cart: "My Cart",
     returnToMenu: "Return to Main Menu",
     total: "Total Amount",
@@ -63,11 +63,12 @@ export const en = {
     takeout: "Take Out",
     clickToViewMenu: "Click to View Menu",
     orderNotes: "Order Notes",
-    noOrderNotes: "No order notes added",
+    noOrderNotes: "No order notes",
     edit: "Edit",
     done: "Done",
     productNote: "Product Note",
-    enterProductNote: "You can write your product note here..."
+    enterProductNote: "You can write your product note here...",
+    ok: "OK",
   },
   product: {
     spicy: "Spicy",

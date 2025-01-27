@@ -67,7 +67,8 @@ export const ru = {
     enterOrderNotes: "Здесь вы можете написать примечания к заказу...",
     noOrderNotes: "Примечания к заказу не добавлены",
     edit: "Изменить",
-    done: "Готово"
+    done: "Готово",
+    ok: 'OK',
   },
   product: {
     spicy: "Острый",

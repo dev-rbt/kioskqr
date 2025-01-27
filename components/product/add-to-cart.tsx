@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { useRouter } from 'next/navigation';
 import { CartProduct } from '@/types/cart';
+import useBranchStore from '@/store/branch';
 
 interface AddToCartProps {
   product: CartProduct;
@@ -13,6 +14,7 @@ interface AddToCartProps {
 
 export function AddToCart({ product }: AddToCartProps) {
   const {addCartProduct} = useCartStore();
+  const {t} = useBranchStore();
   const router = useRouter();
 
   const handleAddToCart = () => {
@@ -29,7 +31,7 @@ export function AddToCart({ product }: AddToCartProps) {
         className="hover:scale-105 transition-transform"
       >
         <Plus className="h-4 w-4 mr-2" />
-        Sepete Ekle
+        {t.common.addToCart}
       </Button>
     </div>
   );
