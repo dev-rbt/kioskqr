@@ -1,5 +1,6 @@
 "use client";
 
+import useBranchStore from '@/store/branch';
 import { useState, useEffect, useCallback } from 'react';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -20,6 +21,7 @@ export const useKeyboardStore = create<KeyboardStore>((set) => ({
 }));
 
 export function VirtualKeyboard() {
+  const { t } = useBranchStore();
   const { isOpen, inputRef, setIsOpen } = useKeyboardStore();
   const [layout, setLayout] = useState("default");
   const [previewValue, setPreviewValue] = useState("");
@@ -116,7 +118,7 @@ export function VirtualKeyboard() {
               onClick={handleClose}
               className="px-6 py-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
             >
-              Tamam
+              {t.common.ok}
             </button>
           </div>
 

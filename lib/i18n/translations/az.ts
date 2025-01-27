@@ -6,7 +6,7 @@ export const az = {
     menuGroups: "Menyu Qrupları",
     addToCartSuccess: "Menyu səbətə uğurla əlavə edildi",
     productAddToCartSuccess: "Məhsul səbətə əlavə edildi",
-    addedToCart: "Səbətinizə əlavə edildi",
+    addedToCart: "Səbətinizə əlavə olundu",
     cart: "Səbət",
     returnToMenu: "Əsas Menyuya Qayıt",
     total: "Cəmi",
@@ -67,7 +67,8 @@ export const az = {
     enterOrderNotes: "Sifariş qeydlərinizi bura yaza bilərsiniz...",
     noOrderNotes: "Sifariş qeydi əlavə edilməyib",
     edit: "Düzəliş et",
-    done: "Hazır"
+    done: "Hazır",
+    ok: 'OK',
   },
   product: {
     spicy: "Acılı",

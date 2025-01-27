@@ -92,7 +92,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                   <div className="rounded-full bg-white/20 p-3">
                     <Check className="w-8 h-8" />
                   </div>
-                  <p className="font-medium text-lg">Sepete Eklendi</p>
+                  <p className="font-medium text-lg">{t.common.addedToCart}</p>
                 </motion.div>
               </motion.div>
             )}
