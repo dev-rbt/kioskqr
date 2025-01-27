@@ -203,7 +203,7 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
                             <div className="flex items-center gap-3">
                               <div className="w-16 h-16 rounded-lg overflow-hidden">
                                 <img 
-                                  src={selection.Item.Translations?.[selectedLanguage?.Key || 'en-US']?.ImageUrl || getNextProductImage()} 
+                                  src={selection.Item.Translations?.[selectedLanguage?.Key || 'en-US']?.ImageUrl ||   selection.Item.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US']?.ImageUrl || getNextProductImage()} 
                                   alt={selection.Item.OriginalName}
                                   className="w-full h-full object-cover"
                                 />
