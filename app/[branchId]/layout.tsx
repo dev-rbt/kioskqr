@@ -24,7 +24,7 @@ export default function BranchLayout({
   const router = useRouter();
   const { clearCart } = useCartStore();
   const pathname = usePathname();
-     
+  const excludedPaths = [`/${params?.branchId}/payment`];
   useEffect(() => {
     console.log(params?.branchId)
     if (params?.branchId) {
@@ -35,17 +35,19 @@ export default function BranchLayout({
   if (!params?.branchId) {
     return null;
   }
-  return (
+  if(!excludedPaths.some(path => pathname?.includes(path))){
     <TimerProvider
       timeout={INACTIVITY_TIMEOUT}
-      excludedPaths={[`/${params?.branchId}/payment`]}
+      excludedPaths={excludedPaths}
       onTimeout={async () => {
-        const branchId = params?.branchId?.toString();
-        if (branchId) {
-          clearCart();
-          await reset(branchId);
-          await fetchBranchData(branchId);
-          router.push(`/${branchId}`);
+        if(!excludedPaths.some(path => pathname?.includes(path))) {
+          const branchId = params?.branchId?.toString();
+          if (branchId) {
+            clearCart();
+            await reset(branchId);
+            await fetchBranchData(branchId);
+            router.push(`/${branchId}`);
+          }
         }
       }}
     >
@@ -66,5 +68,25 @@ export default function BranchLayout({
         </html>
       )}
     </TimerProvider>
+  }
+  return (
+    <>
+          {isLoading ? (
+        <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
+          <body className={inter.className}>
+            <Loader />
+          </body>
+        </html>
+      ) : (
+        <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
+          <body className={inter.className}>
+            <div className="flex-1 flex flex-col">
+              {children}
+              <VirtualKeyboard />
+            </div>
+          </body>
+        </html>
+      )}
+    </>
   );
 }

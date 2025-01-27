@@ -12,7 +12,6 @@ import useBranchStore from '@/store/branch';
 import { useTimer } from '@/contexts/timer-context';
 
 const PaymentSuccess = ({ amount, onReturn, t }: { amount: number; onReturn: () => void, t: Translation }) => {
-  const { remainingTime } = useTimer();
 
   return (
     <motion.div
@@ -27,7 +26,7 @@ const PaymentSuccess = ({ amount, onReturn, t }: { amount: number; onReturn: () 
       </div>
       <Button onClick={onReturn} className="gap-2">
         <CheckCircle2 className="h-4 w-4" />
-        {t.common.returnToMenu} ({remainingTime})
+        {t.common.returnToMenu}
       </Button>
     </motion.div>
   );
