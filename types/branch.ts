@@ -7,6 +7,7 @@ export enum OrderType {
 export interface Language {
     Key: string;
     Code: string;
+    Dir: string;
     Name: string;
     IsActive: boolean;
 }

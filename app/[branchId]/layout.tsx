@@ -20,11 +20,11 @@ export default function BranchLayout({
   children: React.ReactNode;
   params: { branchId: string };
 }) {
-  const { fetchBranchData, isLoading, reset } = useBranchStore();
+  const { fetchBranchData, isLoading, reset, selectedLanguage } = useBranchStore();
   const router = useRouter();
   const { clearCart } = useCartStore();
   const pathname = usePathname();
-
+     
   useEffect(() => {
     console.log(params?.branchId)
     if (params?.branchId) {
@@ -50,13 +50,13 @@ export default function BranchLayout({
       }}
     >
       {isLoading ? (
-        <html lang="tr" suppressHydrationWarning>
+        <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
           <body className={inter.className}>
             <Loader />
           </body>
         </html>
       ) : (
-        <html lang="tr" suppressHydrationWarning>
+        <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
           <body className={inter.className}>
             <div className="flex-1 flex flex-col">
               {children}
