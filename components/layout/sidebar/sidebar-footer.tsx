@@ -10,12 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion } from 'framer-motion';
 import { ChevronDown, Palette } from 'lucide-react';
-import { themes } from '@/lib/themes';
 import { useThemeStore } from '@/store/theme';
-import { cn } from '@/lib/utils';
 
 export function SidebarFooter() {
-  const { branchData, selectedLanguage, setSelectedLanguage } = useBranchStore();
+  const { branchData, selectedLanguage, setSelectedLanguage, t } = useBranchStore();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const { currentTheme, setTheme: setColorTheme } = useThemeStore();
@@ -39,7 +37,7 @@ export function SidebarFooter() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-muted-foreground font-medium">Dil Seçimi</p>
+                  <p className="text-xs text-muted-foreground font-medium">{t.common.languageSelection}</p>
                   <p className="font-medium">{selectedLanguage?.Name || 'Seçiniz'}</p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-muted-foreground" />

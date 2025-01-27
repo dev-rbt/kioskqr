@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface TimerContextType {
   remainingTime: number;
@@ -11,15 +12,23 @@ const TimerContext = createContext<TimerContextType | undefined>(undefined);
 export function TimerProvider({
   children,
   timeout,
-  onTimeout
+  onTimeout,
+  excludedPaths = []
 }: {
   children: React.ReactNode;
   timeout: number;
   onTimeout: () => Promise<void>;
+  excludedPaths?: string[];
 }) {
   const [remainingTime, setRemainingTime] = useState(timeout / 1000);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Eğer mevcut path excluded ise timer'ı başlatma
+    if (excludedPaths.some(path => pathname?.includes(path))) {
+      return;
+    }
+
     let timeoutId: NodeJS.Timeout;
     let intervalId: NodeJS.Timeout;
     let isActive = true;
@@ -70,7 +79,7 @@ export function TimerProvider({
         document.removeEventListener(event, resetTimer);
       });
     };
-  }, [timeout, onTimeout]);
+  }, [timeout, onTimeout, excludedPaths, pathname]);
 
   return (
     <TimerContext.Provider value={{ remainingTime }}>

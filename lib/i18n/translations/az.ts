@@ -59,6 +59,8 @@ export const az = {
     changePaymentMethod: "Ödəniş Üsulunu Dəyişdir",
     deviceNumberZeroError: "Cihaz nömrəsi 0 ola bilməz",
     paymentPrinting: "Ödəniş Çap Olunur",
+    dineIn: "Burada yeyəcəm",
+    takeout: "Paket edəcəm",
     productNote: "Məhsul Qeydi",
     enterProductNote: "Məhsul qeydinizi bura yaza bilərsiniz...",
     orderNotes: "Sifariş Qeydləri",

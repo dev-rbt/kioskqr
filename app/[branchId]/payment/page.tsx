@@ -55,9 +55,15 @@ export default function PaymentPage() {
   const initialStep = searchParams?.get('stepNumber') ? parseInt(searchParams.get('stepNumber')!) : 1;
   const [step, setStep] = useState(initialStep);
   const [error, setError] = useState('');
+  const { setInputRef, setIsOpen, inputRef } = useKeyboardStore();
   const noteInputRef = useRef<HTMLTextAreaElement>(null);
-  const { setInputRef, setIsOpen } = useKeyboardStore();
-  const [note, setNote] = useState(cart.Notes || '');
+
+  useEffect(() => {
+    if (noteInputRef.current) {
+      noteInputRef.current.value = cart.Notes || '';
+      setInputRef(noteInputRef.current);
+    }
+  }, []);
 
   const handleFocus = useCallback(() => {
     if (noteInputRef.current) {
@@ -66,38 +72,12 @@ export default function PaymentPage() {
     }
   }, [setInputRef, setIsOpen]);
 
-  const handleNoteChange = useCallback(async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newNote = e.target.value;
-    setNote(newNote);
-    console.log('Updating note to:', newNote);
-    try {
-      await updateCart({
-        Notes: newNote
-      });
-      console.log('Note updated in cart');
-    } catch (error) {
-      console.error('Failed to update cart notes:', error);
+  const handleNextStep = useCallback(() => {
+    if (noteInputRef.current) {
+      updateCart({ Notes: noteInputRef.current.value });
     }
+    setStep(2);
   }, [updateCart]);
-
-  const handleNoteInput = useCallback(async (e: React.FormEvent<HTMLTextAreaElement>) => {
-    const target = e.target as HTMLTextAreaElement;
-    const newNote = target.value;
-    setNote(newNote);
-    console.log('Updating note to:', newNote);
-    try {
-      await updateCart({
-        Notes: newNote
-      });
-      console.log('Note updated in cart');
-    } catch (error) {
-      console.error('Failed to update cart notes:', error);
-    }
-  }, [updateCart]);
-
-  useEffect(() => {
-    setNote(cart.Notes || '');
-  }, [cart.Notes]);
 
   const handleDeviceNumberChange = async (digit: string) => {
     if (digit === 'delete') {
@@ -105,12 +85,10 @@ export default function PaymentPage() {
       setError('');
     } else {
       const newNumber = cart.CallNumber + digit;
-      // Check if trying to enter just 0
       if (newNumber === '0') {
         setError(t.common.deviceNumberZeroError);
         return;
       }
-      // Remove leading zeros and update
       const strippedNumber = newNumber.replace(/^0+/, '');
       await updateCart({ CallNumber: strippedNumber });
       setError('');
@@ -128,6 +106,7 @@ export default function PaymentPage() {
 
   const handlePaymentMethodSelect = async (paymentMethod: PaymentMethod) => {
     await updateCart({
+      Notes: noteInputRef.current?.value,
       PaymentType: paymentMethod.Type as 'CREDIT_CARD' | 'MEAL_CARD',
       PaymentMethod: {
         Key: paymentMethod.PaymentMethodKey,
@@ -138,22 +117,6 @@ export default function PaymentPage() {
       }
     });
     router.push('transaction');
-  };
-
-  const handleOrderNotesSubmit = async () => {
-    try {
-      await updateCart({ ...cart, Notes: note });
-      setStep(2);
-    } catch (error) {
-      console.error('Error updating cart:', error);
-    }
-  };
-
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      await handleOrderNotesSubmit();
-    }
   };
 
   return (
@@ -260,21 +223,21 @@ export default function PaymentPage() {
                     <Receipt className="w-10 h-10 text-white" />
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="note" className="text-sm font-medium">{t.common.orderNotes}</label>
                     <textarea
                       id="note"
-                      value={note}
-                      onChange={handleNoteChange}
-                      onInput={handleNoteInput}
+                      defaultValue={cart.Notes}
+                      value={cart.Notes}
                       onFocus={handleFocus}
                       ref={noteInputRef}
-                      placeholder={t.common.enterProductNote}
+                      placeholder={t.common.orderNotes}
                       className="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
                   <Button
-                    onClick={handleOrderNotesSubmit}
+                    onClick={handleNextStep}
                     className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl gap-2"
                   >
                     {t.common.nextButton}
@@ -364,7 +327,9 @@ export default function PaymentPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setStep(1)}
+                        onClick={() => {
+                          setStep(1);
+                        }}
                         className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 flex-shrink-0"
                       >
                         {t.common.edit}
@@ -391,7 +356,10 @@ export default function PaymentPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setStep(2)}
+                        onClick={() => {
+                          updateCart({ CallNumber: '' });
+                          setStep(2);
+                        }}
                         className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                       >
                         {t.common.edit}

@@ -59,6 +59,8 @@ export const ru = {
     changePaymentMethod: "Изменить способ оплаты",
     deviceNumberZeroError: "Номер устройства не может быть 0",
     paymentPrinting: "Печать чека",
+    dineIn: "Поесть в ресторане",
+    takeout: "Взять с собой",
     productNote: "Примечание к продукту",
     enterProductNote: "Здесь вы можете написать примечание к продукту...",
     orderNotes: "Примечания к заказу",

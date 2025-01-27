@@ -34,10 +34,10 @@ export default function BranchLayout({
   if (!params?.branchId) {
     return null;
   }
-
   return (
     <TimerProvider
       timeout={INACTIVITY_TIMEOUT}
+      excludedPaths={[`/${params?.branchId}/payment`]}
       onTimeout={async () => {
         const branchId = params?.branchId?.toString();
         if (branchId) {
