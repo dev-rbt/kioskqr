@@ -106,7 +106,7 @@ export default function PaymentPage() {
 
   const handlePaymentMethodSelect = async (paymentMethod: PaymentMethod) => {
     await updateCart({
-      Notes: noteInputRef.current?.value,
+      Notes: cart.Notes,
       PaymentType: paymentMethod.Type as 'CREDIT_CARD' | 'MEAL_CARD',
       PaymentMethod: {
         Key: paymentMethod.PaymentMethodKey,
