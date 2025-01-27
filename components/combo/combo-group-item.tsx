@@ -18,9 +18,10 @@ interface ComboGroupItemProps {
 }
 
 export function ComboGroupItem({ item, group, onSelect, totalGroupQuantity, selectedQuantity }: ComboGroupItemProps) {
-  const {selectedLanguage} = useBranchStore();
+  const {branchData, selectedLanguage} = useBranchStore();
   const [isSelected, setIsSelected] = useState(selectedQuantity > 0);
   const translation = item.Translations?.[selectedLanguage?.Key || ''];
+  const turkishTranslation = item.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US'];
   
   const canIncrease = group.MaxQuantity === 0 || (totalGroupQuantity < group.MaxQuantity);
   
@@ -58,7 +59,7 @@ export function ComboGroupItem({ item, group, onSelect, totalGroupQuantity, sele
         {/* Product Image */}
         <div className="relative h-40 overflow-hidden">
           <img
-            src={translation?.ImageUrl || getNextProductImage()}
+            src={translation?.ImageUrl || turkishTranslation?.ImageUrl || getNextProductImage()}
             alt={translation?.Name || item.OriginalName}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
