@@ -1,6 +1,7 @@
 "use client";
 
-import { ComboGroup } from '@/types/branch';
+import useBranchStore from '@/store/branch';
+import { ComboGroup, OrderType } from '@/types/branch';
 import { ComboSelections } from '@/types/combo';
 
 export function calculateGroupProgress(
@@ -25,10 +26,12 @@ export function calculateTotalPrice(
   basePrice: number,
   selections: ComboSelections
 ): number {
+  const {selectedOrderType} = useBranchStore.getState();
   const extraPrice = Object.values(selections)
     .flat()
     .reduce((total, selection) => 
-      total + (selection.Item.ExtraPriceTakeOut * selection.Quantity), 0);
+      total + (selectedOrderType == OrderType.DELIVERY ? selection.Item.ExtraPriceDelivery * selection.Quantity 
+                  : selection.Item.ExtraPriceTakeOut * selection.Quantity), 0);
 
   return basePrice + extraPrice;
 }

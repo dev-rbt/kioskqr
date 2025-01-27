@@ -8,7 +8,7 @@ import { AddToCartButton } from './product-card/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
 import { UtensilsCrossed, Check, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { Product } from '@/types/branch';
+import { OrderType, Product } from '@/types/branch';
 import { useState } from 'react';
 import useBranchStore from '@/store/branch';
 import { useCartStore } from '@/store/cart';
@@ -22,7 +22,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   const [showAddedAnimation, setShowAddedAnimation] = useState(false);
-  const {branchData, selectedLanguage, t} = useBranchStore();
+  const {branchData, selectedLanguage, t, selectedOrderType} = useBranchStore();
   const {addCartProduct} = useCartStore();
   let productTranslation = product.Translations?.[selectedLanguage?.Key || 'en-US'];
   
@@ -34,7 +34,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
       TransactionKey: uuidv4(),
       MenuItemKey: product.ProductID,
       MenuItemText: productTranslation?.Name || product.OriginalName,
-      Price: product.TakeOutPrice,
+      Price: selectedOrderType == OrderType.DELIVERY ? product.DeliveryPrice : product.TakeOutPrice,
       Quantity: 1,
       TaxPercent: product.TaxPercent,
       OrderByWeight: product.OrderByWeight,
@@ -104,7 +104,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               imageUrl={productTranslation?.ImageUrl || turkishTranslation?.ImageUrl} 
               alt={productTranslation?.Name || product.OriginalName} 
             />
-            <ProductPrice price={product.TakeOutPrice} />
+            <ProductPrice price={selectedOrderType == OrderType.DELIVERY ? product.DeliveryPrice : product.TakeOutPrice} />
             {product.IsCombo && (
               <Badge 
                 className="absolute top-4 left-4 text-primary-foreground gap-1.5"

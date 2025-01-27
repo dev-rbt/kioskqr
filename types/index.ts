@@ -29,5 +29,4 @@ export interface Product {
 }
 
 // Re-export other types
-export type { CartItem } from './cart';
 export type { ComboSelections } from './combo';

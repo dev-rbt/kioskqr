@@ -1,0 +1,25 @@
+.custom-keyboard {
+  width: 100% !important;
+  background: transparent !important;
+  padding: 5px;
+}
+
+.custom-keyboard .hg-button {
+  height: 60px !important;
+  font-size: 20px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-keyboard .hg-button:active {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.custom-keyboard .hg-button.hg-red {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: rgb(239, 68, 68) !important;
+}
+
+.custom-keyboard .hg-button.hg-red:active {
+  background: rgba(239, 68, 68, 0.2) !important;
+}

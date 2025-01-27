@@ -12,8 +12,11 @@ import { ShoppingBag } from 'lucide-react';
 import { CartItems } from './cart/cart-items';
 import { CartTotal } from './cart/cart-total';
 import { CartEmpty } from './cart/cart-empty';
+import { CartNotes } from './cart/cart-notes';
 import { motion, AnimatePresence } from 'framer-motion';
 import useBranchStore from "@/store/branch";
+import { useState } from 'react';
+import { useKeyboardStore } from "@/components/ui/virtual-keyboard";
 
 interface CartSheetProps {
   children?: React.ReactNode;
@@ -23,7 +26,10 @@ interface CartSheetProps {
 export function CartSheet({ children, className }: CartSheetProps) {
   const { cart } = useCartStore();
   const { t } = useBranchStore();
+  const { isOpen: isKeyboardOpen } = useKeyboardStore();
   const productCount = cart.Items.length;
+  const [isOpen, setIsOpen] = useState(true);
+
 
   return (
     <Sheet>
@@ -48,7 +54,26 @@ export function CartSheet({ children, className }: CartSheetProps) {
           )}
         </div>
       </SheetTrigger>
-      <SheetContent className="flex flex-col h-full w-full sm:max-w-lg z-[60] bg-gradient-to-br from-background via-background/98 to-background/95 border-l-0 shadow-2xl">
+      <SheetContent
+        className="flex flex-col h-full w-full sm:max-w-lg z-[60] bg-gradient-to-br from-background via-background/98 to-background/95 border-l-0 shadow-2xl"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => {
+          if (isKeyboardOpen) {
+            e.preventDefault();
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          if (isKeyboardOpen) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          if (isKeyboardOpen) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+      >
         <SheetHeader className="space-y-4 pb-6 border-b relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-primary/5 to-transparent opacity-50" />
           <div className="relative space-y-1">
@@ -65,8 +90,8 @@ export function CartSheet({ children, className }: CartSheetProps) {
             </p>
           </div>
         </SheetHeader>
-        
-        <motion.div 
+
+        <motion.div
           className="flex-1 overflow-auto py-6 px-1 custom-scrollbar"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

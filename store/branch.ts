@@ -1,24 +1,52 @@
 import { create } from 'zustand';
-import { BranchData, Language } from '@/types/branch';
+import { BranchData, Language, OrderType } from '@/types/branch';
 import axios from 'axios';
 import { Translation, translations } from '@/lib/i18n';
 
 interface BranchStore {
     branchData: BranchData | null;
     selectedLanguage: Language | null;
+    selectedOrderType: OrderType | null;
     t: Translation;
     isLoading: boolean;
     error: string | null;
     fetchBranchData: (branchId: string) => Promise<void>;
     setSelectedLanguage: (branchId: string, language: Language) => Promise<void>;
+    setSelectedOrderType: (branchId: string, orderType: OrderType | null) => void;
+    reset: (branchId: string | undefined) => Promise<void>;
 }
 
 const useBranchStore = create<BranchStore>((set) => ({
     branchData: null,
     isLoading: true,
     selectedLanguage: null,
+    selectedOrderType: null,
     t: translations['tr' as keyof typeof translations],
     error: null,
+    reset: async (branchId: string | undefined) => {
+        return new Promise<void>((resolve) => {
+            set({
+                branchData: null,
+                selectedLanguage: null,
+                selectedOrderType: null,
+                isLoading: true,
+                error: null,
+                t: translations['tr' as keyof typeof translations]
+            });
+            if (branchId) {
+                localStorage.removeItem(`branch_orderType_${branchId}`);
+            }
+            resolve();
+        });
+    },
+    setSelectedOrderType: (branchId: string, orderType: OrderType | null) => {
+        set((prev) => ({ ...prev, selectedOrderType: orderType }));
+        if(orderType){
+            localStorage.setItem(`branch_orderType_${branchId}`, orderType);
+        }else{
+            localStorage.removeItem(`branch_orderType_${branchId}`);
+        }
+    },
     setSelectedLanguage: async (branchId: string, language: Language) => {
         try {
             const languageCode = language.Code.toLowerCase() as keyof typeof translations;

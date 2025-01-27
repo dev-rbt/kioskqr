@@ -1,3 +1,4 @@
+import { OrderType } from "./branch";
 
 export interface CartProduct {
     TransactionKey?: string;
@@ -23,7 +24,6 @@ export interface PaymentMethod {
     Type: string;
 }
 
-export type OrderType = 'Delivery' | 'TakeOut';
 export type PaymentType = 'CREDIT_CARD' | 'MEAL_CARD';
 
 export interface Cart {
@@ -33,7 +33,7 @@ export interface Cart {
     DiscountOrderAmount?: number;
     Notes?: string;
     CallNumber?: string;
-    OrderType?: OrderType;
+    OrderType?: OrderType | null;
     PaymentType?: PaymentType;
     Items?: CartProduct[];
     PaymentMethod?: PaymentMethod;

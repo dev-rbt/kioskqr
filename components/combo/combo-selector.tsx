@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { ComboSelections } from '@/types/combo';
 import { Button } from '../ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -11,20 +11,24 @@ import { calculateTotalPrice, calculateGroupProgress } from '@/lib/utils/combo-s
 import { ComboGroup as ComboGroupType, ComboItem } from '@/types/branch';
 import useBranchStore from '@/store/branch';
 import { getNextProductImage } from '@/lib/utils/mock-images';
+import { useKeyboardStore } from '@/components/ui/virtual-keyboard';
 
 interface ComboSelectorProps {
   groups: ComboGroupType[];
   basePrice: number;
-  onAddToCart: (selections: ComboSelections) => void;
+  onAddToCart: (selections: ComboSelections, note: string) => void;
 }
 
 export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorProps) {
   const [selections, setSelections] = useState<ComboSelections>({});
   const [activeGroupIndex, setActiveGroupIndex] = useState(0);
+  const [note, setNote] = useState("");
   const { toast } = useToast();
   const { t } = useBranchStore();
   const {selectedLanguage} = useBranchStore();
   const allGroups = [...groups, { OriginalName: "Siparişi Tamamla", IsForcedGroup: false, ForcedQuantity: 0, MaxQuantity: 0, Items: [] }];
+  const noteInputRef = useRef<HTMLTextAreaElement>(null);
+  const { setInputRef, setIsOpen } = useKeyboardStore();
 
   const handleSelect = useCallback((groupName: string, item: ComboItem, quantity: number) => {
     setSelections(prev => {
@@ -111,8 +115,25 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
       }
     }
 
-    onAddToCart(selections);
-  }, [groups, selections, onAddToCart, toast]);
+    onAddToCart({ ...selections }, note);
+  }, [groups, selections, onAddToCart, toast, note]);
+
+  const handleFocus = useCallback(() => {
+    if (noteInputRef.current) {
+      setInputRef(noteInputRef.current);
+      setIsOpen(true);
+    }
+  }, [setInputRef, setIsOpen]);
+
+  const handleNoteChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNote(e.target.value);
+  }, []);
+
+  const handleNoteInput = useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+    setNote(target.value);
+  }, []);
+
 
   return (
     <motion.div 
@@ -206,18 +227,33 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
                   ))}
                 </div>
                 <div className="pt-4 border-t">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-lg font-medium">{t.common.totalAmount}</div>
-                    <div className="text-2xl font-bold">{calculateTotalPrice(basePrice, selections)} ₺</div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label htmlFor="note" className="text-sm font-medium">{t.common.productNote}</label>
+                      <textarea
+                        id="note"
+                        value={note}
+                        onChange={handleNoteChange}
+                        onInput={handleNoteInput}
+                        onFocus={handleFocus}
+                        ref={noteInputRef}
+                        placeholder={t.common.enterProductNote}
+                        className="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-lg font-medium">{t.common.totalAmount}</div>
+                      <div className="text-2xl font-bold">{calculateTotalPrice(basePrice, selections)} ₺</div>
+                    </div>
+                    <Button 
+                      className="w-full gap-2" 
+                      size="lg"
+                      onClick={handleAddToCart}
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      {t.common.addToCart}
+                    </Button>
                   </div>
-                  <Button 
-                    className="w-full gap-2" 
-                    size="lg"
-                    onClick={handleAddToCart}
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    {t.common.addToCart}
-                  </Button>
                 </div>
               </div>
             </div>
@@ -231,8 +267,6 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
           )}
         </motion.div>
       </div>
-
-
     </motion.div>
   );
 }

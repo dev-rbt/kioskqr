@@ -29,9 +29,11 @@ export function CartItemCard({ item }: CartItemCardProps) {
           <h3 className="font-semibold text-lg bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
             {item.MenuItemText}
           </h3>
-          <p className="text-sm text-muted-foreground/80 line-clamp-1 mt-0.5">
-            {item.Notes}
-          </p>
+          {item.Notes && (
+            <p className="text-sm text-muted-foreground/80 mt-0.5">
+              Not: {item.Notes}
+            </p>
+          )}
           
           {item.IsMainCombo && item?.Items.length > 0 && (
             <div className="mt-3 pt-3 border-t border-border/50">

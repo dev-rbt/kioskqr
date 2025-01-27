@@ -20,7 +20,8 @@ export const ar = {
     requiredSelectionCount: "اختيارات مطلوبة",
     selectedProducts: "المنتجات المختارة",
     totalAmount: "المبلغ الإجمالي",
-    allMenus: "القائمة الكاملة",
+    amountToPay: "المبلغ المستحق للدفع",
+    allMenus: "جميع القوائم",
     viewAllCategories: "تصفح الفئات",
     viewProducts: "تصفح المنتجات",
     showCart: "عرض السلة",
@@ -57,7 +58,14 @@ export const ar = {
     tapToViewMenu: "انقر لعرض القائمة",
     changePaymentMethod: "تغيير طريقة الدفع",
     deviceNumberZeroError: "لا يمكن أن يكون رقم الجهاز 0",
-    paymentPrinting: "جاري طباعة الإيصال"
+    paymentPrinting: "جاري طباعة الإيصال",
+    productNote: "ملاحظة المنتج",
+    enterProductNote: "يمكنك كتابة ملاحظة المنتج هنا...",
+    orderNotes: "ملاحظات الطلب",
+    enterOrderNotes: "يمكنك كتابة ملاحظات طلبك هنا...",
+    noOrderNotes: "لم تتم إضافة ملاحظات للطلب",
+    edit: "تعديل",
+    done: "تم"
   },
   product: {
     spicy: "حار",

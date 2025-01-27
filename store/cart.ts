@@ -24,7 +24,7 @@ export const useCartStore = create<CartStore>()(
       DiscountLineAmount: 0,
       Notes: '',
       CallNumber: '',
-      OrderType: 'Delivery',
+      OrderType: null,
       PaymentType: 'CREDIT_CARD',
       Items: [],
       PaymentMethod: {
@@ -211,7 +211,7 @@ export const useCartStore = create<CartStore>()(
           DiscountLineAmount: 0,
           Notes: '',
           CallNumber: '',
-          OrderType: 'Delivery',
+          OrderType: null,
           PaymentType: 'CREDIT_CARD',
           Items: [],
           PaymentMethod: {

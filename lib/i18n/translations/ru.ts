@@ -20,6 +20,7 @@ export const ru = {
     requiredSelectionCount: "выборов необходимо",
     selectedProducts: "Выбранные продукты",
     totalAmount: "Общая сумма",
+    amountToPay: "Сумма к оплате",
     allMenus: "Все меню",
     viewAllCategories: "Просмотр категорий",
     viewProducts: "Просмотр продуктов",
@@ -57,7 +58,14 @@ export const ru = {
     tapToViewMenu: "Нажмите, чтобы посмотреть меню",
     changePaymentMethod: "Изменить способ оплаты",
     deviceNumberZeroError: "Номер устройства не может быть 0",
-    paymentPrinting: "Печать чека"
+    paymentPrinting: "Печать чека",
+    productNote: "Примечание к продукту",
+    enterProductNote: "Здесь вы можете написать примечание к продукту...",
+    orderNotes: "Примечания к заказу",
+    enterOrderNotes: "Здесь вы можете написать примечания к заказу...",
+    noOrderNotes: "Примечания к заказу не добавлены",
+    edit: "Изменить",
+    done: "Готово"
   },
   product: {
     spicy: "Острый",

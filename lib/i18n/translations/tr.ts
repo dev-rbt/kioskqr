@@ -20,6 +20,7 @@ export const tr = {
     requiredSelectionCount: "adet seçim gerekli",
     selectedProducts: "Seçilen Ürünler",
     totalAmount: "Toplam Tutar",
+    amountToPay: "Ödenecek Tutar",
     allMenus: "Tüm Menü",
     viewAllCategories: "Kategorilere Göz Atın",
     viewProducts: "Ürünlere göz atın",
@@ -57,7 +58,16 @@ export const tr = {
     tapToViewMenu: "Menüyü görüntülemek için dokunun",
     changePaymentMethod: "Ödeme Yöntemini Değiştir",
     deviceNumberZeroError: "Cihaz numarası 0 seçilemez",
-    paymentPrinting: "Ödeme Yazdırılıyor"
+    paymentPrinting: "Ödeme Yazdırılıyor",
+    dineIn: "Burada Yiyeceğim",
+    takeout: "Paket Yaptıracağım",
+    orderNotes: "Siparişinize Not Eklemek İster misiniz?",
+    enterOrderNotes: "Sipariş notunuzu buraya yazabilirsiniz...",
+    noOrderNotes: "Sipariş notu girilmedi",
+    edit: "Değiştir",
+    done: "Tamam",
+    productNote: "Ürün Notu",
+    enterProductNote: "Ürün notunuzu buraya yazabilirsiniz..."
   },
   product: {
     spicy: "Acılı",
