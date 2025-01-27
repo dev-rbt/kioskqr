@@ -3,7 +3,7 @@
 import useBranchStore from '@/store/branch';
 import { Inter } from 'next/font/google';
 import { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import Loader from '@/components/ui/loader';
 import { TimerProvider } from '@/contexts/timer-context';
 import { useCartStore } from '@/store/cart';
@@ -23,6 +23,7 @@ export default function BranchLayout({
   const { fetchBranchData, isLoading, reset } = useBranchStore();
   const router = useRouter();
   const { clearCart } = useCartStore();
+  const pathname = usePathname();
 
   useEffect(() => {
     console.log(params?.branchId)
