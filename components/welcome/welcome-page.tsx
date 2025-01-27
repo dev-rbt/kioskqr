@@ -113,7 +113,7 @@ export default function WelcomePage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/tavukdunyasi2.wmv" type="video/mp4" />
+          <source src="/tavukdunyasi2.wmv" type="video/wmv" />
         </video>
       </div>
 
