@@ -9,25 +9,29 @@ import { CefSharpMessageType } from '@/types/cefsharp.d';
 import { useEffect, useState } from 'react';
 import { Translation } from '@/lib/i18n';
 import useBranchStore from '@/store/branch';
+import { useTimer } from '@/contexts/timer-context';
 
-const PaymentSuccess = ({ amount, onReturn, t }: { amount: number; onReturn: () => void, t: Translation }) => (
-  <motion.div
-    key="complete"
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.9 }}
-    className="space-y-8 backdrop-blur-sm bg-white/30 p-8 rounded-3xl shadow-xl border border-white/20"
-  >
-    <div className="text-center space-y-2 bg-white/20 rounded-2xl p-4 backdrop-blur-sm">
-      <div className="text-3xl font-bold text-primary">₺ {amount.toFixed(2)}</div>
-      <div className="text-sm text-muted-foreground font-medium">{t.common.paymentCompleted}</div>
-    </div>
-    <Button onClick={onReturn} className="gap-2">
-      <CheckCircle2 className="h-4 w-4" />
-      {t.common.returnToMenu}
-    </Button>
-  </motion.div>
-);
+const PaymentSuccess = ({ amount, onReturn, t }: { amount: number; onReturn: () => void, t: Translation }) => {
+  const { remainingTime } = useTimer();
+
+  return (
+    <motion.div
+      key="complete"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="flex flex-col items-center justify-center gap-4 text-center"
+    >
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold">{t.common.paymentCompleted}</h2>
+        <p className="text-muted-foreground">{amount} TL</p>
+      </div>
+      <Button onClick={onReturn} className="gap-2">
+        <CheckCircle2 className="h-4 w-4" />
+        {t.common.returnToMenu} ({remainingTime})
+      </Button>
+    </motion.div>
+  );
+};
 
 const PaymentPending = ({ amount,t  }: { amount: number; t: Translation }) => (
   <motion.div
@@ -219,7 +223,7 @@ export default function PaymentTransactionPage() {
 
                   switch (cefSharpMessage.Type) {
                     case CefSharpMessageType.PAYMENT_SUCCESS:
-                      return <PaymentSuccess amount={cart.AmountDue} onReturn={handleReturnToMenu} t={t}/>;
+                      return <PaymentSuccess amount={cart.AmountDue} onReturn={handleReturnToMenu} t={t} />;
                     case CefSharpMessageType.PAYMENT_PENDING:
                       return <PaymentPending amount={cart.AmountDue} t={t} />;
                     case CefSharpMessageType.PAYMENT_PRINTING:

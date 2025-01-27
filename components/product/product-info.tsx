@@ -3,13 +3,15 @@
 import { Star } from 'lucide-react';
 import { ProductBadge } from '@/components/ui/product-badge';
 import { Price } from '@/components/ui/price';
-import { Product } from '@/types/branch';
+import { OrderType, Product } from '@/types/branch';
+import useBranchStore from '@/store/branch';
 
 interface ProductInfoProps {
   product: Product;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const {selectedOrderType} = useBranchStore();
   return (
     <div className="space-y-4">
       {/* Rating */}
@@ -23,7 +25,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {/* Price */}
       <div>
         <Price 
-          amount={product.TakeOutPrice} 
+          amount={(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice} 
           className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
         />
         {product.IsCombo && (

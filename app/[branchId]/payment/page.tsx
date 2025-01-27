@@ -3,13 +3,11 @@
 import { useCartStore } from '@/store/cart';
 import { motion } from 'framer-motion';
 import {
-  CreditCard,
   ArrowLeft,
   ArrowRight,
   CreditCardIcon,
   Banknote,
   CircleDollarSign,
-  Contact,
   Wallet,
   Receipt,
   Store,
@@ -19,9 +17,10 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { CurrencyDisplay } from '@/components/payment/currency-display';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import useBranchStore from '@/store/branch';
 import { PaymentMethod } from '@/types/branch';
+import { useKeyboardStore } from '@/components/ui/virtual-keyboard';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -56,6 +55,49 @@ export default function PaymentPage() {
   const initialStep = searchParams?.get('stepNumber') ? parseInt(searchParams.get('stepNumber')!) : 1;
   const [step, setStep] = useState(initialStep);
   const [error, setError] = useState('');
+  const noteInputRef = useRef<HTMLTextAreaElement>(null);
+  const { setInputRef, setIsOpen } = useKeyboardStore();
+  const [note, setNote] = useState(cart.Notes || '');
+
+  const handleFocus = useCallback(() => {
+    if (noteInputRef.current) {
+      setInputRef(noteInputRef.current);
+      setIsOpen(true);
+    }
+  }, [setInputRef, setIsOpen]);
+
+  const handleNoteChange = useCallback(async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newNote = e.target.value;
+    setNote(newNote);
+    console.log('Updating note to:', newNote);
+    try {
+      await updateCart({
+        Notes: newNote
+      });
+      console.log('Note updated in cart');
+    } catch (error) {
+      console.error('Failed to update cart notes:', error);
+    }
+  }, [updateCart]);
+
+  const handleNoteInput = useCallback(async (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+    const newNote = target.value;
+    setNote(newNote);
+    console.log('Updating note to:', newNote);
+    try {
+      await updateCart({
+        Notes: newNote
+      });
+      console.log('Note updated in cart');
+    } catch (error) {
+      console.error('Failed to update cart notes:', error);
+    }
+  }, [updateCart]);
+
+  useEffect(() => {
+    setNote(cart.Notes || '');
+  }, [cart.Notes]);
 
   const handleDeviceNumberChange = async (digit: string) => {
     if (digit === 'delete') {
@@ -81,7 +123,7 @@ export default function PaymentPage() {
       return;
     }
     setError('');
-    setStep(2);
+    setStep(3);
   };
 
   const handlePaymentMethodSelect = async (paymentMethod: PaymentMethod) => {
@@ -96,6 +138,22 @@ export default function PaymentPage() {
       }
     });
     router.push('transaction');
+  };
+
+  const handleOrderNotesSubmit = async () => {
+    try {
+      await updateCart({ ...cart, Notes: note });
+      setStep(2);
+    } catch (error) {
+      console.error('Error updating cart:', error);
+    }
+  };
+
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      await handleOrderNotesSubmit();
+    }
   };
 
   return (
@@ -127,7 +185,7 @@ export default function PaymentPage() {
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-gray-600">{t.common.totalAmount}</span>
-                <div className="flex items-center gap-1 font-bold">
+                <div className="flex items-baseline gap-1 font-bold">
                   <span className="text-emerald-600 text-lg">₺</span>
                   <span className="text-2xl text-gray-900">{cart.AmountDue.toFixed(2)}</span>
                 </div>
@@ -143,18 +201,37 @@ export default function PaymentPage() {
               <div className="h-1 bg-gray-200 rounded-full">
                 <div
                   className="h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-                  style={{ width: step === 1 ? '50%' : '100%' }}
+                  style={{ width: step === 1 ? '33%' : step === 2 ? '66%' : '100%' }}
                 />
               </div>
               <div className="flex justify-between -mt-2">
-                <div className="flex flex-col items-center">
-                  <div className={`w-4 h-4 rounded-full ${step >= 1 ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                  <span className="text-sm font-medium mt-2 text-gray-600">{t.common.selectedDevice}</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className={`w-4 h-4 rounded-full ${step >= 2 ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                  <span className="text-sm font-medium mt-2 text-gray-600">{t.common.paymentMethod}</span>
-                </div>
+                <button
+                  onClick={() => setStep(1)}
+                  className="flex flex-col items-center group cursor-pointer transition-all"
+                >
+                  <div className={`w-4 h-4 rounded-full transition-colors ${step >= 1 ? 'bg-emerald-500 group-hover:bg-emerald-600' : 'bg-gray-300 group-hover:bg-gray-400'}`} />
+                  <span className={`text-sm font-medium mt-2 transition-colors ${step >= 1 ? 'text-emerald-600 group-hover:text-emerald-700' : 'text-gray-600 group-hover:text-gray-700'}`}>
+                    {t.common.orderNotes}
+                  </span>
+                </button>
+                <button
+                  onClick={() => cart.Notes && setStep(2)}
+                  className={`flex flex-col items-center transition-all ${cart.Notes ? 'cursor-pointer group' : 'cursor-not-allowed opacity-50'}`}
+                >
+                  <div className={`w-4 h-4 rounded-full transition-colors ${step >= 2 ? 'bg-emerald-500 group-hover:bg-emerald-600' : 'bg-gray-300 group-hover:bg-gray-400'}`} />
+                  <span className={`text-sm font-medium mt-2 transition-colors ${step >= 2 ? 'text-emerald-600 group-hover:text-emerald-700' : 'text-gray-600 group-hover:text-gray-700'}`}>
+                    {t.common.selectedDevice}
+                  </span>
+                </button>
+                <button
+                  onClick={() => cart.Notes && cart.CallNumber && setStep(3)}
+                  className={`flex flex-col items-center transition-all ${cart.Notes && cart.CallNumber ? 'cursor-pointer group' : 'cursor-not-allowed opacity-50'}`}
+                >
+                  <div className={`w-4 h-4 rounded-full transition-colors ${step >= 3 ? 'bg-emerald-500 group-hover:bg-emerald-600' : 'bg-gray-300 group-hover:bg-gray-400'}`} />
+                  <span className={`text-sm font-medium mt-2 transition-colors ${step >= 3 ? 'text-emerald-600 group-hover:text-emerald-700' : 'text-gray-600 group-hover:text-gray-700'}`}>
+                    {t.common.paymentMethod}
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -166,13 +243,53 @@ export default function PaymentPage() {
             className="space-y-16"
           >
             {step === 1 ? (
-              // Step 1: Device Number Input
+              // Step 1: Order Notes Input
               <motion.div
                 variants={itemVariants}
                 className="max-w-lg mx-auto text-center space-y-8"
               >
                 <div className="space-y-4">
-                  <span className="text-emerald-600 font-medium text-lg">{t.common.step} 1/2</span>
+                  <span className="text-emerald-600 font-medium text-lg">{t.common.step} 1/3</span>
+                  <h1 className="text-4xl font-bold text-gray-900">
+                    {t.common.orderNotes}
+                  </h1>
+                </div>
+
+                <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-xl space-y-6">
+                  <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                    <Receipt className="w-10 h-10 text-white" />
+                  </div>
+
+                  <div className="space-y-4">
+                    <textarea
+                      id="note"
+                      value={note}
+                      onChange={handleNoteChange}
+                      onInput={handleNoteInput}
+                      onFocus={handleFocus}
+                      ref={noteInputRef}
+                      placeholder={t.common.enterProductNote}
+                      className="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleOrderNotesSubmit}
+                    className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl gap-2"
+                  >
+                    {t.common.nextButton}
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              </motion.div>
+            ) : step === 2 ? (
+              // Step 2: Device Number Input
+              <motion.div
+                variants={itemVariants}
+                className="max-w-lg mx-auto text-center space-y-8"
+              >
+                <div className="space-y-4">
+                  <span className="text-emerald-600 font-medium text-lg">{t.common.step} 2/3</span>
                   <h1 className="text-4xl font-bold text-gray-900">
                     {t.common.selectDeviceNumber}
                   </h1>
@@ -196,8 +313,8 @@ export default function PaymentPage() {
                           key={digit}
                           onClick={async () => await handleDeviceNumberChange(digit.toString())}
                           className={`h-14 text-2xl font-semibold ${digit === 'delete'
-                              ? 'bg-red-500 hover:bg-red-600 text-white col-span-1'
-                              : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-200'
+                            ? 'bg-red-500 hover:bg-red-600 text-white col-span-1'
+                            : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-200'
                             } rounded-xl`}
                           style={{
                             gridColumn: digit === 0 ? '2' : 'auto'
@@ -223,34 +340,69 @@ export default function PaymentPage() {
                 </div>
               </motion.div>
             ) : (
-              // Step 2: Payment Method Selection
+              // Step 3: Payment Method Selection
               <>
-                {/* Device Number Display */}
-                <div className="max-w-lg mx-auto bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
-                        <Smartphone className="w-6 h-6 text-white" />
+                <div className="max-w-lg mx-auto space-y-4">
+                  {/* Order Notes Display */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md flex-shrink-0">
+                          <Receipt className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-gray-600 text-sm">{t.common.orderNotes}</p>
+                          <p className="text-xl font-bold text-gray-900 break-words line-clamp-2">
+                            {cart.Notes || t.common.noOrderNotes}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-gray-600 text-sm">{t.common.selectedDevice}</p>
-                        <p className="text-xl font-bold text-gray-900">{cart.CallNumber}</p>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setStep(1)}
+                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 flex-shrink-0"
+                      >
+                        {t.common.edit}
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setStep(1)}
-                      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                    >
-                      Değiştir
-                    </Button>
-                  </div>
+                  </motion.div>
+
+                  {/* Device Number Display */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                          <Smartphone className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-gray-600 text-sm">{t.common.selectedDevice}</p>
+                          <p className="text-xl font-bold text-gray-900">{cart.CallNumber}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setStep(2)}
+                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                      >
+                        {t.common.edit}
+                      </Button>
+                    </div>
+                  </motion.div>
                 </div>
 
                 <motion.div
                   variants={itemVariants}
-                  className="text-center space-y-8 relative"
+                  className="text-center space-y-8"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -259,15 +411,13 @@ export default function PaymentPage() {
                     className="relative z-10"
                   >
                     <div className="flex items-center justify-center gap-4 mb-4">
-
-                      <span className="text-emerald-600 font-medium text-lg">{t.common.step} 2/2</span>
+                      <span className="text-emerald-600 font-medium text-lg">{t.common.step} 3/3</span>
                     </div>
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 pb-3">
                       {t.common.selectPaymentMethod}
                     </h1>
                     <div className="h-1 w-32 mx-auto bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full mt-6" />
                   </motion.div>
-
 
                   {/* Amount Card */}
                   <motion.div
@@ -276,7 +426,7 @@ export default function PaymentPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <p className="text-gray-600 text-lg font-medium">Ödenecek Tutar</p>
+                        <p className="text-gray-600 text-lg font-medium">{t.common.amountToPay}</p>
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl font-semibold text-emerald-600">₺</span>
                           <span className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">

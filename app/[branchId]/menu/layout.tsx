@@ -3,26 +3,38 @@
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { Sidebar } from '@/components/layout/sidebar/sidebar';
 import { CartFooter } from '@/components/cart/cart-footer';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import useBranchStore from '@/store/branch';
+import { useCartStore } from '@/store/cart';
+import { useInactivityTimer } from '@/hooks/useInactivityTimer';
+
+const INACTIVITY_TIMEOUT = 60000; // 1 minute in milliseconds
+//const INACTIVITY_TIMEOUT = 10000; // 10 seconds in milliseconds
 
 export default function MenuLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
+  const router = useRouter();
   const params = useParams();
-  const { branchData,fetchBranchData } = useBranchStore();
-  const isProductDetailPage = pathname?.startsWith(`/${params?.branchId}/product/`);
+  const { fetchBranchData, reset } = useBranchStore();
+  const { clearCart } = useCartStore();
 
-  useEffect(() => {
-    if (params?.branchId) {
-      fetchBranchData(params.branchId as string);
+  useInactivityTimer({
+    timeout: INACTIVITY_TIMEOUT,
+    onTimeout: async () => {
+      const branchId = params?.branchId?.toString();
+      if (branchId) {
+        clearCart();
+        await reset(branchId);
+        await fetchBranchData(branchId);
+        router.push(`/${branchId}`);
+      }
     }
-  }, [params?.branchId, fetchBranchData]);
+  });
 
   return (
     <>

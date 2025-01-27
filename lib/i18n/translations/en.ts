@@ -20,6 +20,7 @@ export const en = {
     requiredSelectionCount: "selections required",
     selectedProducts: "Selected Products",
     totalAmount: "Total Amount",
+    amountToPay: "Amount to Pay",
     allMenus: "All Menu",
     viewAllCategories: "Browse Categories",
     viewProducts: "Browse Products",
@@ -57,7 +58,16 @@ export const en = {
     tapToViewMenu: "Tap to view the menu",
     changePaymentMethod: "Change Payment Method",
     deviceNumberZeroError: "Device number cannot be 0",
-    paymentPrinting: "Payment Printing"
+    paymentPrinting: "Payment Printing",
+    dineIn: "Dine In",
+    takeout: "Take Out",
+    clickToViewMenu: "Click to View Menu",
+    orderNotes: "Order Notes",
+    noOrderNotes: "No order notes added",
+    edit: "Edit",
+    done: "Done",
+    productNote: "Product Note",
+    enterProductNote: "You can write your product note here..."
   },
   product: {
     spicy: "Spicy",

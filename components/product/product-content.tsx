@@ -14,9 +14,10 @@ import { containerVariants, itemVariants } from './animations';
 import { useState } from 'react';
 import useBranchStore from '@/store/branch';
 import { calculateTotalPrice } from '@/lib/utils/combo-selector';
+import { OrderType } from '@/types/branch';
 
 export default function ProductContent({ params }: { params: { id: string, categoryId: string, branchId: string } }) {
-  const { branchData, selectedLanguage } = useBranchStore();
+  const { branchData, selectedLanguage, selectedOrderType } = useBranchStore();
   const { addCartProduct } = useCartStore();
   const { t } = useBranchStore();
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
     notFound();
   }
 
-  const handleComboAddToCart = (selections: ComboSelections) => {
+  const handleComboAddToCart = (selections: ComboSelections, note:string) => {
     setShowAddedAnimation(true);
     console.log(selections)
     // Combo seçimlerini SelectedItems formatına dönüştür
@@ -39,13 +40,12 @@ export default function ProductContent({ params }: { params: { id: string, categ
         MenuItemText: selection.Item.OriginalName,
         Price: selection.Item.ExtraPriceTakeOut || 0,
         Quantity: selection.Quantity || 1,
-        Notes: '',
         IsMainCombo: false,
         Items: []
       }))
     );
-
-    const totalPrice = product.Combo ? calculateTotalPrice(product.TakeOutPrice, selections) : product.TakeOutPrice;
+    const price = (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice
+    const totalPrice = product.Combo ? calculateTotalPrice(price, selections) : price;
 
     setTimeout(() => {
       addCartProduct({
@@ -53,7 +53,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
         MenuItemText: product.OriginalName,
         Price: totalPrice,
         Quantity: 1,
-        Notes: '',
+        Notes: note,
         IsMainCombo: true,
         Items: selectedItems
       });
@@ -69,7 +69,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
       addCartProduct({
         MenuItemKey: product.ProductID,
         MenuItemText: product.OriginalName,
-        Price: product.TakeOutPrice,
+        Price: (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice,
         Quantity: 1,
         Notes: '',
         IsMainCombo: false,
@@ -108,7 +108,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
 
   return (
     <motion.main
-      className="mx-auto px-4"
+      className="px-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -167,7 +167,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
                 <div className="relative">
                   <ProductImage src={productTranslation?.ImageUrl || ''} alt={product.OriginalName || ''} />
                   <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground px-4 py-2 rounded-full font-bold shadow-lg">
-                    {product.TakeOutPrice} ₺
+                    {(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice} ₺
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -201,7 +201,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
             <motion.div variants={itemVariants}>
                 <ComboSelector
                   groups={product.Combo}
-                  basePrice={product.TakeOutPrice}
+                  basePrice={(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice}
                   onAddToCart={handleComboAddToCart}
                 />
             </motion.div>
@@ -213,7 +213,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="h-4 w-4" />
-                {t.common.addToCart} ({product.TakeOutPrice} ₺)
+                {t.common.addToCart} ({(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice} ₺)
               </Button>
             </motion.div>
           )}

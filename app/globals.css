@@ -161,4 +161,39 @@
   }
 }
 
+/* Virtual Keyboard Styles */
+.simple-keyboard {
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  font-family: inherit !important;
+}
+
+.simple-keyboard .hg-button {
+  height: 50px !important;
+  border-radius: 0.5rem !important;
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1a202c !important;
+  font-size: 1.125rem !important;
+  margin: 3px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.simple-keyboard .hg-button:hover {
+  background: #f7fafc !important;
+}
+
+.simple-keyboard .hg-button.keyboard-button {
+  background: #f1f5f9 !important;
+  font-weight: 500;
+}
+
+.simple-keyboard .hg-button[data-skbtn="{space}"] {
+  max-width: none !important;
+  width: 200px !important;
+}
+
 /* Existing styles... */

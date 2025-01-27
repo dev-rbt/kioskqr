@@ -1,4 +1,9 @@
-//buraya yaz 
+
+export enum OrderType {
+    DELIVERY = 'DELIVERY',
+    TAKEOUT = 'TAKEOUT'
+}
+
 export interface Language {
     Key: string;
     Code: string;

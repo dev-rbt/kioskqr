@@ -1,185 +1,223 @@
-"use client";
+'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ChevronRight, Globe } from 'lucide-react';
+import { ShoppingBag, Utensils, Globe } from 'lucide-react';
 import useBranchStore from '@/store/branch';
-import { Language } from '@/types/branch';
-import { useParams } from 'next/navigation';
+import { OrderType } from '@/types/branch';
+import type { Language } from '@/types/branch';
 
-export default function WelcomePage() {
-  const [isExiting, setIsExiting] = useState(false);
-  const router = useRouter();
-  const params = useParams();
+const LanguageSwitcher = () => {
   const { branchData, selectedLanguage, setSelectedLanguage, t } = useBranchStore();
 
-  const handleClick = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      if (params?.branchId) {
-        router.push(`/${params.branchId}/menu`);
-      }
-    }, 500);
-  };
-  console.log("selectedLanguage", selectedLanguage)
   const handleLanguageSelect = (language: Language) => {
-    if (params?.branchId) {
-      setSelectedLanguage(params.branchId as string, language);
-    }
+    if (!branchData) return;
+    setSelectedLanguage(branchData.BranchID.toString(), language);
   };
-
-  if (!branchData) return null;
 
   return (
-    <>
-      <AnimatePresence>
-        {!isExiting && (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="absolute top-0 left-0 right-0 z-50"
+    >
+      {/* Language Title */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="flex items-center gap-2 text-white/90 mb-4">
+          <Globe className="w-5 h-5" />
+          <span className="text-lg font-medium">{t.common.languageSelection}</span>
+        </div>
+      </div>
+
+      {/* Language Options */}
+      <div className="flex justify-center">
+        <div className="flex gap-3 p-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-2xl">
+          {branchData?.Languages?.map((language) => (
+            <motion.button
+              key={language.Key}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleLanguageSelect(language)}
+              className={`relative group min-w-[140px] ${
+                selectedLanguage?.Key === language.Key
+                  ? ''
+                  : 'hover:bg-white/10'
+              }`}
+            >
+              {/* Background for active state */}
+              {selectedLanguage?.Key === language.Key && (
+                <motion.div
+                  layoutId="activeLanguage"
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/80 to-primary/60"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+
+              {/* Content */}
+              <div className={`relative flex flex-col items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
+                selectedLanguage?.Key === language.Key
+                  ? 'text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}>
+                <span className="text-3xl">{language.Code}</span>
+                <span className="font-medium">{language.Name}</span>
+
+                {/* Active Indicator */}
+                {selectedLanguage?.Key === language.Key && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -bottom-1 w-12 h-1 rounded-full bg-white"
+                  />
+                )}
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default function WelcomePage() {
+  const router = useRouter();
+  const { branchData, selectedLanguage, setSelectedLanguage, setSelectedOrderType, t } = useBranchStore();
+  const [showContent, setShowContent] = useState(false);
+
+  const handleClick = async (orderType: OrderType) => {
+    if (!branchData) return;
+
+    localStorage.setItem(
+      `branch_orderType_${branchData.BranchID}`,
+      orderType
+    );
+
+    setSelectedOrderType(branchData?.BranchID.toString(), orderType);
+    router.push(`/${branchData.BranchID}/menu`);
+  };
+
+  if (!branchData) {
+    return null;
+  }
+
+  return (
+    <div className="relative min-h-screen">
+      {/* Video Background */}
+      <div className="absolute inset-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/tavukdunyasi2.mp4" type="video/mp4" />
+        </video>
+      </div>
+
+      {/* Language Switcher - Always visible */}
+      <LanguageSwitcher />
+
+      {!showContent ? (
+        // Splash Screen
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center cursor-pointer"
+          onClick={() => setShowContent(true)}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 overflow-hidden"
+            className="absolute bottom-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: [0.4, 1, 0.4],
+              y: [0, -10, 0],
+              transition: {
+                opacity: {
+                  repeat: Infinity,
+                  duration: 2,
+                  ease: "easeInOut"
+                },
+                y: {
+                  repeat: Infinity,
+                  duration: 2,
+                  ease: "easeInOut"
+                }
+              }
+            }}
           >
-            {/* Background */}
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074')] bg-cover bg-center" />
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 via-transparent to-orange-500/30" />
-              <div className="absolute inset-0 bg-gradient-to-tl from-blue-500/20 via-transparent to-pink-500/20" />
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-            </div>
-
-            {/* Language Switcher Section */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="absolute top-0 left-0 right-0 z-50"
-            >
-              {/* Language Title */}
-              <div className="flex flex-col items-center pt-8 pb-4">
-                <div className="flex items-center gap-2 text-white/90 mb-4">
-                  <Globe className="w-5 h-5" />
-                  <span className="text-lg font-medium">Dil Seçimi</span>
-                </div>
-              </div>
-
-              {/* Language Options */}
-              <div className="flex justify-center">
-                <div className="flex gap-3 p-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-2xl">
-                  {branchData?.Languages?.map((language) => (
-                    <motion.button
-                      key={language.Key}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleLanguageSelect(language)}
-                      className={`relative group min-w-[140px] ${selectedLanguage?.Key === language.Key
-                          ? ''
-                          : 'hover:bg-white/10'
-                        }`}
-                    >
-                      {/* Background for active state */}
-                      {selectedLanguage?.Key === language.Key && (
-                        <motion.div
-                          layoutId="activeLanguage"
-                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/80 to-primary/60"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-                      )}
-
-                      {/* Content */}
-                      <div className={`relative flex flex-col items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${selectedLanguage?.Key === language.Key
-                          ? 'text-white'
-                          : 'text-white/70 hover:text-white'
-                        }`}>
-                        <span className="text-3xl">{language.Code}</span>
-                        <span className="font-medium">{language.Name}</span>
-
-                        {/* Active Indicator */}
-                        {selectedLanguage?.Key === language.Key && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute -bottom-1 w-12 h-1 rounded-full bg-white"
-                          />
-                        )}
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Main Content */}
-            <div
-              className="relative h-full flex flex-col items-center justify-center p-8"
-              onClick={handleClick}
-            >
-              {/* Logo and Brand */}
+            <span className="text-white/90 text-2xl font-medium tracking-wider">
+              {t.common.tapToViewMenu}
+            </span>
+          </motion.div>
+        </motion.div>
+      ) : (
+        // Main Content
+        <AnimatePresence>
+          <motion.div
+            className="relative z-10 min-h-screen flex items-center justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="container mx-auto px-4">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-center mb-20"
+                transition={{ delay: 0.2 }}
+                className="text-center"
               >
                 <div className="relative inline-flex items-center justify-center mb-6">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/50 to-orange-500/50 blur-2xl animate-pulse" />
-                  <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                  <div className="relative bg-black/20 backdrop-blur-sm p-6 rounded-full border border-white/10">
                     <ShoppingBag className="w-20 h-20 text-white" />
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
+                <h1 className="p-3 text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
                   {branchData.BranchName}
                 </h1>
                 <div className="text-lg text-white/60 tracking-widest">
-                  {t.common.digitalMenu}
+                  {t.common.welcomeMessage}
                 </div>
               </motion.div>
 
-              {/* Call to Action */}
+              {/* Order Type Selection */}
               <motion.div
-                initial={{ y: 50, opacity: 0 }}
+                initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="text-center"
+                transition={{ delay: 0.4 }}
+                className="flex flex-row gap-6 w-full max-w-2xl justify-center mt-20 mx-auto"
               >
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-orange-500/50 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                  <div className="relative inline-flex items-center gap-4 px-8 py-6 rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 transition-all">
-                    <span className="text-3xl md:text-4xl font-medium text-white">
-                      {t.common.welcomeMessage}
-                    </span>
-                    <ChevronRight className="w-8 h-8 text-white animate-pulse" />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Touch Indicator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="absolute bottom-12 left-0 right-0 flex justify-center"
-              >
-                <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                  }}
-                  className="text-white/60 text-lg font-medium tracking-wide"
+                <button
+                  onClick={() => handleClick(OrderType.TAKEOUT)}
+                  className="group relative aspect-square w-48"
                 >
-                  Menüyü görüntülemek için dokunun
-                </motion.div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-orange-500/50 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                  <div className="relative flex flex-col items-center justify-center gap-4 h-full rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 transition-all">
+                    <Utensils className="w-16 h-16 text-white" />
+                    <span className="text-2xl font-medium text-white">
+                      {t.common.dineIn}
+                    </span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleClick(OrderType.DELIVERY)}
+                  className="group relative aspect-square w-48"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-orange-500/50 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                  <div className="relative flex flex-col items-center justify-center gap-4 h-full rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 transition-all">
+                    <ShoppingBag className="w-16 h-16 text-white" />
+                    <span className="text-2xl font-medium text-white">
+                      {t.common.takeout}
+                    </span>
+                  </div>
+                </button>
               </motion.div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-
+        </AnimatePresence>
+      )}
+    </div>
   );
 }

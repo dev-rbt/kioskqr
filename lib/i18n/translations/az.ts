@@ -20,6 +20,7 @@ export const az = {
     requiredSelectionCount: "seçim tələb olunur",
     selectedProducts: "Seçilmiş Məhsullar",
     totalAmount: "Ümumi Məbləğ",
+    amountToPay: "Ödəniləcək Məbləğ",
     allMenus: "Bütün Menyu",
     viewAllCategories: "Kateqoriyalara Baxın",
     viewProducts: "Məhsullara baxın",
@@ -57,7 +58,14 @@ export const az = {
     tapToViewMenu: "Menyunu görmək üçün toxunun",
     changePaymentMethod: "Ödəniş Üsulunu Dəyişdir",
     deviceNumberZeroError: "Cihaz nömrəsi 0 ola bilməz",
-    paymentPrinting: "Ödəniş Çap Olunur"
+    paymentPrinting: "Ödəniş Çap Olunur",
+    productNote: "Məhsul Qeydi",
+    enterProductNote: "Məhsul qeydinizi bura yaza bilərsiniz...",
+    orderNotes: "Sifariş Qeydləri",
+    enterOrderNotes: "Sifariş qeydlərinizi bura yaza bilərsiniz...",
+    noOrderNotes: "Sifariş qeydi əlavə edilməyib",
+    edit: "Düzəliş et",
+    done: "Hazır"
   },
   product: {
     spicy: "Acılı",
