@@ -12,7 +12,7 @@ interface CartStore {
   removeSelectedItem: (productId: string, selectedItemId: string) => void;
   updateSelectedItem: (productId: string, selectedItem: CartProduct) => void;
   clearCart: () => void;
-  updateCart: (updatedCart: Partial<Cart>) => Promise<void>;
+  updateCart: (updatedCart: Partial<Cart>) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -226,17 +226,13 @@ export const useCartStore = create<CartStore>()(
     },
     
     updateCart: (updatedCart) => {
-      return new Promise((resolve) => {
-        set((state) => ({
+      set((state) => {
+        return {
           cart: {
             ...state.cart,
-            ...updatedCart,
-            AmountDue: updatedCart.Items 
-              ? calculateCartTotal(updatedCart.Items)
-              : state.cart.AmountDue
+            ...updatedCart
           }
-        }));
-        resolve();
+        };
       });
     }
   }))

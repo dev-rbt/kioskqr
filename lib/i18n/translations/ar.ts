@@ -59,6 +59,8 @@ export const ar = {
     changePaymentMethod: "تغيير طريقة الدفع",
     deviceNumberZeroError: "لا يمكن أن يكون رقم الجهاز 0",
     paymentPrinting: "جاري طباعة الإيصال",
+    dineIn: "سأتناول الطعام هنا",
+    takeout: "طلب خارجي",
     productNote: "ملاحظة المنتج",
     enterProductNote: "يمكنك كتابة ملاحظة المنتج هنا...",
     orderNotes: "ملاحظات الطلب",
