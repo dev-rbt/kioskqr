@@ -111,7 +111,12 @@ export default function WelcomePage() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            height: '100vh',
+            width: '100%',
+            objectFit: 'fill',
+            position: 'absolute'
+          }}
         >
           <source src="/tavukdunyasi.webm" type="video/webm" />
         </video>
