@@ -25,7 +25,8 @@ export function TimerProvider({
 
   useEffect(() => {
     // Eğer mevcut path excluded ise timer'ı başlatma
-    if (excludedPaths.some(path => pathname?.includes(path))) {
+    const isExcludedPath = excludedPaths.some(path => pathname?.includes(path));
+    if (isExcludedPath) {
       return;
     }
 
