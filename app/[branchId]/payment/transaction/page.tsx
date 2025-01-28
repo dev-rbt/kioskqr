@@ -249,7 +249,6 @@ export default function PaymentTransactionPage() {
     //     });
     //   }
     // };
-
     if (typeof window !== 'undefined') {
       window.handleCefSharpMessage = cefSharpMessageHandler;
       // Start simulation
