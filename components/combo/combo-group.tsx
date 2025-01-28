@@ -110,12 +110,27 @@ export function ComboGroup({ group, selections, onSelect, progress }: ComboGroup
           {group.Items.map((item) => {
             const selectedItem = selections[group.OriginalName]?.find(s => s.Item.MenuItemKey === item.MenuItemKey);
             const selectedQuantity = selectedItem?.Quantity || 0;
+
+            const handleItemSelect = (quantity: number) => {
+              // If MaxQuantity is 1 and we're selecting a new item, deselect all others
+              if (group.MaxQuantity === 1 && quantity > 0) {
+                // First deselect all items
+                selections[group.OriginalName]?.forEach(s => {
+                  if (s.Item.MenuItemKey !== item.MenuItemKey) {
+                    onSelect(group.OriginalName, s.Item, 0);
+                  }
+                });
+              }
+              // Then select the new item
+              onSelect(group.OriginalName, item, quantity);
+            };
+
             return (
               <ComboGroupItem
                 key={item.MenuItemKey}
                 item={item}
                 group={group}
-                onSelect={(quantity) => onSelect(group.OriginalName, item, quantity)}
+                onSelect={handleItemSelect}
                 totalGroupQuantity={totalQuantity}
                 selectedQuantity={selectedQuantity}
               />

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Utensils, Globe } from 'lucide-react';
+import { ShoppingBag, Utensils, Globe, ArrowDown } from 'lucide-react';
 import useBranchStore from '@/store/branch';
 import { OrderType } from '@/types/branch';
 import type { Language } from '@/types/branch';
@@ -33,7 +33,7 @@ const LanguageSwitcher = () => {
 
       {/* Language Options */}
       <div className="flex justify-center">
-        <div className="flex gap-3 p-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-2xl">
+        <div className="flex gap-3 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
           {branchData?.Languages?.map((language) => (
             <motion.button
               key={language.Key}
@@ -111,49 +111,64 @@ export default function WelcomePage() {
           loop
           muted
           playsInline
-          style={{
-            height: '100vh',
-            width: '100%',
-            objectFit: 'fill',
-            position: 'absolute'
-          }}
+          className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/tavukdunyasi.webm" type="video/webm" />
         </video>
+        {/* Subtle dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/30" />
       </div>
 
       {/* Language Switcher - Always visible */}
       <LanguageSwitcher />
 
       {!showContent ? (
-        // Splash Screen
+        // Splash Screen with Enhanced Tap Text
         <motion.div
           className="absolute inset-0 flex items-center justify-center cursor-pointer"
           onClick={() => setShowContent(true)}
         >
           <motion.div
-            className="absolute bottom-20"
+            className="relative text-center space-y-8"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: [0.4, 1, 0.4],
-              y: [0, -10, 0],
-              transition: {
-                opacity: {
-                  repeat: Infinity,
-                  duration: 2,
-                  ease: "easeInOut"
-                },
-                y: {
-                  repeat: Infinity,
-                  duration: 2,
-                  ease: "easeInOut"
-                }
-              }
-            }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <span className="text-white/90 text-2xl font-medium tracking-wider">
-              {t.common.tapToViewMenu}
-            </span>
+            {/* Glowing circle behind the text */}
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+
+            {/* Main tap text with enhanced styling */}
+            <motion.div
+              className="relative"
+              animate={{ 
+                scale: [1, 1.05, 1],
+                y: [0, -10, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight">
+                {t.common.tapToViewMenu}
+              </h2>
+              
+              {/* Animated arrow */}
+              <motion.div
+                animate={{ 
+                  y: [0, 10, 0],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="flex justify-center"
+              >
+                <ArrowDown className="w-12 h-12 text-primary animate-bounce" />
+              </motion.div>
+            </motion.div>
           </motion.div>
         </motion.div>
       ) : (

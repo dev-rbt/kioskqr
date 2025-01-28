@@ -15,10 +15,15 @@ import { useState } from 'react';
 import useBranchStore from '@/store/branch';
 import { calculateTotalPrice } from '@/lib/utils/combo-selector';
 import { OrderType } from '@/types/branch';
+import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from 'next/navigation';
 
 export default function ProductContent({ params }: { params: { id: string, categoryId: string, branchId: string } }) {
   const { branchData, selectedLanguage, selectedOrderType } = useBranchStore();
-  const { addCartProduct } = useCartStore();
+  const { addCartProduct, updateCartProductTransactionKey, cart } = useCartStore();
+  const searchParams = useSearchParams();
+  const transactionKey = searchParams.get('transactionKey');
+  const existingItem = transactionKey ? cart.Items.find(item => item.TransactionKey === transactionKey) : null;
   const { t } = useBranchStore();
   const router = useRouter();
   const [showAddedAnimation, setShowAddedAnimation] = useState(false);
@@ -31,34 +36,45 @@ export default function ProductContent({ params }: { params: { id: string, categ
     notFound();
   }
 
-  const handleComboAddToCart = (selections: ComboSelections, note:string) => {
+  const handleComboAddToCart = (selections: ComboSelections, note: string) => {
+    console.log("Received note in ProductContent:", note);
     setShowAddedAnimation(true);
-    console.log(selections)
+
+    const totalPrice = product.Combo ? calculateTotalPrice((selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice, selections) : (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice;
     // Combo seçimlerini SelectedItems formatına dönüştür
     const selectedItems = Object.entries(selections).flatMap(([groupName, groupSelections]) => 
       groupSelections.map(selection => ({
+        TransactionKey: uuidv4(),
         MenuItemKey: selection.Item.MenuItemKey,
         MenuItemText: selection.Item.OriginalName,
         Price: selection.Item.ExtraPriceTakeOut || 0,
-        Quantity: selection.Quantity || 1,
+        Quantity: selection.Quantity,
         IsMainCombo: false,
-        Items: []
+        Items: [],
+        Notes: ''
       }))
     );
-    const price = (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice
-    const totalPrice = product.Combo ? calculateTotalPrice(price, selections) : price;
+
+    const cartProduct = {
+      TransactionKey: transactionKey || uuidv4(),
+      MenuItemKey: product.ProductID,
+      MenuItemText: product.OriginalName,
+      Price: totalPrice,
+      Quantity: existingItem?.Quantity || 1,
+      IsMainCombo: true,
+      Items: selectedItems,
+      Notes: note
+    };
+    console.log("Cart product with note:", cartProduct);
 
     setTimeout(() => {
-      addCartProduct({
-        MenuItemKey: product.ProductID,
-        MenuItemText: product.OriginalName,
-        Price: totalPrice,
-        Quantity: 1,
-        Notes: note,
-        IsMainCombo: true,
-        Items: selectedItems
-      });
-
+      if (transactionKey) {
+        // If transactionKey exists, update the existing cart item
+        updateCartProductTransactionKey(transactionKey, cartProduct);
+      } else {
+        // If no transactionKey, add as new item
+        addCartProduct(cartProduct);
+      }
       router.push(`/${params.branchId}/menu/category/${params.categoryId}`);
     }, 700);
   };
@@ -66,46 +82,28 @@ export default function ProductContent({ params }: { params: { id: string, categ
   const handleAddToCart = () => {
     setShowAddedAnimation(true);
 
+    const cartProduct = {
+      TransactionKey: transactionKey || uuidv4(),
+      MenuItemKey: product.ProductID,
+      MenuItemText: product.OriginalName,
+      Price: (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice,
+      Quantity: existingItem?.Quantity || 1,
+      IsMainCombo: false,
+      Items: [],
+      Notes: ''
+    };
+
     setTimeout(() => {
-      addCartProduct({
-        MenuItemKey: product.ProductID,
-        MenuItemText: product.OriginalName,
-        Price: (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice,
-        Quantity: 1,
-        Notes: '',
-        IsMainCombo: false,
-        
-        Items: []
-      });
+      if (transactionKey) {
+        // If transactionKey exists, update the existing cart item
+        updateCartProductTransactionKey(transactionKey, cartProduct);
+      } else {
+        // If no transactionKey, add as new item
+        addCartProduct(cartProduct);
+      }
       router.push(`/${params.branchId}/menu/category/${params.categoryId}`);
     }, 700);
   };
-
-  /*
-    if (error) {
-      return (
-        <div className="container mx-auto px-4 pt-40 text-center">
-          <h1 className="text-2xl font-bold text-red-500">{error}</h1>
-          <p className="text-muted-foreground mt-2">{t.common.tryAgain}</p>
-        </div>
-      );
-    }
-  
-    if (isLoading) {
-      return (
-        <main className="container mx-auto px-4 pt-40">
-          <Skeleton className="h-8 w-32 mb-8" />
-          <div className="grid md:grid-cols-2 gap-8">
-            <Skeleton className="h-[400px] rounded-lg" />
-            <div className="space-y-6">
-              <Skeleton className="h-10 w-3/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-[200px]" />
-            </div>
-          </div>
-        </main>
-      );
-    }*/
 
   return (
     <motion.main
@@ -204,6 +202,7 @@ export default function ProductContent({ params }: { params: { id: string, categ
                   groups={product.Combo}
                   basePrice={(selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice}
                   onAddToCart={handleComboAddToCart}
+                  existingTransactionKey={transactionKey || undefined}
                 />
             </motion.div>
           ) : (
