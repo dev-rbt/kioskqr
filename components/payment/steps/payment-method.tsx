@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { CreditCardIcon, StickyNote, Smartphone, Wallet, ChevronRight, CircleDollarSign } from 'lucide-react';
+import { CreditCard, StickyNote, Smartphone, Wallet, ChevronRight, CircleDollarSign } from 'lucide-react';
 import { PaymentMethod as PaymentMethodType } from '@/types/branch';
 import { useParams, useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
@@ -39,7 +39,7 @@ const PaymentMethodCard = ({
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-lg blur group-hover:blur-md transition-all" />
               <div className="relative w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                {paymentMethodIcons[method.Type] || <CreditCardIcon className="w-8 h-8 text-primary" />}
+                {paymentMethodIcons[method.Type] || <CreditCard className="w-8 h-8 text-primary" />}
               </div>
             </div>
             
@@ -178,7 +178,7 @@ export function PaymentMethod({ notes, callNumber, paymentMethods, onSelect, t, 
         >
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-              <CreditCardIcon className="w-6 h-6 text-primary" />
+              <CreditCard className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Kredi Kartı</h2>

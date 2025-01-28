@@ -4,7 +4,7 @@ import { useCartStore } from '@/store/cart';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  CreditCard as CreditCardIcon,
+  CreditCard,
   Banknote,
   CircleDollarSign,
   Wallet,
@@ -28,7 +28,7 @@ import { DeviceNumber } from '@/components/payment/steps/device-number';
 import { PaymentMethod as PaymentMethodStep } from '@/components/payment/steps/payment-method';
 
 const paymentMethodIcons: Record<string, JSX.Element> = {
-  CREDIT_CARD: <CreditCardIcon className="w-8 h-8" />,
+  CREDIT_CARD: <CreditCard className="w-8 h-8" />,
   MEAL_CARD: <Banknote className="w-8 h-8" />,
   SODEXO: <Wallet className="w-8 h-8" />,
   MULTINET: <Receipt className="w-8 h-8" />,
@@ -38,7 +38,7 @@ const paymentMethodIcons: Record<string, JSX.Element> = {
 const steps = [
   { icon: StickyNote, label: 'Sipariş Notu' },
   { icon: Smartphone, label: 'Cihaz No' },
-  { icon: CreditCardIcon, label: 'Ödeme' }
+  { icon: CreditCard, label: 'Ödeme' }
 ];
 
 export default function PaymentPage() {
