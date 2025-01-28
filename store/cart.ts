@@ -7,7 +7,9 @@ interface CartStore {
   cart: Cart;
   addCartProduct: (product: CartProduct) => void;
   removeCartProduct: (productId: string) => void;
+  removeCartProductTransactionKey: (transactionKey: string) => void;
   updateCartProduct: (productId: string, updatedProduct: CartProduct) => void;
+  updateCartProductTransactionKey: (transactionKey: string, updatedProduct: CartProduct) => void;
   addSelectedItem: (productId: string, selectedItem: CartProduct) => void;
   removeSelectedItem: (productId: string, selectedItemId: string) => void;
   updateSelectedItem: (productId: string, selectedItem: CartProduct) => void;
@@ -70,6 +72,25 @@ export const useCartStore = create<CartStore>()(
       set((state) => {
         const newItems = (state.cart.Items || []).map((product) =>
           product.MenuItemKey === productId ? updatedProduct : product
+        );
+
+        return {
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
+          }
+        };
+      });
+    },
+
+    updateCartProductTransactionKey: (transactionKey, updatedProduct) => {
+      set((state) => {
+        const newItems = (state.cart.Items || []).map((product) =>
+          product.TransactionKey === transactionKey ? updatedProduct : product
         );
 
         return {
@@ -187,6 +208,25 @@ export const useCartStore = create<CartStore>()(
       set((state) => {
         const newItems = (state.cart.Items || []).filter(
           (item) => item.MenuItemKey !== productId
+        );
+
+        return {
+          cart: {
+            ...state.cart,
+            Items: newItems,
+            AmountDue: calculateCartTotal(newItems),
+            SubTotal: calculateCartTotal(newItems),
+            DiscountOrderAmount: 0,
+            DiscountLineAmount: 0
+          }
+        };
+      });
+    },
+
+    removeCartProductTransactionKey: (transactionKey) => {
+      set((state) => {
+        const newItems = (state.cart.Items || []).filter(
+          (product) => product.TransactionKey !== transactionKey
         );
 
         return {

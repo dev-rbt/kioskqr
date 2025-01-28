@@ -6,13 +6,24 @@ import { ProductImage } from './product-card/product-image';
 import { ProductPrice } from './product-card/product-price';
 import { AddToCartButton } from './product-card/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
-import { UtensilsCrossed, Check, Clock } from 'lucide-react';
+import { 
+  UtensilsCrossed, 
+  Check, 
+  Clock, 
+  Star, 
+  Flame,
+  Leaf,
+  Ban,
+  Sparkles,
+  ChefHat
+} from 'lucide-react';
 import Link from 'next/link';
 import { OrderType, Product } from '@/types/branch';
 import { useState } from 'react';
 import useBranchStore from '@/store/branch';
 import { useCartStore } from '@/store/cart';
 import { v4 as uuidv4 } from 'uuid';
+import ReactStars from "react-rating-stars-component";
 
 interface ProductCardProps {
   product: Product;
@@ -28,6 +39,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   
   // Get Turkish translation as fallback
   const turkishTranslation = product.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US'];
+
   const handleAddToCart = () => {
     setShowAddedAnimation(true);
     addCartProduct({
@@ -48,6 +60,26 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
     setTimeout(() => {
       setShowAddedAnimation(false);
     }, 1500);
+  };
+
+  // Badge icon mapping
+  const getBadgeIcon = (code: string) => {
+    switch (code) {
+      case 'SPICY':
+        return <ChefHat className="w-3 h-3 mr-1" />;
+      case 'VEGAN':
+        return <Leaf className="w-3 h-3 mr-1" />;
+      case 'VEGETARIAN':
+        return <Leaf className="w-3 h-3 mr-1" />;
+      case 'GLUTEN_FREE':
+        return <Ban className="w-3 h-3 mr-1" />;
+      case 'NEW':
+        return <Sparkles className="w-3 h-3 mr-1" />;
+      case 'BESTSELLER':
+        return <Flame className="w-3 h-3 mr-1" />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -115,12 +147,43 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                 {t.common.menu}
               </Badge>
             )}
+            {product.Rating > 0 && (
+              <div className="absolute left-3 top-3 bg-black/60 rounded-xl px-2 py-1">
+                <ReactStars
+                  count={5}
+                  value={product.Rating}
+                  edit={false}
+                  size={20}
+                  activeColor="#FFD700"
+                  isHalf={true}
+                />
+              </div>
+            )}
+            {/* Product Badges - Limited to 3, stacked vertically */}
+            {productTranslation?.Badges && (
+              <div className="absolute right-3 top-3 flex flex-col gap-1">
+                {productTranslation.Badges.slice(0, 3).map((badge, index) => (
+                  <Badge 
+                    key={badge.BadgeKey}
+                    className="text-xs py-0.5 px-2 whitespace-nowrap flex items-center"
+                    style={{ 
+                      color: 'white', 
+                      backgroundColor: branchData?.SecondColor,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    {getBadgeIcon(badge.Code)}
+                    {badge.Name}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Content Section */}
           <div className="flex flex-col flex-1 p-3">
             {/* Title */}
-            <h3 className="text-lg font-bold line-clamp-2 min-h-[48px] mb-2"
+            <h3 className="text-lg font-bold line-clamp-2 min-h-[48px]"
                 style={{ color: branchData?.SecondColor || 'inherit' }}>
               {productTranslation?.Name || product.OriginalName}
             </h3>
@@ -134,12 +197,18 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
             )}
 
             {/* Meta Info Row */}
-            <div className="flex items-center gap-3 mb-3 text-sm"
+            <div className="flex items-center gap-3 mb-3 text-sm flex-wrap"
                  style={{ color: branchData?.SecondColor || 'inherit' }}>
               {product.PreperationTime > 0 && (
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
                   <span>{product.PreperationTime} {t.product.minutes}</span>
+                </div>
+              )}
+              {product.Calories > 0 && (
+                <div className="flex items-center gap-1">
+                  <Flame className="w-4 h-4" />
+                  <span>{product.Calories} kcal</span>
                 </div>
               )}
             </div>

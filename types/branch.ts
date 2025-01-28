@@ -24,15 +24,16 @@ export interface ThemeSettings {
 }
 
 export interface Badge {
-    badgeKey: string;
-    badgeName: string;
+    BadgeKey?: string;
+    Name?: string;
+    Code?: string;
 }
 
 export interface Translation {
     Name: string;
     Description: string;
     ImageUrl: string;
-    badges?: Badge[];
+    Badges?: Badge[];
 }
 
 export interface ComboItemTranslation {
@@ -74,6 +75,7 @@ export interface Product {
     Translations: {
         [key: string]: Translation;
     };
+    
     TakeOutPrice: number;
     DeliveryPrice: number;
     Weight: number;

@@ -1,34 +1,74 @@
 "use client";
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { ComboSelections } from '@/types/combo';
 import { Button } from '../ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShoppingCart, CheckCircle2, ChevronRight, ArrowRight, UtensilsCrossed } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ComboGroup } from './combo-group';
 import { calculateTotalPrice, calculateGroupProgress } from '@/lib/utils/combo-selector';
 import { ComboGroup as ComboGroupType, ComboItem } from '@/types/branch';
 import useBranchStore from '@/store/branch';
 import { getNextProductImage } from '@/lib/utils/mock-images';
 import { useKeyboardStore } from '@/components/ui/virtual-keyboard';
+import { useCartStore } from '@/store/cart';
 
 interface ComboSelectorProps {
   groups: ComboGroupType[];
   basePrice: number;
   onAddToCart: (selections: ComboSelections, note: string) => void;
+  existingTransactionKey?: string;
 }
 
-export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorProps) {
+export function ComboSelector({ groups, basePrice, onAddToCart, existingTransactionKey }: ComboSelectorProps) {
   const [selections, setSelections] = useState<ComboSelections>({});
   const [activeGroupIndex, setActiveGroupIndex] = useState(0);
   const [note, setNote] = useState("");
   const { toast } = useToast();
-  const { t } = useBranchStore();
-  const {branchData, selectedLanguage} = useBranchStore();
+  const { t, branchData, selectedLanguage } = useBranchStore();
+  const { cart } = useCartStore();
+  const { setInputRef, setIsOpen } = useKeyboardStore();
   const allGroups = [...groups, { OriginalName: t.common.completeOrder, IsForcedGroup: false, ForcedQuantity: 0, MaxQuantity: 0, Items: [] }];
   const noteInputRef = useRef<HTMLTextAreaElement>(null);
-  const { setInputRef, setIsOpen } = useKeyboardStore();
+
+  // Load existing selections if transactionKey is provided
+  useEffect(() => {
+    if (existingTransactionKey) {
+      const existingItem = cart.Items.find(item => item.TransactionKey === existingTransactionKey);
+      if (existingItem?.IsMainCombo && existingItem.Items) {
+        // Convert existing combo items to selections format
+        const existingSelections: ComboSelections = {};
+        existingItem.Items.forEach(item => {
+          const group = groups.find(g => g.Items.some(i => i.MenuItemKey === item.MenuItemKey));
+          if (group) {
+            const groupItem = group.Items.find(i => i.MenuItemKey === item.MenuItemKey);
+            if (groupItem) {
+              if (!existingSelections[group.OriginalName]) {
+                existingSelections[group.OriginalName] = [];
+              }
+              existingSelections[group.OriginalName].push({
+                GroupName: group.OriginalName,
+                Item: groupItem,
+                Quantity: item.Quantity || 1
+              });
+            }
+          }
+        });
+        setSelections(existingSelections);
+        if (existingItem.Notes) {
+          setNote(existingItem.Notes);
+        }
+      }
+    }
+  }, [existingTransactionKey, cart.Items, groups]);
+
+  const handleFocus = useCallback(() => {
+    if (noteInputRef.current) {
+      setInputRef(noteInputRef.current);
+      setIsOpen(true);
+    }
+  }, [setInputRef, setIsOpen]);
 
   const handleSelect = useCallback((groupName: string, item: ComboItem, quantity: number) => {
     setSelections(prev => {
@@ -59,11 +99,10 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
         ]
       };
 
-      // If this is the last group and a selection was made, go to summary
       if (activeGroupIndex === groups.length - 1 && newQuantity > 0) {
         setTimeout(() => {
-          setActiveGroupIndex(allGroups.length - 1); // Go to "Siparişi Tamamla"
-        }, 300); // Small delay for better UX
+          setActiveGroupIndex(allGroups.length - 1);
+        }, 300);
       } else if (group.ForcedQuantity > 0) {
         const currentGroupSelections = newSelections[groupName] || [];
         const currentTotalQuantity = currentGroupSelections.reduce((sum, s) => sum + s.Quantity, 0);
@@ -115,65 +154,70 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
       }
     }
 
-    onAddToCart({ ...selections }, note);
-  }, [groups, selections, onAddToCart, toast, note]);
-
-  const handleFocus = useCallback(() => {
-    if (noteInputRef.current) {
-      setInputRef(noteInputRef.current);
-      setIsOpen(true);
-    }
-  }, [setInputRef, setIsOpen]);
-
-  const handleNoteChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNote(e.target.value);
-  }, []);
-
-  const handleNoteInput = useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
-    const target = e.target as HTMLTextAreaElement;
-    setNote(target.value);
-  }, []);
-
+    const currentNote = noteInputRef.current?.value || "";
+    onAddToCart({ ...selections }, currentNote);
+  }, [groups, selections, onAddToCart, toast]);
 
   return (
     <motion.div 
-      className="grid grid-cols-6 gap-3"
+      className="grid grid-cols-6 gap-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
       {/* Left Side - Steps */}
-      <div className="space-y-4 col-span-2">
-        <h3 className="text-xl font-semibold">{t.common.menuSelections}</h3>
-        <div className="space-y-2">
-          {allGroups.map((group, index) => {
-            const isComplete = isGroupComplete(group);
-            const isActive = index === activeGroupIndex;
-            
-            return (
-              <motion.div
-                key={group.OriginalName}
-                className={`p-4 rounded-xl cursor-pointer transition-colors ${
-                  isActive ? 'bg-primary/10 border-primary/20' : 
-                  'bg-secondary/10 border-secondary/20'
-                } border`}
-                onClick={() => setActiveGroupIndex(index)}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{group.OriginalName}</div>
-                    {group.ForcedQuantity > 0 && (
-                      <div className="text-sm text-muted-foreground">
-                        {group.ForcedQuantity} {t.common.requiredSelectionCount}
+      <div className="col-span-2 space-y-4">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 space-y-4">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            {t.common.menuSelections}
+          </h3>
+          <div className="space-y-3">
+            {allGroups.map((group, index) => {
+              const isComplete = isGroupComplete(group);
+              const isActive = index === activeGroupIndex;
+              
+              return (
+                <motion.button
+                  key={group.OriginalName}
+                  onClick={() => setActiveGroupIndex(index)}
+                  className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-primary/10 ring-2 ring-primary/20' 
+                      : 'hover:bg-gray-50'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-lg font-semibold ${isActive ? 'text-primary' : 'text-gray-900'}`}>
+                          {group.OriginalName}
+                        </span>
+                        {group.ForcedQuantity > 0 && (
+                          <span className="text-sm text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
+                            {group.ForcedQuantity} {t.common.requiredSelectionCount}
+                          </span>
+                        )}
+                      </div>
+                      {group.IsForcedGroup && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {t.common.requiredSelection}
+                        </p>
+                      )}
+                    </div>
+                    {isComplete && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-primary">
+                          {t.common.selectionCompleted}
+                        </span>
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
                       </div>
                     )}
                   </div>
-                  {isComplete && (
-                    <CheckCircle2 className="w-6 h-6 text-green-500" />
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -187,38 +231,53 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
           className="space-y-6"
         >
           {activeGroupIndex === allGroups.length - 1 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
-              <div className="p-6 space-y-6">
-                <h3 className="text-2xl font-bold">{t.common.selectedProducts}</h3>
-                <div className="space-y-4">
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="p-8 space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <UtensilsCrossed className="w-8 h-8 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      {t.common.selectedProducts}
+                    </h2>
+                    <p className="text-gray-500">
+                      {t.common.reviewYourSelections}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
                   {Object.entries(selections).map(([groupName, items]) => (
-                    <div key={groupName} className="space-y-2">
-                      <div className="font-medium text-lg">{groupName}</div>
-                      <div className="space-y-2">
+                    <div key={groupName} className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">{groupName}</h3>
+                      <div className="space-y-3">
                         {items.map((selection, idx) => (
                           <div 
                             key={idx} 
-                            className="flex items-center justify-between p-4 bg-primary/5 border border-primary/10 rounded-lg hover:bg-primary/10 transition-colors group"
+                            className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                           >
-                            <div className="flex items-center gap-3">
-                              <div className="w-16 h-16 rounded-lg overflow-hidden">
-                                <img 
-                                  src={selection.Item.Translations?.[selectedLanguage?.Key || 'en-US']?.ImageUrl ||   selection.Item.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US']?.ImageUrl || getNextProductImage()} 
-                                  alt={selection.Item.OriginalName}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <div>
-                                <div className="font-medium">{selection.Item.OriginalName}</div>
-                                {selection.Item.ExtraPriceTakeOut > 0 && (
-                                  <div className="text-sm text-muted-foreground">
-                                    +{selection.Item.ExtraPriceTakeOut} ₺
-                                  </div>
-                                )}
-                              </div>
+                            <div className="w-16 h-16 rounded-lg overflow-hidden">
+                              <img 
+                                src={selection.Item.Translations?.[selectedLanguage?.Key || 'en-US']?.ImageUrl || selection.Item.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US']?.ImageUrl || getNextProductImage()} 
+                                alt={selection.Item.OriginalName}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="flex items-center gap-4">
-                              <div className="font-medium">x{selection.Quantity}</div>
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900">
+                                {selection.Item.OriginalName}
+                              </div>
+                              {selection.Item.ExtraPriceTakeOut > 0 && (
+                                <div className="text-sm text-primary">
+                                  +{selection.Item.ExtraPriceTakeOut} ₺
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="px-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
+                                x{selection.Quantity}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -226,34 +285,36 @@ export function ComboSelector({ groups, basePrice, onAddToCart }: ComboSelectorP
                     </div>
                   ))}
                 </div>
-                <div className="pt-4 border-t">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label htmlFor="note" className="text-sm font-medium">{t.common.productNote}</label>
-                      <textarea
-                        id="note"
-                        value={note}
-                        onChange={handleNoteChange}
-                        onInput={handleNoteInput}
-                        onFocus={handleFocus}
-                        ref={noteInputRef}
-                        placeholder={t.common.enterProductNote}
-                        className="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-lg font-medium">{t.common.totalAmount}</div>
-                      <div className="text-2xl font-bold">{calculateTotalPrice(basePrice, selections)} ₺</div>
-                    </div>
-                    <Button 
-                      className="w-full gap-2" 
-                      size="lg"
-                      onClick={handleAddToCart}
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      {t.common.addToCart}
-                    </Button>
+
+                <div className="space-y-4 pt-6 border-t">
+                  <div className="space-y-2">
+                    <label htmlFor="note" className="text-sm font-medium">{t.common.productNote}</label>
+                    <textarea
+                      id="note"
+                      defaultValue={note}
+                      onFocus={handleFocus}
+                      ref={noteInputRef}
+                      placeholder={t.common.enterProductNote}
+                      className="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
+
+                  <div className="flex items-center justify-between py-4">
+                    <div className="text-lg font-medium text-gray-900">
+                      {t.common.totalAmount}
+                    </div>
+                    <div className="text-3xl font-bold text-primary">
+                      {calculateTotalPrice(basePrice, selections)} ₺
+                    </div>
+                  </div>
+
+                  <Button 
+                    className="w-full h-14 text-lg gap-2 bg-primary hover:bg-primary/90"
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    {existingTransactionKey ? t.common.update : t.common.addToCart}
+                  </Button>
                 </div>
               </div>
             </div>

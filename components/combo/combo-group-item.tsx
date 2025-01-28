@@ -23,14 +23,19 @@ export function ComboGroupItem({ item, group, onSelect, totalGroupQuantity, sele
   const translation = item.Translations?.[selectedLanguage?.Key || ''];
   const turkishTranslation = item.Translations?.[branchData?.Languages.find(language => language.Code.toLowerCase() === 'tr')?.Key || 'en-US'];
   
-  const canIncrease = group.MaxQuantity === 0 || (totalGroupQuantity < group.MaxQuantity);
+  const canIncrease = group.MaxQuantity === 0 || 
+    (totalGroupQuantity < group.MaxQuantity) || 
+    (group.MaxQuantity === 1 && totalGroupQuantity === 1 && !isSelected);
   
   useEffect(() => { 
     setIsSelected(selectedQuantity > 0);
   }, [selectedQuantity]);
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity === 0 || (group.MaxQuantity === 0 || totalGroupQuantity < group.MaxQuantity)) {
+    // If MaxQuantity is 1 and we already have a selection, deselect other items automatically
+    if (group.MaxQuantity === 1 && totalGroupQuantity === 1 && !isSelected && newQuantity > 0) {
+      onSelect(1); // This will automatically handle deselecting the other item through the parent component
+    } else if (newQuantity === 0 || (group.MaxQuantity === 0 || totalGroupQuantity < group.MaxQuantity)) {
       onSelect(newQuantity);
     }
   };
@@ -47,7 +52,7 @@ export function ComboGroupItem({ item, group, onSelect, totalGroupQuantity, sele
           handleQuantityChange(selectedQuantity + 1);
         }
       }}
-      className={`cursor-pointer ${!canIncrease && !isSelected ? 'opacity-50' : ''}`}
+      className={`cursor-pointer ${(!canIncrease && !isSelected) ? 'opacity-50' : ''}`}
     >
       <div className={`
         relative overflow-hidden rounded-2xl transition-all duration-300
