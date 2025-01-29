@@ -67,17 +67,17 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   const getBadgeIcon = (code: string) => {
     switch (code) {
       case 'SPICY':
-        return <Image src="/img/pepper.svg" alt="Spicy" width={12} height={12} className="mr-1" />;
+        return <Image src="/img/pepper.svg" alt="Spicy" width={20} height={20} className="mr-1" />;
       case 'VEGAN':
-        return <Leaf className="w-3 h-3 mr-1" />;
+        return <Leaf className="mr-1" width={20} height={20}/>;
       case 'VEGETARIAN':
-        return <Leaf className="w-3 h-3 mr-1" />;
+        return <Leaf className="mr-1" width={20} height={20}/>;
       case 'GLUTEN_FREE':
-        return <Ban className="w-3 h-3 mr-1" />;
+        return <Ban className="mr-1" width={20} height={20}/>;
       case 'NEW':
-        return <Sparkles className="w-3 h-3 mr-1" />;
+        return <Sparkles className="mr-1" width={20} height={20}/>;
       case 'BESTSELLER':
-        return <Flame className="w-3 h-3 mr-1" />;
+        return <Flame className="mr-1" width={20} height={20}/>;
       default:
         return null;
     }
