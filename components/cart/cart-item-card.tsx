@@ -62,13 +62,13 @@ export function CartItemCard({ item }: CartItemCardProps) {
       <div className="relative p-4 rounded-2xl border border-gray-100 hover:border-primary/20 bg-white/50 backdrop-blur-sm transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/5">
         <div className="flex gap-4">
           {/* Product Image */}
-          <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+          <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center bg-white">
             <img
               src={imageUrl}
               alt={item.MenuItemText}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           </div>
 
           {/* Product Info */}
