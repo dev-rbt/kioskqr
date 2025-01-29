@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {CategorySettings} from '@/components/settings/category-settings';
 import ProductSettings from '@/components/settings/product-settings';
 import { ComboSettings } from '@/components/settings/combo-settings';
@@ -27,6 +27,7 @@ import useTemplateStore from "@/store/settings/template";
 import usePriceTemplateStore from "@/store/settings/price-template";
 import { Button } from "@/components/ui/button";
 import { KioskSettings } from "@/components/settings/kiosk-settings";
+import axios from 'axios';
 
 const menuItems = [
   { id: 'branches', label: 'Şubeler', icon: Building2, component: BranchSettings },
@@ -42,10 +43,21 @@ const menuItems = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<string>('products');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
   const { fetchLanguages } = useSettingLanguageStore();
   const { fetchBranches } = useSettingBranchStore();
   const { fetchTemplates } = useTemplateStore();
   const { fetchPriceTemplates } = usePriceTemplateStore();
+
+  const accumulatedDataRef = useRef('');
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     fetchLanguages();
@@ -55,20 +67,58 @@ export default function SettingsPage() {
   }, []);
 
   const handleUpdate = async () => {
+    if (!isMounted.current) return;
+    
     setIsUpdating(true);
+    setUpdateMessage('Güncelleme başlatılıyor...');
+    accumulatedDataRef.current = '';
+
     try {
-      const response = await fetch('/api/update', {
-        method: 'GET',
+      const response = await axios.get('/api/update', {
+        responseType: 'text',
+        onDownloadProgress: (progressEvent) => {
+          if (!isMounted.current) return;
+
+          const newData = progressEvent.event.target.responseText.slice(accumulatedDataRef.current.length);
+          accumulatedDataRef.current = progressEvent.event.target.responseText;
+          
+          const lines = newData.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.error) {
+                  throw new Error(data.error);
+                }
+
+                if (data.message === 'COMPLETED') {
+                  setIsUpdating(false);
+                  setUpdateMessage('');
+                  // Refresh data after update
+                  fetchLanguages();
+                  fetchBranches();
+                  fetchTemplates();
+                  fetchPriceTemplates();
+                  return;
+                }
+
+                setUpdateMessage(data.message);
+              } catch (e) {
+                console.error('Error parsing SSE message:', e);
+              }
+            }
+          }
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update data');
+      if (response.status !== 200) {
+        throw new Error('Güncelleme başarısız oldu');
       }
-
     } catch (error) {
       console.error('Error updating data:', error);
-
-    } finally {
+      setUpdateMessage('Güncelleme sırasında hata oluştu');
       setIsUpdating(false);
     }
   };
@@ -80,8 +130,16 @@ export default function SettingsPage() {
       {/* Navigation */}
       <div className="border-b">
         <div className="container mx-auto">
-          <nav className="flex items-center justify-between  py-4">
-            <div className="flex items-center space-x-2 ">
+          <nav className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={handleUpdate}
+                disabled={isUpdating}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={cn("h-4 w-4", isUpdating && "animate-spin")} />
+                {isUpdating ? updateMessage : "Verileri Güncelle"}
+              </Button>
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -105,20 +163,6 @@ export default function SettingsPage() {
                 );
               })}
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleUpdate}
-              disabled={isUpdating}
-              className="ml-4"
-            >
-              <RefreshCw className={cn(
-                "w-4 h-4 mr-2",
-                isUpdating && "animate-spin"
-              )} />
-              {isUpdating ? "Güncelleniyor..." : "Verileri Güncelle"}
-            </Button>
           </nav>
         </div>
       </div>
