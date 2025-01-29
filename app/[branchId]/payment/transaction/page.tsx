@@ -303,8 +303,7 @@ export default function PaymentTransactionPage() {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background and overlay elements */}
       <div 
-        className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1556742393-d75f468bfcb0?q=80&w=2070')] bg-cover bg-center"
-        style={{ filter: 'brightness(0.1)' }}
+        className="fixed inset-0 bg-[url('/img/paymentbackground.jpeg')] bg-cover bg-center"
       />
       
       <div className="fixed inset-0">

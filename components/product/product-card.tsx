@@ -148,12 +148,12 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               </Badge>
             )}
             {product.Rating > 0 && (
-              <div className="absolute left-3 top-3 bg-black/60 rounded-xl px-2 py-1">
+              <div className="absolute left-3 bottom-3 bg-black/60 rounded-xl px-2 py-1">
                 <ReactStars
                   count={5}
                   value={product.Rating}
                   edit={false}
-                  size={20}
+                  size={16}
                   activeColor="#FFD700"
                   isHalf={true}
                 />

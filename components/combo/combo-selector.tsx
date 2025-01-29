@@ -179,7 +179,7 @@ export function ComboSelector({ groups, basePrice, onAddToCart, existingTransact
                 <motion.button
                   key={group.OriginalName}
                   onClick={() => setActiveGroupIndex(index)}
-                  className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
+                  className={`w-full text-left p-2 sm:p-4 rounded-xl transition-all duration-300 ${
                     isActive 
                       ? 'bg-primary/10 ring-2 ring-primary/20' 
                       : 'hover:bg-gray-50'
@@ -187,32 +187,34 @@ export function ComboSelector({ groups, basePrice, onAddToCart, existingTransact
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-lg font-semibold ${isActive ? 'text-primary' : 'text-gray-900'}`}>
+                      <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                        <span className={`text-base sm:text-lg font-semibold ${isActive ? 'text-primary' : 'text-gray-900'}`}>
                           {group.OriginalName}
                         </span>
-                        {group.ForcedQuantity > 0 && (
-                          <span className="text-sm text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
-                            {group.ForcedQuantity} {t.common.requiredSelectionCount}
-                          </span>
-                        )}
                       </div>
                       {group.IsForcedGroup && (
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">
                           {t.common.requiredSelection}
                         </p>
                       )}
                     </div>
-                    {isComplete && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-primary">
-                          {t.common.selectionCompleted}
+                    <div className="flex flex-col items-end gap-1">
+                      {group.ForcedQuantity > 0 && (
+                        <span className="text-xs sm:text-sm text-primary/80 bg-primary/10 px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                          {group.ForcedQuantity} {t.common.requiredSelectionCount}
                         </span>
-                        <CheckCircle2 className="w-5 h-5 text-primary" />
-                      </div>
-                    )}
+                      )}
+                      {isComplete && (
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <span className="text-xs sm:text-sm font-medium text-primary hidden sm:inline">
+                            {t.common.selectionCompleted}
+                          </span>
+                          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </motion.button>
               );

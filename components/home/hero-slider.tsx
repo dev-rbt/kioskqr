@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Banner } from '@/types/branch';
+import useBranchStore from '@/store/branch';
 
 
 
 export function HeroSlider({banners}: {banners: Banner[]}) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const {branchData} = useBranchStore();
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % banners.length);
@@ -44,12 +45,9 @@ export function HeroSlider({banners}: {banners: Banner[]}) {
         {banners.map((_, index) => (
           <button
             key={index}
+            style={index === currentIndex ? {backgroundColor: branchData?.SecondColor} : {backgroundColor: '#fff'}}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? 'bg-primary w-8' 
-                : 'bg-white/70 hover:bg-white'
-            }`}
+            className={`w-2 h-2 rounded-full transition-all duration-300`}
           />
         ))}
       </div>
