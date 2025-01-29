@@ -111,7 +111,7 @@ export default function WelcomePage() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="h-screen w-full object-fill absolute"
         >
           <source src="/tavukdunyasi.webm" type="video/webm" />
         </video>
