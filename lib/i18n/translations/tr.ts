@@ -66,6 +66,7 @@ export const tr = {
     edit: "Değiştir",
     done: "Tamam",
     productNote: "Ürün Notu",
+    enterText: "Metin girin...",
     enterProductNote: "Ürün notunuzu buraya yazabilirsiniz...",
     ok: "Tamam",
     selectionCompleted: "Seçim tamamlandı",

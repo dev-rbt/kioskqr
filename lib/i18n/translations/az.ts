@@ -79,6 +79,7 @@ export const az = {
     mustSelect: "seçilməlidir",
     goBack: "Geri Qayıt",
     completeOrder: "Sifarişi Tamamla",
+    enterText: "Mətn daxil edin...",
   },
   product: {
     spicy: "Acılı",

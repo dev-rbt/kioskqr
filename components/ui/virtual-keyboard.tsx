@@ -23,6 +23,7 @@ export const useKeyboardStore = create<KeyboardStore>((set) => ({
 export function VirtualKeyboard() {
   const { t } = useBranchStore();
   const { isOpen, inputRef, setIsOpen } = useKeyboardStore();
+  
   const [layout, setLayout] = useState("default");
   const [previewValue, setPreviewValue] = useState("");
   const [isInModal, setIsInModal] = useState(false);
@@ -112,7 +113,7 @@ export function VirtualKeyboard() {
               value={previewValue}
               readOnly
               className="flex-1 p-4 rounded-xl border border-input bg-white/50 text-lg"
-              placeholder="Metin girin..."
+              placeholder={t.common.enterText}
             />
             <button
               onClick={handleClose}

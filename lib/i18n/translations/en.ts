@@ -79,6 +79,7 @@ export const en = {
     mustSelect: "must be selected",
     goBack: "Go Back",
     completeOrder: "Complete Order",
+    enterText: "Enter text...",
   },
   product: {
     spicy: "Spicy",

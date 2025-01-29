@@ -79,6 +79,7 @@ export const ar = {
     mustSelect: "يجب الاختيار",
     goBack: "رجوع",
     completeOrder: "إكمال الطلب",
+    enterText: "أدخل النص...",
   },
   product: {
     spicy: "حار",
