@@ -116,7 +116,7 @@ export default function WelcomePage() {
           <source src="/tavukdunyasi.webm" type="video/webm" />
         </video>
         {/* Subtle dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/30" />
+        <div className="absolute inset-0 " />
       </div>
 
       {/* Language Switcher - Always visible */}
