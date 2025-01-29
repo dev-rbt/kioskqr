@@ -69,15 +69,15 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
       case 'SPICY':
         return <Image src="/img/pepper.svg" alt="Spicy" width={20} height={20} className="mr-1" />;
       case 'VEGAN':
-        return <Leaf className="mr-1" width={20} height={20}/>;
+        return <Leaf className="mr-1 fill-current text-green-500" width={20} height={20}/>;
       case 'VEGETARIAN':
-        return <Leaf className="mr-1" width={20} height={20}/>;
+        return <Leaf className="mr-1 fill-current text-green-500" width={20} height={20}/>;
       case 'GLUTEN_FREE':
-        return <Ban className="mr-1" width={20} height={20}/>;
+        return <Ban className="mr-1 fill-current text-red-500" width={20} height={20}/>;
       case 'NEW':
-        return <Sparkles className="mr-1" width={20} height={20}/>;
+        return <Sparkles className="mr-1 fill-current text-yellow-400" width={20} height={20}/>;
       case 'BESTSELLER':
-        return <Flame className="mr-1" width={20} height={20}/>;
+        return <Flame className="mr-1 fill-current text-orange-500" width={20} height={20}/>;
       default:
         return null;
     }
