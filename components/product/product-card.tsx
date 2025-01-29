@@ -6,6 +6,7 @@ import { ProductImage } from './product-card/product-image';
 import { ProductPrice } from './product-card/product-price';
 import { AddToCartButton } from './product-card/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { 
   UtensilsCrossed, 
   Check, 
@@ -66,7 +67,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
   const getBadgeIcon = (code: string) => {
     switch (code) {
       case 'SPICY':
-        return <ChefHat className="w-3 h-3 mr-1" />;
+        return <Image src="/img/pepper.svg" alt="Spicy" width={12} height={12} className="mr-1" />;
       case 'VEGAN':
         return <Leaf className="w-3 h-3 mr-1" />;
       case 'VEGETARIAN':
