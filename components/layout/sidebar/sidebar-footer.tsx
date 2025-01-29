@@ -57,8 +57,8 @@ export function SidebarFooter() {
               }}
               className="flex items-center gap-3 py-2 px-4"
             >
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary uppercase">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{backgroundColor: branchData?.SecondColor}}>
+                <span className="text-sm font-semibold text-white uppercase">
                   {language.Code}
                 </span>
               </div>
