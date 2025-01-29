@@ -58,7 +58,7 @@ export default function SettingsPage() {
     setIsUpdating(true);
     try {
       const response = await fetch('/api/update', {
-        method: 'POST',
+        method: 'GET',
       });
 
       if (!response.ok) {
