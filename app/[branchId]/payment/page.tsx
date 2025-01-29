@@ -15,7 +15,7 @@ import {
   StickyNote,
   ChevronRight
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import useBranchStore from '@/store/branch';
@@ -46,6 +46,7 @@ export default function PaymentPage() {
   const { branchData, t } = useBranchStore();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const { setInputRef, setIsOpen } = useKeyboardStore();
@@ -152,7 +153,7 @@ export default function PaymentPage() {
         <PaymentHeader
           totalAmount={cart.AmountDue}
           progress={(step / 3) * 100}
-          onBack={() => router.back()}
+          onBack={() => router.push(`/${params?.branchId}/menu`)}
           t={t}
         />
 
