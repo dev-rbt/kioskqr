@@ -20,7 +20,7 @@ export default function BranchLayout({
   children: React.ReactNode;
   params: { branchId: string };
 }) {
-  const { fetchBranchData, isLoading, reset, selectedLanguage } = useBranchStore();
+  const { fetchBranchData, isLoading, reset, selectedLanguage, branchData } = useBranchStore();
   const router = useRouter();
   const { clearCart } = useCartStore();
   const pathname = usePathname();
@@ -54,15 +54,23 @@ export default function BranchLayout({
   }
 
   return isLoading ? (
-    <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
+    <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning style={{ 
+      backgroundColor: '#f4f2f4',
+      scrollbarWidth: 'thin',
+      scrollbarColor: `${branchData?.SecondColor} #f4f2f4`
+    }}>
       <body className={inter.className}>
         <Loader />
       </body>
     </html>
   ) : (
-    <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning>
+    <html lang={selectedLanguage?.Code.toLowerCase() || "tr"} dir={selectedLanguage?.Dir || "ltr"} suppressHydrationWarning style={{ 
+      backgroundColor: '#f4f2f4',
+      scrollbarWidth: 'thin',
+      scrollbarColor: `${branchData?.SecondColor} #f4f2f4`
+    }}>
       <body className={inter.className}>
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col" >
           {children}
           <VirtualKeyboard />
         </div>
