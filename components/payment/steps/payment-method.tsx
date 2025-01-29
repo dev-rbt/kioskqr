@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { Button } from '@/components/ui/button';
 import { useCallback } from 'react';
+import useBranchStore from '@/store/branch';
 
 // Move PaymentMethodCard outside the main component
 const PaymentMethodCard = ({ 
@@ -72,6 +73,7 @@ interface PaymentMethodProps {
 export function PaymentMethod({ notes, callNumber, paymentMethods, onSelect, t, paymentMethodIcons }: PaymentMethodProps) {
   const router = useRouter();
   const { cart } = useCartStore();
+  const {branchData} = useBranchStore();
   const params = useParams();
   
   const creditCardMethods = paymentMethods.filter(method => method.Type === 'CREDIT_CARD');
@@ -113,8 +115,8 @@ export function PaymentMethod({ notes, callNumber, paymentMethods, onSelect, t, 
           onClick={handleEditNotes}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <StickyNote className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{backgroundColor: branchData?.SecondColor}}>
+              <StickyNote className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs text-gray-500">{t.common.orderNotes}</p>
