@@ -148,8 +148,25 @@ export default async function handler(
     res: NextApiResponse
 ) {
     if (req.method === 'GET') {
+        // Set proper SSE headers
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no'
+        });
+
         try {
+            // Helper function to send updates with proper SSE format
+            const sendUpdate = (message: string) => {
+                console.log('Update Status:', message);
+                res.write(`data: ${JSON.stringify({ message })}\n\n`);
+                // Force flush the response
+                if (res.flush) res.flush();
+            };
+
             // 1. Sync price templates first
+            sendUpdate('Fiyat Şablonları Güncelleniyor...');
             const priceTemplatesData = await syncData<PriceTemplates>({
                 query: `
                         SELECT
@@ -165,6 +182,7 @@ export default async function handler(
             });
 
             // 2. Sync menu templates
+            sendUpdate('Menü Şablonları Güncelleniyor...');
             const menuTemplatesData = await syncData<MenuTemplate>({
                 query: `
                         SELECT
@@ -182,6 +200,7 @@ export default async function handler(
             });
 
             // 3. Sync menu groups
+            sendUpdate('Menü Grupları Güncelleniyor...');
             const menuGroupsData = await syncData<MenuGroups>({
                 query: `SELECT
                             mg.TemplateKey,
@@ -199,6 +218,7 @@ export default async function handler(
             });
 
             // 4. Sync products
+            sendUpdate('Ürünler Güncelleniyor...');
             const productsData = await syncData<Products>({
                 query: `SELECT 
                             p.ProductKey AS [ProductKey],
@@ -238,6 +258,7 @@ export default async function handler(
             });
 
             // 5. Sync menu item prices
+            sendUpdate('Ürün Fiyatları Güncelleniyor...');
             const menuItemPricesData = await syncData<MenuItemPrices>({
                 query: `
                     SELECT
@@ -260,6 +281,7 @@ export default async function handler(
             });
 
             // 6. Sync menu item layout
+            sendUpdate('Menü Düzeni Güncelleniyor...');
             const menuLayoutData = await syncData<MenuItemLayout>({
                 query: `
                         SELECT
@@ -284,6 +306,7 @@ export default async function handler(
             });
 
             // 7. Sync branches
+            sendUpdate('Şubeler Güncelleniyor...');
             const branchData = await syncData<Branch>({
                 query: `
                         SELECT
@@ -300,6 +323,7 @@ export default async function handler(
             });
 
             // 8. Sync payment methods
+            sendUpdate('Ödeme Yöntemleri Güncelleniyor...');
             const paymentMethodData = await syncData<PaymentMethods>({
                 query: `
                     SELECT
@@ -361,6 +385,7 @@ export default async function handler(
             });
 
             // 9. Sync Combo Menus
+            sendUpdate('Combo Menüler Güncelleniyor...');
             const comboData = await syncData({
                 query: `
                     SELECT
@@ -472,37 +497,18 @@ export default async function handler(
                     return rows;
                 },
             });
+            sendUpdate('Combo Menüler Güncellendi');
 
-            return res.status(200).json({
-                message: 'Data sync completed successfully',
-                affectedRows: {
-                    priceTemplates: priceTemplatesData.length,
-                    menuTemplates: menuTemplatesData.length,
-                    menuGroups: menuGroupsData.length,
-                    products: productsData.length,
-                    menuItemPrices: menuItemPricesData.length,
-                    menuLayout: menuLayoutData.length,
-                    branches: branchData.length,
-                    paymentMethods: paymentMethodData.length,
-                    comboMenus: comboData.length,
-                    total: priceTemplatesData.length +
-                        menuTemplatesData.length +
-                        menuGroupsData.length +
-                        productsData.length +
-                        menuItemPricesData.length +
-                        menuLayoutData.length +
-                        branchData.length +
-                        paymentMethodData.length +
-                        comboData.length
-                }
-            });
+            // Send final success message
+            sendUpdate('COMPLETED');
+            res.end();
 
         } catch (error) {
-            console.error('Error updating data:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            console.error('Error in update handler:', error);
+            res.write(`data: ${JSON.stringify({ error: 'Güncelleme sırasında hata oluştu' })}\n\n`);
+            res.end();
         }
     } else {
-        res.setHeader('Allow', ['GET']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        res.status(405).json({ error: 'Method not allowed' });
     }
 }
