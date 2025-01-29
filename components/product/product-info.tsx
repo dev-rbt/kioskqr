@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from 'lucide-react';
+import ReactStars from "react-rating-stars-component";
 import { ProductBadge } from '@/components/ui/product-badge';
 import { Price } from '@/components/ui/price';
 import { OrderType, Product } from '@/types/branch';
@@ -15,10 +15,16 @@ export function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="space-y-4">
       {/* Rating */}
-      {product.Rating && (
-        <div className="flex items-center gap-1 text-yellow-500">
-          <Star className="h-5 w-5 fill-current" />
-          <span className="font-medium text-lg">{product.Rating}</span>
+      {product.Rating > 0 && (
+        <div className="flex items-center gap-2">
+          <ReactStars
+            count={5}
+            value={product.Rating}
+            edit={false}
+            size={24}
+            activeColor="#FFD700"
+            isHalf={true}
+          />
         </div>
       )}
 
