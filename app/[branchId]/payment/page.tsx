@@ -140,15 +140,30 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
-      <div className="main-content">
-        {/* Background Patterns */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[url('/patterns/topography.svg')] opacity-[0.02]" />
-          <div className="absolute top-0 -right-64 w-[40rem] h-[40rem] bg-gradient-to-br from-primary/5 to-primary/10 rounded-full blur-3xl opacity-30" />
-          <div className="absolute -bottom-32 -left-64 w-[50rem] h-[50rem] bg-gradient-to-tr from-primary/10 to-primary/5 rounded-full blur-3xl opacity-30" />
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background */}
+      <div 
+        className="fixed inset-0 bg-[url('/img/paymentbackground.jpeg')] bg-cover bg-center"
+      />
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-[url('/patterns/topography.svg')] bg-repeat opacity-5" />
+        <div className="absolute inset-0 bg-[url('/patterns/circuit-board.svg')] bg-repeat opacity-5" />
+      </div>
+      
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background/95 to-primary/10" />
+        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-background to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-96 bg-gradient-to-t from-background to-transparent" />
+      </div>
 
+      <div className="fixed inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -right-48 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-blob opacity-50" />
+        <div className="absolute top-3/4 -left-48 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-blob animation-delay-2000 opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-blob animation-delay-4000 opacity-50" />
+      </div>
+
+      {/* Content */}
+      <div className="relative">
         {/* Header */}
         <PaymentHeader
           totalAmount={cart.AmountDue}
