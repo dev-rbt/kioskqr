@@ -31,8 +31,8 @@ export function SidebarFooter() {
           >
             <div className="w-full px-4 py-3 rounded-xl flex items-center gap-3 bg-background hover:bg-muted transition-colors border border-input">
               <div className="flex items-center gap-3 flex-1">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="text-base font-semibold text-primary uppercase">
+                <div className="w-10 h-10 rounded-lg  flex items-center justify-center" style={{backgroundColor: branchData?.SecondColor}}>
+                  <span className="text-base font-semibold text-white uppercase">
                     {selectedLanguage?.Code || 'TR'}
                   </span>
                 </div>

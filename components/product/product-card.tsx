@@ -147,18 +147,6 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                 {t.common.menu}
               </Badge>
             )}
-            {product.Rating > 0 && (
-              <div className="absolute left-3 bottom-3 bg-black/60 rounded-xl px-2 py-1">
-                <ReactStars
-                  count={5}
-                  value={product.Rating}
-                  edit={false}
-                  size={16}
-                  activeColor="#FFD700"
-                  isHalf={true}
-                />
-              </div>
-            )}
             {/* Product Badges - Limited to 3, stacked vertically */}
             {productTranslation?.Badges && (
               <div className="absolute right-3 top-3 flex flex-col gap-1">
@@ -182,6 +170,21 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
 
           {/* Content Section */}
           <div className="flex flex-col flex-1 p-3">
+            {/* Rating */}
+            {product.Rating > 0 && (
+              <div className="flex items-center mb-1">
+                <ReactStars
+                  count={5}
+                  value={product.Rating}
+                  edit={false}
+                  size={18}
+                  activeColor="#FFD700"
+                  isHalf={true}
+                />
+                <span className="text-sm ml-1 text-gray-500">{product.Rating.toFixed(1)}</span>
+              </div>
+            )}
+            
             {/* Title */}
             <h3 className="text-lg font-bold line-clamp-2 min-h-[48px]"
                 style={{ color: branchData?.SecondColor || 'inherit' }}>
