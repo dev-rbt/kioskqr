@@ -138,7 +138,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               alt={productTranslation?.Name || product.OriginalName} 
             />
             <ProductPrice price={selectedOrderType == OrderType.DELIVERY ? product.DeliveryPrice : product.TakeOutPrice} />
-            {product.IsCombo && (
+            {/* {product.IsCombo && (
               <Badge 
                 className="absolute top-4 left-4 text-primary-foreground gap-1.5 z-20"
                 variant="secondary"
@@ -147,7 +147,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                 <UtensilsCrossed className="h-3.5 w-3.5" />
                 {t.common.menu}
               </Badge>
-            )}
+            )} */}
             {/* Product Badges - Horizontal layout */}
             {productTranslation?.Badges && (
               <div className="absolute left-0 top-0 flex flex-row gap-0.5 flex-wrap z-30">
