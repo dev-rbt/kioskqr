@@ -101,7 +101,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
         
         {/* Main Card */}
         <Card 
-          className="relative h-full flex flex-col overflow-hidden transition-all duration-300 border-2 border-transparent hover:border-[var(--border-color)] rounded-xl"
+          className="relative h-full flex flex-col overflow-hidden transition-all duration-300 border-2 border-transparent hover:border-[var(--border-color)] rounded-xl z-10"
           style={{ 
             backgroundColor: 'white',
             ['--border-color' as any]: 'transparent'
@@ -140,7 +140,7 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
             <ProductPrice price={selectedOrderType == OrderType.DELIVERY ? product.DeliveryPrice : product.TakeOutPrice} />
             {product.IsCombo && (
               <Badge 
-                className="absolute top-4 left-4 text-primary-foreground gap-1.5"
+                className="absolute top-4 left-4 text-primary-foreground gap-1.5 z-20"
                 variant="secondary"
                 style={{ color: 'white', backgroundColor: branchData?.SecondColor }}
               >
@@ -148,17 +148,16 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                 {t.common.menu}
               </Badge>
             )}
-            {/* Product Badges - Limited to 3, stacked vertically */}
+            {/* Product Badges - Horizontal layout */}
             {productTranslation?.Badges && (
-              <div className="absolute right-3 top-3 flex flex-col gap-1">
+              <div className="absolute left-0 top-0 flex flex-row gap-0.5 flex-wrap z-30">
                 {productTranslation.Badges.slice(0, 3).map((badge, index) => (
                   <Badge 
                     key={badge.BadgeKey}
-                    className="text-xs py-0.5 px-2 whitespace-nowrap flex items-center"
+                    className="text-xs py-0.5 px-1.5 whitespace-nowrap flex items-center"
                     style={{ 
                       color: 'white', 
                       backgroundColor: branchData?.SecondColor,
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                     }}
                   >
                     {getBadgeIcon(badge.Code)}
