@@ -79,6 +79,7 @@ export const ru = {
     mustSelect: "нужно выбрать",
     goBack: "Назад",
     completeOrder: "Завершить заказ",
+    enterText: "Введите текст...",
   },
   product: {
     spicy: "Острый",
