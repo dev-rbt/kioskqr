@@ -19,30 +19,52 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useCartContext } from '@/components/cart/cart-context';
+import React from 'react';
 
 export function CartFooter() {
   const { cart, clearCart } = useCartStore();
   const { branchData, selectedLanguage, t } = useBranchStore();
   const pathname = usePathname();
+  const { setFooterHeight } = useCartContext();
+  const footerRef = React.useRef<HTMLDivElement>(null);
   
   const hasItems = cart.Items.length > 0;
   const isProductDetail = pathname?.startsWith('/product/');
+  const shouldHide = !hasItems || isProductDetail || !branchData || !selectedLanguage;
+  
+  React.useEffect(() => {
+    const updateHeight = () => {
+      if (footerRef.current && !shouldHide) {
+        setFooterHeight(footerRef.current.offsetHeight);
+      } else {
+        setFooterHeight(0);
+      }
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      setFooterHeight(0);
+    };
+  }, [setFooterHeight, shouldHide]);
 
-  // Don't show footer if there are no items or if we're on product detail page
-  if (!hasItems || isProductDetail || !branchData || !selectedLanguage) return null;
+  if (shouldHide) {
+    return null;
+  }
 
   return (
     <motion.div
+      ref={footerRef}
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       exit={{ y: 100 }}
+      transition={{ type: "spring", bounce: 0, duration: 0.5 }}
       className="fixed bottom-0 left-0 right-0 z-50"
     >
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/95 to-transparent -top-20 pointer-events-none" />
-      
       {/* Main content */}
-      <div className="relative bg-card border-t shadow-2xl p-4">
+      <div className="bg-background border-t shadow-2xl p-4">
         <div className="container flex items-center justify-between gap-4">
           {/* Clear cart button with confirmation */}
           <AlertDialog>

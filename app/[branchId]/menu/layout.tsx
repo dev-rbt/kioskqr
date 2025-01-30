@@ -9,6 +9,7 @@ import { useParams } from 'next/navigation';
 import useBranchStore from '@/store/branch';
 import { useCartStore } from '@/store/cart';
 import { useInactivityTimer } from '@/hooks/useInactivityTimer';
+import { CartContextProvider } from '@/components/cart/cart-context'; // Import from correct path
 
 const INACTIVITY_TIMEOUT = 60000; // 1 minute in milliseconds
 //const INACTIVITY_TIMEOUT = 10000; // 10 seconds in milliseconds
@@ -39,15 +40,17 @@ export default function MenuLayout({
   return (
     <>
       <ThemeProvider />
-      <div className="flex min-h-screen bg-menu">
-        <Sidebar />
-        <main className='flex-1 ml-80'>
-          <div className={`max-w-[1600px] mx-auto`}>
-            {children}
-          </div>
-        </main>
-        <CartFooter />
-      </div>
+      <CartContextProvider>
+        <div className="flex min-h-screen bg-menu">
+          <Sidebar />
+          <main className='flex-1 ml-80'>
+            <div className={`max-w-[1600px] mx-auto pb-32`}>
+              {children}
+            </div>
+          </main>
+          <CartFooter />
+        </div>
+      </CartContextProvider>
     </>
   );
 }
