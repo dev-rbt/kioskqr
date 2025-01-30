@@ -274,8 +274,16 @@ export default function PaymentTransactionPage() {
 
   // Return to menu function
   const handleReturnToMenu = () => {
-    clearCart();
-    router.push(`/${params?.branchId}/menu`);
+    try {
+      if (typeof window !== 'undefined' && 'CefSharp' in window) {
+        window.CefSharp.PostMessage({ cancelOrder: null });
+      }
+      clearCart();
+      router.push(`/${params?.branchId}/menu`);
+    } catch (error) {
+      console.error("CefSharp communication error:", error);
+      setIsRetrying(false);
+    }
   };
 
   // Payment menu function
