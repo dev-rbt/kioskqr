@@ -276,7 +276,7 @@ export default function PaymentTransactionPage() {
   const handleReturnToMenu = () => {
     try {
       if (typeof window !== 'undefined' && 'CefSharp' in window) {
-        window.CefSharp.PostMessage({ cancelOrder: null });
+        window.CefSharp.PostMessage({ cancelOrder: cart });
       }
       clearCart();
       router.push(`/${params?.branchId}/menu`);
