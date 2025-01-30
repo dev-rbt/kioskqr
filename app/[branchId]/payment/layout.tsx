@@ -19,18 +19,18 @@ export default function PaymentLayout({
   const { fetchBranchData, reset } = useBranchStore();
   const { clearCart } = useCartStore();
 
-  useInactivityTimer({
-    timeout: INACTIVITY_TIMEOUT,
-    onTimeout: async () => {
-      const branchId = params?.branchId?.toString();
-      if (branchId) {
-        clearCart();
-        await reset(branchId);
-        await fetchBranchData(branchId);
-        router.push(`/${branchId}`);
-      }
-    }
-  });
+  // useInactivityTimer({
+  //   timeout: INACTIVITY_TIMEOUT,
+  //   onTimeout: async () => {
+  //     const branchId = params?.branchId?.toString();
+  //     if (branchId) {
+  //       clearCart();
+  //       await reset(branchId);
+  //       await fetchBranchData(branchId);
+  //       router.push(`/${branchId}`);
+  //     }
+  //   }
+  // });
 
   return (
     <>
