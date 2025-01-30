@@ -138,58 +138,52 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               alt={productTranslation?.Name || product.OriginalName} 
             />
             <ProductPrice price={selectedOrderType == OrderType.DELIVERY ? product.DeliveryPrice : product.TakeOutPrice} />
-            {/* {product.IsCombo && (
-              <Badge 
-                className="absolute top-4 left-4 text-primary-foreground gap-1.5 z-20"
-                variant="secondary"
-                style={{ color: 'white', backgroundColor: branchData?.SecondColor }}
-              >
-                <UtensilsCrossed className="h-3.5 w-3.5" />
-                {t.common.menu}
-              </Badge>
-            )} */}
-            {/* Product Badges - Horizontal layout */}
-            {productTranslation?.Badges && (
-              <div className="absolute left-0 top-0 flex flex-row gap-0.5 flex-wrap z-30">
-                {productTranslation.Badges.slice(0, 3).map((badge, index) => (
-                  <Badge 
-                    key={badge.BadgeKey}
-                    className="text-xs py-0.5 px-1.5 whitespace-nowrap flex items-center"
-                    style={{ 
-                      color: 'white', 
-                      backgroundColor: branchData?.SecondColor,
-                    }}
-                  >
-                    {getBadgeIcon(badge.Code)}
-                    {badge.Name}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Content Section */}
           <div className="flex flex-col flex-1 p-3">
-            {/* Rating */}
-            {product.Rating > 0 && (
-              <div className="flex items-center mb-1">
-                <ReactStars
-                  count={5}
-                  value={product.Rating}
-                  edit={false}
-                  size={18}
-                  activeColor="#FFD700"
-                  isHalf={true}
-                />
-                <span className="text-sm ml-1 text-gray-500">{product.Rating.toFixed(1)}</span>
-              </div>
-            )}
-            
             {/* Title */}
-            <h3 className="text-lg font-bold line-clamp-2 min-h-[48px]"
+            <h3 className="text-lg font-bold line-clamp-2 mb-1"
                 style={{ color: branchData?.SecondColor || 'inherit' }}>
               {productTranslation?.Name || product.OriginalName}
             </h3>
+
+            {/* Rating and Badges Row */}
+            <div className="flex items-center mb-2">
+              {/* Rating */}
+              {product.Rating > 0 && (
+                <div className="flex items-center">
+                  <ReactStars
+                    count={5}
+                    value={product.Rating}
+                    edit={false}
+                    size={18}
+                    activeColor="#FFD700"
+                    isHalf={true}
+                  />
+                  <span className="text-sm ml-1 text-gray-500">{product.Rating.toFixed(1)}</span>
+                </div>
+              )}
+
+              {/* Product Badges */}
+              {productTranslation?.Badges && (
+                <div className="flex flex-row gap-1 flex-wrap ml-auto">
+                  {productTranslation.Badges.slice(0, 3).map((badge) => (
+                    <Badge 
+                      key={badge.BadgeKey}
+                      className="text-xs py-0.5 px-1.5 whitespace-nowrap flex items-center"
+                      style={{ 
+                        color: 'white', 
+                        backgroundColor: branchData?.SecondColor,
+                      }}
+                    >
+                      {getBadgeIcon(badge.Code)}
+                      {badge.Name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Description */}
             {productTranslation?.Description && (
@@ -199,19 +193,30 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               </p>
             )}
 
-            {/* Meta Info Row */}
-            <div className="flex items-center gap-3 mb-3 text-sm flex-wrap"
-                 style={{ color: branchData?.SecondColor || 'inherit' }}>
+            {/* Meta Info Cards */}
+            <div className="flex items-center gap-4 mb-3">
               {product.PreperationTime > 0 && (
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{product.PreperationTime} {t.product.minutes}</span>
+                <div 
+                  className="inline-flex items-center"
+                  style={{ color: branchData?.SecondColor || 'inherit' }}
+                >
+                  <Clock className="w-4 h-4 mr-1.5 opacity-70" />
+                  <span className="text-sm font-medium tracking-tight">
+                    {product.PreperationTime}
+                    <span className="text-xs opacity-60 ml-1">{t.product.minutes}</span>
+                  </span>
                 </div>
               )}
               {product.Calories > 0 && (
-                <div className="flex items-center gap-1">
-                  <Flame className="w-4 h-4" />
-                  <span>{product.Calories} {t.product.calories}</span>
+                <div 
+                  className="inline-flex items-center"
+                  style={{ color: branchData?.SecondColor || 'inherit' }}
+                >
+                  <Flame className="w-4 h-4 mr-1.5 opacity-70" />
+                  <span className="text-sm font-medium tracking-tight">
+                    {product.Calories}
+                    <span className="text-xs opacity-60 ml-1">{t.product.calories}</span>
+                  </span>
                 </div>
               )}
             </div>
