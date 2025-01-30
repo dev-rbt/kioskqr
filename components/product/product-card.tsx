@@ -148,42 +148,20 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
               {productTranslation?.Name || product.OriginalName}
             </h3>
 
-            {/* Rating and Badges Row */}
-            <div className="flex items-center mb-2">
-              {/* Rating */}
-              {product.Rating > 0 && (
-                <div className="flex items-center">
-                  <ReactStars
-                    count={5}
-                    value={product.Rating}
-                    edit={false}
-                    size={18}
-                    activeColor="#FFD700"
-                    isHalf={true}
-                  />
-                  <span className="text-sm ml-1 text-gray-500">{product.Rating.toFixed(1)}</span>
-                </div>
-              )}
-
-              {/* Product Badges */}
-              {productTranslation?.Badges && (
-                <div className="flex flex-row gap-1 flex-wrap ml-auto">
-                  {productTranslation.Badges.slice(0, 3).map((badge) => (
-                    <Badge 
-                      key={badge.BadgeKey}
-                      className="text-xs py-0.5 px-1.5 whitespace-nowrap flex items-center"
-                      style={{ 
-                        color: 'white', 
-                        backgroundColor: branchData?.SecondColor,
-                      }}
-                    >
-                      {getBadgeIcon(badge.Code)}
-                      {badge.Name}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Rating */}
+            {product.Rating > 0 && (
+              <div className="flex items-center mb-2">
+                <ReactStars
+                  count={5}
+                  value={product.Rating}
+                  edit={false}
+                  size={18}
+                  activeColor="#FFD700"
+                  isHalf={true}
+                />
+                <span className="text-sm ml-1 text-gray-500">{product.Rating.toFixed(1)}</span>
+              </div>
+            )}
 
             {/* Description */}
             {productTranslation?.Description && (
@@ -220,6 +198,25 @@ export function ProductCard({ product, categoryId, index}: ProductCardProps) {
                 </div>
               )}
             </div>
+
+            {/* Product Badges */}
+            {productTranslation?.Badges && (
+              <div className="flex flex-row gap-1 flex-wrap mb-3">
+                {productTranslation.Badges.slice(0, 3).map((badge) => (
+                  <Badge 
+                    key={badge.BadgeKey}
+                    className="text-xs py-0.5 px-1.5 whitespace-nowrap flex items-center"
+                    style={{ 
+                      color: 'white', 
+                      backgroundColor: branchData?.SecondColor,
+                    }}
+                  >
+                    {getBadgeIcon(badge.Code)}
+                    {badge.Name}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
             {/* Add to Cart Button */}
             <div className="mt-auto">
