@@ -371,9 +371,61 @@ export default function PaymentTransactionPage() {
                     </div>
                   );
                 case WebViewMessageType.VALIDATION_ERROR:
+                  return (
+                    <div className="space-y-12">
+                      <Error
+                        amount={cart.AmountDue}
+                        error={errorMessage}
+                        onRetry={handleRetry}
+                        onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
+                        t={t}
+                      />
+                      <CurrencyDisplay amount={cart.AmountDue} />
+                    </div>
+                  );
                 case WebViewMessageType.PAYMENT_ERROR:
+                  return (
+                    <div className="space-y-12">
+                      <Error
+                        amount={cart.AmountDue}
+                        error={errorMessage}
+                        onRetry={handleRetry}
+                        onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
+                        t={t}
+                      />
+                      <CurrencyDisplay amount={cart.AmountDue} />
+                    </div>
+                  );
                 case WebViewMessageType.ORDER_SAVE_ERROR:
+                  return (
+                    <div className="space-y-12">
+                      <Error
+                        amount={cart.AmountDue}
+                        error={errorMessage}
+                        onRetry={handleRetry}
+                        onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
+                        t={t}
+                      />
+                      <CurrencyDisplay amount={cart.AmountDue} />
+                    </div>
+                  );
                 case WebViewMessageType.ECR_ERROR:
+                  return (
+                    <div className="space-y-12">
+                      <Error
+                        amount={cart.AmountDue}
+                        error={errorMessage}
+                        onRetry={handleRetry}
+                        onCancel={handleReturnToMenu}
+                        onChangePaymentMethod={handlePaymentMenu}
+                        t={t}
+                      />
+                      <CurrencyDisplay amount={cart.AmountDue} />
+                    </div>
+                  );
                 case WebViewMessageType.ACTION_RESPONSE:
                   return (
                     <div className="space-y-12">
