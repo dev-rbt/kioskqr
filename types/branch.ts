@@ -48,6 +48,8 @@ export interface ComboItem {
     OriginalName: string;
     ExtraPriceTakeOut: number;
     ExtraPriceDelivery: number;
+    TaxPercent: number;
+    OrderByWeight: boolean;
     IsDefault: boolean;
     DefaultQuantity: number;
     Translations: {

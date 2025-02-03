@@ -109,6 +109,7 @@ export const az = {
     ERROR_99: "Ödəniş prosesi uğursuz oldu.",
     ERROR_2086: "Ödəniş alınmadı",
     ERROR_2085: "İstifadəçi əməliyyatı ləğv etdi",
-    ERROR_32: "Kağız bitdi"
+    ERROR_32: "Kağız bitdi",
+    PRODUCT_ZERO_TAX: "Sıfır ƏDV dərəcəsi olan məhsullar mövcuddur",
   }
 };

@@ -109,6 +109,7 @@ export const en = {
     ERROR_2086: "Payment Failed",
     ERROR_32: "Out of Paper",
     ERROR_80: "Customer Cancelled the Transaction.",
-    ERROR_99: "Payment Process Failed."
+    ERROR_99: "Payment Process Failed.",
+    PRODUCT_ZERO_TAX: "Products with zero VAT rate exist",
   }
 };
