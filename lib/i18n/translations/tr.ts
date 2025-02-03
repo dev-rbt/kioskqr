@@ -107,6 +107,7 @@ export const tr = {
     ERROR_99: "Ödeme İşlemi Başarısız.",
     ERROR_2086: "Ödeme Alınamadı",
     ERROR_2085: "Kullanıcı işlemden vazgeçti",
-    ERROR_32: "Kağıt Bitti"
+    ERROR_32: "Kağıt Bitti",
+    PRODUCT_ZERO_TAX: "KDV oranı sıfır olan ürünler mevcut",
   }
 };

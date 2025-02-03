@@ -41,20 +41,26 @@ export default function ProductContent({ params }: { params: { id: string, categ
     setShowAddedAnimation(true);
 
     const totalPrice = product.Combo ? calculateTotalPrice((selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice, selections) : (selectedOrderType == OrderType.DELIVERY) ? product.DeliveryPrice : product.TakeOutPrice;
+
     // Combo seçimlerini SelectedItems formatına dönüştür
     const selectedItems = Object.entries(selections).flatMap(([groupName, groupSelections]) => 
       groupSelections.map(selection => ({
         TransactionKey: uuidv4(),
+        DiscountLineAmount: 0,
+        DiscountCashAmount: 0,
+        DiscountOrderAmount: 0,
+        TaxPercent: selection.Item.TaxPercent,
+        OrderByWeight: selection.Item.OrderByWeight,
         MenuItemKey: selection.Item.MenuItemKey,
         MenuItemText: selection.Item.OriginalName,
-        Price: selection.Item.ExtraPriceTakeOut || 0,
+        Price: selectedOrderType == OrderType.DELIVERY ? selection.Item.ExtraPriceDelivery : selection.Item.ExtraPriceTakeOut || 0,
         Quantity: selection.Quantity,
         IsMainCombo: false,
         Items: [],
         Notes: ''
       }))
     );
-
+  
     const cartProduct = {
       TransactionKey: transactionKey || uuidv4(),
       MenuItemKey: product.ProductID,
@@ -62,6 +68,11 @@ export default function ProductContent({ params }: { params: { id: string, categ
       Price: totalPrice,
       Quantity: existingItem?.Quantity || 1,
       IsMainCombo: true,
+      DiscountLineAmount: 0,
+      DiscountCashAmount: 0,
+      DiscountOrderAmount: 0,
+      TaxPercent: product.TaxPercent,
+      OrderByWeight: product.OrderByWeight,
       Items: selectedItems,
       Notes: note
     };
