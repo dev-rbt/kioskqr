@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, X, Timer } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { WebViewMessageType } from '@/types/webview';
+import { WebViewMessageType } from '@/types/webview.d';
 import { useState, useEffect, useCallback } from 'react';
 import useBranchStore from '@/store/branch';
 import { CurrencyDisplay } from '@/components/payment/currency-display';
