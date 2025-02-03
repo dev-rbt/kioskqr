@@ -256,7 +256,7 @@ export default function PaymentTransactionPage() {
     }
 
     try {
-      if (typeof window !== 'undefined' && 'chrome' in window) {
+      if (typeof window !== 'undefined' ) {
         window.chrome.webview.postMessage({ saveOrder: updatedCart });
       } else {
         console.warn("WebView not found - may be running in browser environment");
@@ -275,7 +275,7 @@ export default function PaymentTransactionPage() {
   // Return to menu function
   const handleReturnToMenu = () => {
     try {
-      if (typeof window !== 'undefined' && 'chrome' in window) {
+      if (typeof window !== 'undefined' ) {
         window.chrome.webview.postMessage({ cancelOrder: cart });
       }
       clearCart();
@@ -297,7 +297,7 @@ export default function PaymentTransactionPage() {
 
     setTimeout(() => {
       try {
-        if (typeof window !== 'undefined' && 'chrome' in window) {
+        if (typeof window !== 'undefined' ) {
           window.chrome.webview.postMessage({ saveOrder: cart });
         }
       } catch (error) {
