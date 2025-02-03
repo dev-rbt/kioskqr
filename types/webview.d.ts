@@ -1,7 +1,7 @@
-interface CefSharp {
-  PostMessage(message: any): void;
+interface WebView {
+  postMessage(message: any): void;
 }
-enum CefSharpMessageType {
+enum WebViewMessageType {
     VALIDATION_ERROR = 'VALIDATION_ERROR',
     ORDER_SAVE_ERROR = 'ORDER_SAVE_ERROR',
     PAYMENT_PENDING = 'PAYMENT_PENDING',
@@ -18,10 +18,12 @@ enum CefSharpMessageType {
 
 declare global {
   interface Window {
-    CefSharp: CefSharp;
-    handleCefSharpError: (error: any) => void;
-    handleCefSharpMessage: (Type: CefSharpMessageType, Code: string, Arg: string) => void;
+    chrome: {
+      webview: WebView;
+    };
+    handleWebViewError: (error: any) => void;
+    handleWebViewMessage: (Type: WebViewMessageType, Code: string, Arg: string) => void;
   }
 }
 
-export {CefSharp, CefSharpMessageType};
+export {WebView, WebViewMessageType};

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, X, Timer } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { CefSharpMessageType } from '@/types/cefsharp.d';
+import { WebViewMessageType } from '@/types/webview';
 import { useState, useEffect, useCallback } from 'react';
 import useBranchStore from '@/store/branch';
 import { CurrencyDisplay } from '@/components/payment/currency-display';
@@ -162,7 +162,7 @@ export default function PaymentTransactionPage() {
   const { t } = useBranchStore();
   const router = useRouter();
   const params = useParams();
-  const [cefSharpMessage, setCefSharpMessage] = useState<{ Type: CefSharpMessageType, Code: string, Arg: string } | null>(null);
+  const [webViewMessage, setWebViewMessage] = useState<{ Type: WebViewMessageType, Code: string, Arg: string } | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
   // Helper function to replace template variables in error messages
@@ -172,42 +172,42 @@ export default function PaymentTransactionPage() {
 
   useEffect(() => {
     const updatedCart = useCartStore.getState().cart;
-    const cefSharpMessageHandler = (Type: CefSharpMessageType, Code: string, Arg: string) => {
+    const webViewMessageHandler = (Type: WebViewMessageType, Code: string, Arg: string) => {
       console.log(updatedCart)
       console.log({ Type, Code, Arg })
-      setCefSharpMessage({ Type, Code, Arg });
+      setWebViewMessage({ Type, Code, Arg });
       setIsRetrying(false);
     };
 
     // Demo simulation function
-    // const simulateCefSharpResponses = () => {
+    // const simulateWebViewResponses = () => {
     //   const amount = updatedCart.AmountDue;
       
     //   if (amount > 1000) {
     //     // Error states for amounts over 1000 TL
     //     const errorResponses = [
     //       { 
-    //         Type: CefSharpMessageType.VALIDATION_ERROR, 
+    //         Type: WebViewMessageType.VALIDATION_ERROR, 
     //         Code: "400", 
     //         Arg: "Validation error: Amount exceeds limit" 
     //       },
     //       { 
-    //         Type: CefSharpMessageType.PAYMENT_ERROR, 
+    //         Type: WebViewMessageType.PAYMENT_ERROR, 
     //         Code: "500", 
     //         Arg: "Payment processing failed" 
     //       },
     //       { 
-    //         Type: CefSharpMessageType.ORDER_SAVE_ERROR, 
+    //         Type: WebViewMessageType.ORDER_SAVE_ERROR, 
     //         Code: "501", 
     //         Arg: "Order could not be saved" 
     //       },
     //       { 
-    //         Type: CefSharpMessageType.ECR_ERROR, 
+    //         Type: WebViewMessageType.ECR_ERROR, 
     //         Code: "502", 
     //         Arg: "ECR communication error" 
     //       },
     //       { 
-    //         Type: CefSharpMessageType.ACTION_RESPONSE, 
+    //         Type: WebViewMessageType.ACTION_RESPONSE, 
     //         Code: "503", 
     //         Arg: "Action failed to complete" 
     //       }
@@ -215,7 +215,7 @@ export default function PaymentTransactionPage() {
 
     //     errorResponses.forEach((response, index) => {
     //       setTimeout(() => {
-    //         cefSharpMessageHandler(
+    //         webViewMessageHandler(
     //           response.Type,
     //           response.Code,
     //           response.Arg
@@ -225,22 +225,22 @@ export default function PaymentTransactionPage() {
     //   } else {
     //     // Normal success flow for amounts under 1000 TL
     //     // Show PaymentPending immediately
-    //     cefSharpMessageHandler(
-    //       CefSharpMessageType.PAYMENT_PENDING,
+    //     webViewMessageHandler(
+    //       WebViewMessageType.PAYMENT_PENDING,
     //       "101",
     //       "Payment pending..."
     //     );
 
     //     // Schedule the rest of the states
     //     const successResponses = [
-    //       { Type: CefSharpMessageType.PAYMENT_CONNECTING, Code: "100", Arg: "Connecting to terminal...", delay: 5000 },
-    //       { Type: CefSharpMessageType.PAYMENT_PRINTING, Code: "102", Arg: "Printing receipt...", delay: 10000 },
-    //       { Type: CefSharpMessageType.PAYMENT_SUCCESS, Code: "200", Arg: "Payment completed successfully", delay: 15000 }
+    //       { Type: WebViewMessageType.PAYMENT_CONNECTING, Code: "100", Arg: "Connecting to terminal...", delay: 5000 },
+    //       { Type: WebViewMessageType.PAYMENT_PRINTING, Code: "102", Arg: "Printing receipt...", delay: 10000 },
+    //       { Type: WebViewMessageType.PAYMENT_SUCCESS, Code: "200", Arg: "Payment completed successfully", delay: 15000 }
     //     ];
 
     //     successResponses.forEach((response) => {
     //       setTimeout(() => {
-    //         cefSharpMessageHandler(
+    //         webViewMessageHandler(
     //           response.Type,
     //           response.Code,
     //           response.Arg
@@ -250,24 +250,24 @@ export default function PaymentTransactionPage() {
     //   }
     // };
     if (typeof window !== 'undefined') {
-      window.handleCefSharpMessage = cefSharpMessageHandler;
+      window.handleWebViewMessage = webViewMessageHandler;
       // Start simulation
-      // simulateCefSharpResponses();
+      // simulateWebViewResponses();
     }
 
     try {
-      if (typeof window !== 'undefined' && 'CefSharp' in window) {
-        window.CefSharp.PostMessage({ saveOrder: updatedCart });
+      if (typeof window !== 'undefined' && 'chrome' in window) {
+        window.chrome.webview.postMessage({ saveOrder: updatedCart });
       } else {
-        console.warn("CefSharp not found - may be running in browser environment");
+        console.warn("WebView not found - may be running in browser environment");
       }
     } catch (error) {
-      console.error("CefSharp communication error:", error);
+      console.error("WebView communication error:", error);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
-        window.handleCefSharpMessage = () => '';
+        window.handleWebViewMessage = () => '';
       }
     };
   }, []);
@@ -275,13 +275,13 @@ export default function PaymentTransactionPage() {
   // Return to menu function
   const handleReturnToMenu = () => {
     try {
-      if (typeof window !== 'undefined' && 'CefSharp' in window) {
-        window.CefSharp.PostMessage({ cancelOrder: cart });
+      if (typeof window !== 'undefined' && 'chrome' in window) {
+        window.chrome.webview.postMessage({ cancelOrder: cart });
       }
       clearCart();
       router.push(`/${params?.branchId}/menu`);
     } catch (error) {
-      console.error("CefSharp communication error:", error);
+      console.error("WebView communication error:", error);
       setIsRetrying(false);
     }
   };
@@ -297,11 +297,11 @@ export default function PaymentTransactionPage() {
 
     setTimeout(() => {
       try {
-        if (typeof window !== 'undefined' && 'CefSharp' in window) {
-          window.CefSharp.PostMessage({ saveOrder: cart });
+        if (typeof window !== 'undefined' && 'chrome' in window) {
+          window.chrome.webview.postMessage({ saveOrder: cart });
         }
       } catch (error) {
-        console.error("CefSharp communication error:", error);
+        console.error("WebView communication error:", error);
         setIsRetrying(false);
       }
     }, 2000);
@@ -335,7 +335,7 @@ export default function PaymentTransactionPage() {
         <div className="w-full max-w-3xl mx-auto space-y-12">
           <AnimatePresence mode="wait">
             {(() => {
-              if (isRetrying || !cefSharpMessage) {
+              if (isRetrying || !webViewMessage) {
                 return (
                   <div className="space-y-12">
                     <PaymentConnecting amount={cart.AmountDue} t={t}/>
@@ -344,37 +344,37 @@ export default function PaymentTransactionPage() {
                 );
               }
 
-              const errorMessage = cefSharpMessage.Code && cefSharpMessage.Code in t.errors
-                ? replaceTemplateVariables(t.errors[cefSharpMessage.Code as keyof typeof t.errors], cefSharpMessage.Arg)
-                : cefSharpMessage.Arg;
+              const errorMessage = webViewMessage.Code && webViewMessage.Code in t.errors
+                ? replaceTemplateVariables(t.errors[webViewMessage.Code as keyof typeof t.errors], webViewMessage.Arg)
+                : webViewMessage.Arg;
 
-              switch (cefSharpMessage.Type) {
-                case CefSharpMessageType.PAYMENT_SUCCESS:
+              switch (webViewMessage.Type) {
+                case WebViewMessageType.PAYMENT_SUCCESS:
                   return (
                     <div className="space-y-12">
                       <PaymentSuccess amount={cart.AmountDue} onReturn={handleReturnToMenu} t={t} />
                       <CurrencyDisplay amount={cart.AmountDue} />
                     </div>
                   );
-                case CefSharpMessageType.PAYMENT_PENDING:
+                case WebViewMessageType.PAYMENT_PENDING:
                   return (
                     <div className="space-y-12">
                       <PaymentPending amount={cart.AmountDue} t={t} />
                       <CurrencyDisplay amount={cart.AmountDue} />
                     </div>
                   );
-                case CefSharpMessageType.PAYMENT_PRINTING:
+                case WebViewMessageType.PAYMENT_PRINTING:
                   return (
                     <div className="space-y-12">
                       <PaymentPrinting amount={cart.AmountDue} t={t} />
                       <CurrencyDisplay amount={cart.AmountDue} />
                     </div>
                   );
-                case CefSharpMessageType.VALIDATION_ERROR:
-                case CefSharpMessageType.PAYMENT_ERROR:
-                case CefSharpMessageType.ORDER_SAVE_ERROR:
-                case CefSharpMessageType.ECR_ERROR:
-                case CefSharpMessageType.ACTION_RESPONSE:
+                case WebViewMessageType.VALIDATION_ERROR:
+                case WebViewMessageType.PAYMENT_ERROR:
+                case WebViewMessageType.ORDER_SAVE_ERROR:
+                case WebViewMessageType.ECR_ERROR:
+                case WebViewMessageType.ACTION_RESPONSE:
                   return (
                     <div className="space-y-12">
                       <Error
