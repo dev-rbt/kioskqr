@@ -228,7 +228,7 @@ export default async function handler(
                             ISNULL(p.ECommerceProductName1, p.ProductName) AS [ProductName],
                             plc.PickValue AS [CategoryName],
                             plg.PickValue AS [GroupName],									  
-                            ISNULL(tg.TaxRate, 8) AS [TaxPercent],
+                            ISNULL(tg.TaxRate, p.TaxPercent1) AS [TaxPercent],
                             p.Barcode,
                             p.Barcode2,
                             p.Barcode3,
